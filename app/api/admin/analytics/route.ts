@@ -75,18 +75,29 @@ export async function GET(request: Request) {
       })
     );
 
-    // Günlük gelir trendi
-    const dailyRevenue = await prisma.$queryRaw<Array<{ date: string; revenue: number }>>`
-      SELECT 
-        DATE(created_at) as date,
-        SUM(total) as revenue
-      FROM "Order"
-      WHERE restaurant_id = ${session.restaurantId}
-        AND created_at >= ${startDate}
-        AND status != 'cancelled'
-      GROUP BY DATE(created_at)
-      ORDER BY date ASC
-    `;
+    // Günlük gelir trendi (basitleştirilmiş versiyon)
+    const allOrders = await prisma.order.findMany({
+      where: {
+        restaurantId: session.restaurantId,
+        createdAt: { gte: startDate },
+        status: { not: "cancelled" },
+      },
+      select: {
+        createdAt: true,
+        total: true,
+      },
+    });
+
+    // Günlere göre grupla
+    const dailyRevenueMap = new Map<string, number>();
+    allOrders.forEach((order) => {
+      const date = order.createdAt.toISOString().split("T")[0];
+      dailyRevenueMap.set(date, (dailyRevenueMap.get(date) || 0) + order.total);
+    });
+
+    const dailyRevenue = Array.from(dailyRevenueMap.entries())
+      .map(([date, revenue]) => ({ date, revenue }))
+      .sort((a, b) => a.date.localeCompare(b.date));
 
     return NextResponse.json({
       totalOrders,
