@@ -4,7 +4,7 @@ import { getAdminSession } from "@/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -15,9 +15,10 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const order = await prisma.order.findFirst({
       where: {
-        id: params.id,
+        id,
         restaurantId: session.restaurantId,
       },
       include: {
@@ -53,7 +54,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -64,11 +65,12 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const data = await request.json();
 
     const order = await prisma.order.updateMany({
       where: {
-        id: params.id,
+        id,
         restaurantId: session.restaurantId,
       },
       data: {
@@ -87,7 +89,7 @@ export async function PUT(
     }
 
     const updatedOrder = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         items: {
           include: {

@@ -4,7 +4,7 @@ import { getAdminSession } from "@/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -15,9 +15,10 @@ export async function GET(
       );
     }
 
+    const { id } = await params;
     const product = await prisma.product.findFirst({
       where: {
-        id: params.id,
+        id,
         category: {
           restaurantId: session.restaurantId,
         },
@@ -94,7 +95,7 @@ export async function PUT(
     }
 
     const product = await prisma.product.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         description: data.description || null,
@@ -122,7 +123,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -133,9 +134,10 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const product = await prisma.product.findFirst({
       where: {
-        id: params.id,
+        id,
         category: {
           restaurantId: session.restaurantId,
         },
@@ -150,7 +152,7 @@ export async function DELETE(
     }
 
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ success: true });

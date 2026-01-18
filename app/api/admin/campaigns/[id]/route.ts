@@ -4,7 +4,7 @@ import { getAdminSession } from "@/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -12,9 +12,10 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const campaign = await prisma.campaign.findFirst({
       where: {
-        id: params.id,
+        id,
         restaurantId: session.restaurantId,
       },
     });
@@ -38,7 +39,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -46,12 +47,13 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const data = await request.json();
 
     // Verify campaign belongs to restaurant
     const existingCampaign = await prisma.campaign.findFirst({
       where: {
-        id: params.id,
+        id,
         restaurantId: session.restaurantId,
       },
     });
@@ -68,7 +70,7 @@ export async function PUT(
       const codeExists = await prisma.campaign.findFirst({
         where: {
           code: data.code.toUpperCase(),
-          id: { not: params.id },
+          id: { not: id },
         },
       });
 
@@ -82,7 +84,7 @@ export async function PUT(
 
     const campaign = await prisma.campaign.updateMany({
       where: {
-        id: params.id,
+        id,
         restaurantId: session.restaurantId,
       },
       data: {
@@ -107,7 +109,7 @@ export async function PUT(
     }
 
     const updatedCampaign = await prisma.campaign.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json(updatedCampaign);
@@ -128,7 +130,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -136,9 +138,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     await prisma.campaign.deleteMany({
       where: {
-        id: params.id,
+        id,
         restaurantId: session.restaurantId,
       },
     });
