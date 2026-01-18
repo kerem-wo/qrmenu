@@ -47,10 +47,15 @@ export async function POST(request: Request) {
       success: true,
       admin: session,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Login error:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    });
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { error: error?.message || "Bir hata oluştu", details: process.env.NODE_ENV === "development" ? error?.stack : undefined },
       { status: 500 }
     );
   }
