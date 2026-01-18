@@ -18,7 +18,7 @@ git commit -m "QR Menu System"
 Sonra GitHub'da yeni repository oluşturup:
 
 ```bash
-git remote add origin https://github.com/kullaniciadi/qr-menu.git
+git remote add origin https://github.com/kerem-wo/qr-menu.git
 git push -u origin main
 ```
 
