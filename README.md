@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # QR Menü Sistemi
 
 Modern ve kullanıcı dostu restoran QR menü sistemi. Restoranlar için dijital menü çözümü ile müşteriler QR kod okutarak menüyü görüntüleyebilir ve online sipariş verebilir.
@@ -125,3 +126,7 @@ npm run dev
 ## Lisans
 
 Bu proje özel bir projedir.
+=======
+# qrmenu
+ONLİNE QR MENU
+>>>>>>> b367b5ced4bcfb06dca226e97634cc85d3601c9e

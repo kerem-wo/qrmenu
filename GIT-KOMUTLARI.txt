@@ -1,0 +1,22 @@
+# GitHub'a Yükleme - Doğru Komutlar
+
+# 1. Remote URL'ini kontrol et
+git remote -v
+
+# 2. Remote URL'ini güncelle (zaten yaptınız, bu adımı atlayabilirsiniz)
+git remote set-url origin https://github.com/kerem-wo/qrmenu
+
+# 3. Tüm dosyaları ekle
+git add .
+
+# 4. Commit et
+git commit -m "QR Menu System - Complete"
+
+# 5. Branch'i main olarak ayarla (eğer master ise)
+git branch -M main
+
+# 6. Push et
+git push -u origin main
+
+# EĞER master branch kullanıyorsanız:
+# git push -u origin master
