@@ -18,9 +18,17 @@ git commit -m "QR Menu System"
 Sonra GitHub'da yeni repository oluşturup:
 
 ```bash
-git remote add origin https://github.com/kerem-wo/qr-menu.git
+# Remote URL'ini ayarla (eğer zaten varsa güncelle)
+git remote set-url origin https://github.com/kerem-wo/qrmenu
+# VEYA yeni ekliyorsanız:
+# git remote add origin https://github.com/kerem-wo/qrmenu
+
+# Branch'i main olarak ayarla ve push et
+git branch -M main
 git push -u origin main
 ```
+
+**Not:** Eğer "master" branch'i varsa, önce `git branch -M main` ile rename edin.
 
 #### Adım 2: Vercel'e Bağlayın
 

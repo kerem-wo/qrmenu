@@ -11,7 +11,7 @@ Vercel kullanırsanız **SQL bilgisi gerektirmez** - Her şey otomatik!
    git init
    git add .
    git commit -m "QR Menu"
-   git remote add origin https://github.com/kullaniciadi/qr-menu.git
+   git remote add origin https://github.com/kerem-wo/qrmenu.git
    git push -u origin main
    ```
 
