@@ -1,5 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { config } from 'dotenv';
+import { resolve } from 'path';
+
+// Load .env.local if it exists
+config({ path: resolve(process.cwd(), '.env.local') });
+// Also load .env as fallback
+config();
 
 const prisma = new PrismaClient();
 
@@ -28,7 +35,60 @@ async function main() {
     },
   });
 
-  // Delete existing categories and products first
+  // Delete existing data in correct order (respecting foreign key constraints)
+  // First delete OrderItemVariant (if exists)
+  await prisma.orderItemVariant.deleteMany({
+    where: {
+      orderItem: {
+        order: {
+          restaurantId: restaurant.id
+        }
+      }
+    }
+  }).catch(() => {}); // Ignore if table doesn't exist
+  
+  // Delete OrderItem
+  await prisma.orderItem.deleteMany({
+    where: {
+      order: {
+        restaurantId: restaurant.id
+      }
+    }
+  });
+  
+  // Delete Orders
+  await prisma.order.deleteMany({
+    where: {
+      restaurantId: restaurant.id
+    }
+  });
+  
+  // Delete Campaigns
+  await prisma.campaign.deleteMany({
+    where: {
+      restaurantId: restaurant.id
+    }
+  });
+  
+  // Delete Customers
+  await prisma.customer.deleteMany({
+    where: {
+      restaurantId: restaurant.id
+    }
+  });
+  
+  // Delete ProductVariants
+  await prisma.productVariant.deleteMany({
+    where: {
+      product: {
+        category: {
+          restaurantId: restaurant.id
+        }
+      }
+    }
+  });
+  
+  // Delete Products
   await prisma.product.deleteMany({ 
     where: { 
       category: {
@@ -36,7 +96,13 @@ async function main() {
       }
     } 
   });
-  await prisma.category.deleteMany({ where: { restaurantId: restaurant.id } });
+  
+  // Finally delete Categories
+  await prisma.category.deleteMany({ 
+    where: { 
+      restaurantId: restaurant.id 
+    } 
+  });
 
   // Create categories
   const pizzaCategory = await prisma.category.create({
