@@ -42,6 +42,8 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceFilter, setPriceFilter] = useState<"all" | "low" | "medium" | "high">("all");
+  const [couponCode, setCouponCode] = useState("");
+  const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
     if (slug) {
@@ -128,6 +130,7 @@ export default function MenuPage() {
           tableNumber: tableNumber || null,
           customerName: customerName || null,
           customerPhone: customerPhone || null,
+          couponCode: couponCode || null,
           items: cart.map((item) => ({
             productId: item.product.id,
             quantity: item.quantity,
