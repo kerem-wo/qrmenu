@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShoppingCart, Search, Filter, X } from "lucide-react";
+import toast from "react-hot-toast";
 
 interface Product {
   id: string;
@@ -122,21 +123,23 @@ export default function MenuPage() {
 
     try {
       const res = await fetch(`/api/campaigns/validate?code=${couponCode}&amount=${subtotal}`);
+      const data = await res.json();
+      
       if (res.ok) {
-        const data = await res.json();
         setDiscount(data.discount || 0);
         if (data.discount > 0) {
-          alert(`Kupon uygulandı! İndirim: ${data.discount.toFixed(2)} ₺`);
+          toast.success(`Kupon uygulandı! İndirim: ${data.discount.toFixed(2)} ₺`);
         } else {
-          alert("Kupon geçersiz veya kullanılamaz!");
+          toast.error("Kupon geçersiz veya kullanılamaz!");
         }
       } else {
         setDiscount(0);
-        alert("Kupon geçersiz!");
+        toast.error(data.error || "Kupon geçersiz!");
       }
     } catch (error) {
       console.error("Error validating coupon:", error);
       setDiscount(0);
+      toast.error("Kupon doğrulanırken bir hata oluştu!");
     }
   };
 
