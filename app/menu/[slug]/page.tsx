@@ -114,6 +114,32 @@ export default function MenuPage() {
   );
   const total = Math.max(0, subtotal - discount);
 
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setDiscount(0);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/campaigns/validate?code=${couponCode}&amount=${subtotal}`);
+      if (res.ok) {
+        const data = await res.json();
+        setDiscount(data.discount || 0);
+        if (data.discount > 0) {
+          alert(`Kupon uygulandı! İndirim: ${data.discount.toFixed(2)} ₺`);
+        } else {
+          alert("Kupon geçersiz veya kullanılamaz!");
+        }
+      } else {
+        setDiscount(0);
+        alert("Kupon geçersiz!");
+      }
+    } catch (error) {
+      console.error("Error validating coupon:", error);
+      setDiscount(0);
+    }
+  };
+
   const handleOrder = async () => {
     if (cart.length === 0) return;
 
