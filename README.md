@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # QR Menü Sistemi
 
 Modern ve kullanıcı dostu restoran QR menü sistemi. Restoranlar için dijital menü çözümü ile müşteriler QR kod okutarak menüyü görüntüleyebilir ve online sipariş verebilir.
@@ -111,22 +110,28 @@ npm run dev
 - **Order** - Siparişler
 - **OrderItem** - Sipariş detayları
 
+## Production Deployment
+
+Production'a yüklemeden önce **mutlaka** `DEPLOY.md` ve `KURULUM-SQL-YOK.md` dosyalarını okuyun!
+
+**Önemli:** SQLite production'da çalışmaz. PostgreSQL veya MySQL kullanmalısınız.
+
+**En Kolay Yöntem:** Vercel kullanın - Otomatik PostgreSQL sağlar, SQL bilgisi gerektirmez!
+
+Detaylı rehber: `KURULUM-SQL-YOK.md`
+
 ## Geliştirme Planı
 
 - [x] Temel proje yapısı
 - [x] Admin panel arayüzü
 - [x] Ürün CRUD işlemleri
 - [x] Public menü sayfası
-- [ ] Görsel yükleme sistemi
-- [ ] Sipariş yönetimi
-- [ ] QR kod oluşturma
+- [x] Sipariş sistemi
+- [x] QR kod oluşturma
+- [ ] Görsel yükleme sistemi (dosya upload)
 - [ ] Ödeme entegrasyonu
 - [ ] Bildirim sistemi
 
 ## Lisans
 
 Bu proje özel bir projedir.
-=======
-# qrmenu
-ONLİNE QR MENU
->>>>>>> b367b5ced4bcfb06dca226e97634cc85d3601c9e
