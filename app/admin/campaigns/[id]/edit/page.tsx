@@ -42,7 +42,12 @@ export default function EditCampaignPage() {
   }, [params?.id]);
 
   const fetchCampaign = async () => {
-    if (!params?.id) return;
+    if (!params?.id) {
+      setLoading(false);
+      toast.error("Geçersiz kampanya ID'si!");
+      router.push("/admin/campaigns");
+      return;
+    }
     
     try {
       const res = await fetch(`/api/admin/campaigns/${params.id}`);
@@ -61,11 +66,14 @@ export default function EditCampaignPage() {
           isActive: campaign.isActive,
         });
       } else {
-        toast.error("Kampanya bulunamadı!");
+        const errorData = await res.json().catch(() => ({ error: "Bilinmeyen hata" }));
+        toast.error(errorData.error || "Kampanya bulunamadı!");
         router.push("/admin/campaigns");
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Error fetching campaign:", error);
       toast.error("Kampanya yüklenirken bir hata oluştu!");
+      router.push("/admin/campaigns");
     } finally {
       setLoading(false);
     }
