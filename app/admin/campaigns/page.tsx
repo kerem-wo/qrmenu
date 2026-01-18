@@ -146,7 +146,7 @@ export default function CampaignsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                      <Link href={`/admin/campaigns/${campaign.id}/edit`} className="flex-1">
+                      <Link href={`/admin/campaigns/${campaign.id}/edit`} prefetch={false} className="flex-1">
                         <Button variant="outline" className="w-full">
                           <Edit className="w-4 h-4 mr-2" />
                           Düzenle
