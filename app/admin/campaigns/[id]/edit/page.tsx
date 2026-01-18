@@ -11,8 +11,6 @@ import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { checkAuth } from "@/lib/auth-client";
 
-// Client components are automatically dynamic in Next.js 14
-
 export default function EditCampaignPage() {
   const router = useRouter();
   const params = useParams();
