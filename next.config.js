@@ -25,6 +25,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
+  // Explicitly set output directory (Next.js default is .next)
+  distDir: '.next',
 }
 
 module.exports = nextConfig
