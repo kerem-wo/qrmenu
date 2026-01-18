@@ -27,6 +27,7 @@ export default function NewProductPage() {
     price: "",
     categoryId: "",
     image: "",
+    stock: "",
     isAvailable: true,
     order: "0",
   });
@@ -82,6 +83,7 @@ export default function NewProductPage() {
           price: parseFloat(formData.price),
           categoryId: formData.categoryId,
           image: formData.image.trim() || null,
+          stock: formData.stock ? parseInt(formData.stock) : null,
           isAvailable: formData.isAvailable,
           order: parseInt(formData.order) || 0,
         }),
@@ -105,52 +107,54 @@ export default function NewProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild>
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
+          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
             <Link href="/admin/products">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Geri
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">Yeni Ürün Ekle</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Yeni Ürün Ekle</h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card>
+      <main className="container mx-auto px-6 py-8 max-w-2xl">
+        <Card className="card-modern">
           <CardHeader>
-            <CardTitle>Ürün Bilgileri</CardTitle>
-            <CardDescription>Yeni ürün eklemek için formu doldurun</CardDescription>
+            <CardTitle className="text-xl font-semibold text-slate-900">Ürün Bilgileri</CardTitle>
+            <CardDescription className="text-slate-600">Yeni ürün eklemek için formu doldurun</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Ürün Adı *</Label>
+                <Label htmlFor="name" className="text-sm font-medium text-slate-700">Ürün Adı *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="Örn: Margherita Pizza"
+                  className="h-11 border-slate-300 focus:border-slate-900"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Açıklama</Label>
+                <Label htmlFor="description" className="text-sm font-medium text-slate-700">Açıklama</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Ürün hakkında detaylı bilgi..."
                   rows={4}
+                  className="border-slate-300 focus:border-slate-900"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Fiyat (₺) *</Label>
+                  <Label htmlFor="price" className="text-sm font-medium text-slate-700">Fiyat (₺) *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -159,75 +163,87 @@ export default function NewProductPage() {
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     required
                     placeholder="0.00"
+                    className="h-11 border-slate-300 focus:border-slate-900"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="order">Sıra</Label>
+                  <Label htmlFor="stock" className="text-sm font-medium text-slate-700">Stok (Boş = Sınırsız)</Label>
                   <Input
-                    id="order"
+                    id="stock"
                     type="number"
-                    value={formData.order}
-                    onChange={(e) => setFormData({ ...formData, order: e.target.value })}
-                    placeholder="0"
+                    value={formData.stock}
+                    onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                    placeholder="Sınırsız"
+                    className="h-11 border-slate-300 focus:border-slate-900"
                   />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4">
-
-                <div className="space-y-2">
-                  <Label htmlFor="categoryId">Kategori *</Label>
-                  <select
-                    id="categoryId"
-                    value={formData.categoryId}
-                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                    required
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    <option value="">Kategori seçin</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="image">Görsel URL</Label>
+                <Label htmlFor="order" className="text-sm font-medium text-slate-700">Sıra</Label>
+                <Input
+                  id="order"
+                  type="number"
+                  value={formData.order}
+                  onChange={(e) => setFormData({ ...formData, order: e.target.value })}
+                  placeholder="0"
+                  className="h-11 border-slate-300 focus:border-slate-900"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="categoryId" className="text-sm font-medium text-slate-700">Kategori *</Label>
+                <select
+                  id="categoryId"
+                  value={formData.categoryId}
+                  onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                  required
+                  className="flex h-11 w-full rounded-md border border-slate-300 bg-background px-3 py-2 text-sm focus:border-slate-900 focus:outline-none"
+                >
+                  <option value="">Kategori seçin</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="image" className="text-sm font-medium text-slate-700">Görsel URL</Label>
                 <Input
                   id="image"
                   type="url"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                   placeholder="https://example.com/image.jpg"
+                  className="h-11 border-slate-300 focus:border-slate-900"
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg">
                 <input
                   type="checkbox"
                   id="isAvailable"
                   checked={formData.isAvailable}
                   onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
-                  className="w-4 h-4"
+                  className="w-4 h-4 rounded border-slate-300"
                 />
-                <Label htmlFor="isAvailable" className="cursor-pointer">
+                <Label htmlFor="isAvailable" className="cursor-pointer text-sm font-medium text-slate-700">
                   Ürün aktif (müşteriler görebilir)
                 </Label>
               </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" disabled={loading} className="flex-1">
+              <div className="flex gap-4 pt-4">
+                <Button type="submit" disabled={loading} className="flex-1 bg-slate-900 hover:bg-slate-800 h-11">
                   {loading ? "Ekleniyor..." : "Ürünü Ekle"}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => router.back()}
-                  className="flex-1"
+                  className="flex-1 border-slate-300 h-11"
                 >
                   İptal
                 </Button>

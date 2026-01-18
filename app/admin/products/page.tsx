@@ -17,6 +17,7 @@ interface Product {
   price: number;
   image: string | null;
   isAvailable: boolean;
+  stock: number | null;
   category: {
     name: string;
   };
@@ -76,19 +77,19 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
               <Link href="/admin/dashboard">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Geri
               </Link>
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Ürün Yönetimi</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Ürün Yönetimi</h1>
           </div>
-          <Button asChild>
+          <Button asChild className="bg-slate-900 hover:bg-slate-800">
             <Link href="/admin/products/new">
               <Plus className="w-4 h-4 mr-2" />
               Yeni Ürün Ekle
@@ -97,12 +98,13 @@ export default function ProductsPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-6 py-8">
         {products.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-gray-500 mb-4">Henüz ürün eklenmemiş.</p>
-              <Button asChild>
+          <Card className="card-modern">
+            <CardContent className="py-16 text-center">
+              <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-600 mb-6">Henüz ürün eklenmemiş.</p>
+              <Button asChild className="bg-slate-900 hover:bg-slate-800">
                 <Link href="/admin/products/new">
                   <Plus className="w-4 h-4 mr-2" />
                   İlk Ürünü Ekle
@@ -113,9 +115,9 @@ export default function ProductsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => (
-              <Card key={product.id} className="overflow-hidden">
+              <Card key={product.id} className="card-modern overflow-hidden">
                 {product.image && (
-                  <div className="relative w-full h-48 bg-gray-200">
+                  <div className="relative w-full h-48 bg-slate-100">
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -127,10 +129,10 @@ export default function ProductsPage() {
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle className="text-lg">{product.name}</CardTitle>
-                      <CardDescription>{product.category.name}</CardDescription>
+                      <CardTitle className="text-lg font-semibold text-slate-900">{product.name}</CardTitle>
+                      <CardDescription className="text-sm">{product.category.name}</CardDescription>
                     </div>
-                    <span className={`px-2 py-1 rounded text-xs ${
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${
                       product.isAvailable 
                         ? "bg-green-100 text-green-800" 
                         : "bg-red-100 text-red-800"
@@ -140,15 +142,26 @@ export default function ProductsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                  <p className="text-sm text-slate-600 mb-2 line-clamp-2">
                     {product.description || "Açıklama yok"}
                   </p>
+                  {product.stock !== null && (
+                    <p className={`text-xs mb-4 ${
+                      product.stock === 0 
+                        ? "text-red-600 font-semibold" 
+                        : product.stock < 10 
+                        ? "text-orange-600" 
+                        : "text-slate-600"
+                    }`}>
+                      Stok: {product.stock} adet
+                    </p>
+                  )}
                   <div className="flex justify-between items-center">
-                    <span className="text-xl font-bold text-primary">
+                    <span className="text-xl font-bold text-slate-900">
                       {product.price.toFixed(2)} ₺
                     </span>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="icon" asChild>
+                      <Button variant="outline" size="icon" asChild className="border-slate-300">
                         <Link href={`/admin/products/${product.id}/edit`}>
                           <Edit className="w-4 h-4" />
                         </Link>
@@ -157,6 +170,7 @@ export default function ProductsPage() {
                         variant="outline"
                         size="icon"
                         onClick={() => handleDelete(product.id)}
+                        className="border-slate-300 hover:bg-red-50 hover:border-red-300"
                       >
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </Button>

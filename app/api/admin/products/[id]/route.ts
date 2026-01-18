@@ -100,6 +100,7 @@ export async function PUT(
         description: data.description || null,
         price: data.price,
         image: data.image || null,
+        stock: data.stock !== undefined ? (data.stock === "" || data.stock === null ? null : parseInt(data.stock)) : undefined,
         isAvailable: data.isAvailable ?? true,
         order: data.order ?? undefined,
         categoryId: data.categoryId || undefined,

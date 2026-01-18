@@ -82,6 +82,7 @@ export async function POST(request: Request) {
         price: data.price,
         image: data.image || null,
         isAvailable: data.isAvailable ?? true,
+        stock: data.stock !== undefined ? (data.stock === "" ? null : parseInt(data.stock)) : null,
         order: data.order || 0,
         categoryId: data.categoryId,
       },

@@ -79,19 +79,19 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
               <Link href="/admin/dashboard">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Geri
               </Link>
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Kategori Yönetimi</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Kategori Yönetimi</h1>
           </div>
-          <Button asChild>
+          <Button asChild className="bg-slate-900 hover:bg-slate-800">
             <Link href="/admin/categories/new">
               <Plus className="w-4 h-4 mr-2" />
               Yeni Kategori Ekle
@@ -100,12 +100,13 @@ export default function CategoriesPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-6 py-8">
         {categories.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-gray-500 mb-4">Henüz kategori eklenmemiş.</p>
-              <Button asChild>
+          <Card className="card-modern">
+            <CardContent className="py-16 text-center">
+              <Plus className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-600 mb-6">Henüz kategori eklenmemiş.</p>
+              <Button asChild className="bg-slate-900 hover:bg-slate-800">
                 <Link href="/admin/categories/new">
                   <Plus className="w-4 h-4 mr-2" />
                   İlk Kategoriyi Ekle
@@ -116,9 +117,9 @@ export default function CategoriesPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categories.map((category) => (
-              <Card key={category.id} className="overflow-hidden">
+              <Card key={category.id} className="card-modern overflow-hidden">
                 {category.image && (
-                  <div className="relative w-full h-48 bg-gray-200">
+                  <div className="relative w-full h-48 bg-slate-100">
                     <Image
                       src={category.image}
                       alt={category.name}
@@ -128,20 +129,20 @@ export default function CategoriesPage() {
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-lg">{category.name}</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-slate-900">{category.name}</CardTitle>
                   {category.description && (
-                    <CardDescription className="line-clamp-2">
+                    <CardDescription className="line-clamp-2 text-sm">
                       {category.description}
                     </CardDescription>
                   )}
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm font-medium text-slate-600">
                       {category._count.products} ürün
                     </span>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="icon" asChild>
+                      <Button variant="outline" size="icon" asChild className="border-slate-300">
                         <Link href={`/admin/categories/${category.id}/edit`}>
                           <Edit className="w-4 h-4" />
                         </Link>
@@ -151,6 +152,7 @@ export default function CategoriesPage() {
                         size="icon"
                         onClick={() => handleDelete(category.id)}
                         disabled={category._count.products > 0}
+                        className="border-slate-300 hover:bg-red-50 hover:border-red-300 disabled:opacity-50"
                       >
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </Button>

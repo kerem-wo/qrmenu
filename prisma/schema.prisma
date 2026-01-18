@@ -17,12 +17,46 @@ model Restaurant {
   description String?
   logo        String?
   theme       String   @default("default")
+  language    String   @default("tr") // tr, en, de, vb.
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
   categories  Category[]
   orders      Order[]
+  campaigns   Campaign[]
   admin       Admin?
+}
+
+model Customer {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?  @unique
+  phone       String?  @unique
+  password    String?  // Opsiyonel şifre
+  favorites   String[] // Favori ürün ID'leri
+  restaurantId String? // Hangi restorana ait (opsiyonel)
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique // Kupon kodu
+  type        String   // "percentage" veya "fixed"
+  value       Float    // İndirim değeri
+  minAmount   Float?   // Minimum sipariş tutarı
+  maxDiscount Float?   // Maksimum indirim tutarı
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(true)
+  usageLimit  Int?     // Kullanım limiti
+  usedCount   Int      @default(0)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Admin {
@@ -55,21 +89,41 @@ model Product {
   price       Float
   image       String?
   isAvailable Boolean  @default(true)
+  stock       Int?     // Stok miktarı (null = sınırsız)
   order       Int      @default(0)
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  variants    ProductVariant[]
   orderItems  OrderItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductVariant {
+  id          String   @id @default(cuid())
+  name        String   // Örn: "Küçük", "Büyük", "Ekstra Peynir"
+  price       Float    // Ek fiyat (varsayılan fiyata eklenecek)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItemVariants OrderItemVariant[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model Order {
   id           String   @id @default(cuid())
+  orderNumber  String   @unique // Takip için benzersiz numara
   tableNumber  String?
   customerName String?
   customerPhone String?
+  customerId   String?  // Müşteri hesabı varsa
+  customer     Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
   status       String   @default("pending") // pending, confirmed, preparing, ready, completed, cancelled
   total        Float
+  discount     Float    @default(0) // İndirim miktarı
+  couponCode  String?  // Kullanılan kupon kodu
+  paymentStatus String @default("pending") // pending, paid, failed, refunded
+  paymentMethod String? // cash, card, online
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   items        OrderItem[]
@@ -85,5 +139,16 @@ model OrderItem {
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId String
   product   Product  @relation(fields: [productId], references: [id])
+  variants  OrderItemVariant[]
+  notes     String?  // Özel notlar
+  createdAt DateTime @default(now())
+}
+
+model OrderItemVariant {
+  id        String   @id @default(cuid())
+  orderItemId String
+  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }

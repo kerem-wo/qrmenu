@@ -95,24 +95,25 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild>
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
+          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
             <Link href="/admin/dashboard">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Geri
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">Siparişler</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-6 py-8">
         {orders.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <p className="text-gray-500">Henüz sipariş yok.</p>
+          <Card className="card-modern">
+            <CardContent className="py-16 text-center">
+              <ShoppingCart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+              <p className="text-slate-600">Henüz sipariş yok.</p>
             </CardContent>
           </Card>
         ) : (
@@ -120,21 +121,21 @@ export default function OrdersPage() {
             {orders.map((order) => {
               const StatusIcon = statusConfig[order.status]?.icon || Clock;
               return (
-                <Card key={order.id}>
+                <Card key={order.id} className="card-modern">
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
-                        <CardTitle className="text-lg">
+                        <CardTitle className="text-lg font-semibold text-slate-900">
                           Sipariş #{order.id.slice(0, 8)}
                         </CardTitle>
-                        <CardDescription>
+                        <CardDescription className="text-sm">
                           {new Date(order.createdAt).toLocaleString("tr-TR")}
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
-                        <StatusIcon className="w-5 h-5" />
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
+                        <StatusIcon className="w-5 h-5 text-slate-400" />
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          statusConfig[order.status]?.color || "bg-slate-100 text-slate-800"
                         }`}>
                           {statusConfig[order.status]?.label || order.status}
                         </span>
@@ -145,35 +146,35 @@ export default function OrdersPage() {
                     <div className="space-y-4">
                       {/* Customer Info */}
                       {(order.tableNumber || order.customerName || order.customerPhone) && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-slate-50 p-4 rounded-lg">
                           {order.tableNumber && (
                             <div>
-                              <span className="font-medium">Masa:</span> {order.tableNumber}
+                              <span className="font-medium text-slate-600">Masa:</span> <span className="text-slate-900">{order.tableNumber}</span>
                             </div>
                           )}
                           {order.customerName && (
                             <div>
-                              <span className="font-medium">İsim:</span> {order.customerName}
+                              <span className="font-medium text-slate-600">İsim:</span> <span className="text-slate-900">{order.customerName}</span>
                             </div>
                           )}
                           {order.customerPhone && (
                             <div>
-                              <span className="font-medium">Telefon:</span> {order.customerPhone}
+                              <span className="font-medium text-slate-600">Telefon:</span> <span className="text-slate-900">{order.customerPhone}</span>
                             </div>
                           )}
                         </div>
                       )}
 
                       {/* Order Items */}
-                      <div className="border-t pt-4">
-                        <h4 className="font-semibold mb-2">Ürünler:</h4>
+                      <div className="border-t border-slate-200 pt-4">
+                        <h4 className="font-semibold text-slate-900 mb-2">Ürünler:</h4>
                         <div className="space-y-2">
                           {order.items.map((item) => (
-                            <div key={item.id} className="flex justify-between text-sm">
-                              <span>
+                            <div key={item.id} className="flex justify-between text-sm py-2">
+                              <span className="text-slate-700">
                                 {item.product.name} x {item.quantity}
                               </span>
-                              <span className="font-medium">
+                              <span className="font-medium text-slate-900">
                                 {(item.price * item.quantity).toFixed(2)} ₺
                               </span>
                             </div>
@@ -182,20 +183,21 @@ export default function OrdersPage() {
                       </div>
 
                       {/* Total */}
-                      <div className="border-t pt-4 flex justify-between items-center">
-                        <span className="text-lg font-bold">Toplam:</span>
-                        <span className="text-xl font-bold text-primary">
+                      <div className="border-t border-slate-200 pt-4 flex justify-between items-center">
+                        <span className="text-lg font-semibold text-slate-900">Toplam:</span>
+                        <span className="text-xl font-bold text-slate-900">
                           {order.total.toFixed(2)} ₺
                         </span>
                       </div>
 
                       {/* Status Actions */}
-                      <div className="border-t pt-4 flex gap-2 flex-wrap">
+                      <div className="border-t border-slate-200 pt-4 flex gap-2 flex-wrap">
                         {order.status === "pending" && (
                           <>
                             <Button
                               size="sm"
                               onClick={() => updateOrderStatus(order.id, "confirmed")}
+                              className="bg-slate-900 hover:bg-slate-800"
                             >
                               Onayla
                             </Button>
@@ -203,6 +205,7 @@ export default function OrdersPage() {
                               size="sm"
                               variant="outline"
                               onClick={() => updateOrderStatus(order.id, "cancelled")}
+                              className="border-slate-300 hover:bg-red-50 hover:border-red-300"
                             >
                               İptal Et
                             </Button>
@@ -212,6 +215,7 @@ export default function OrdersPage() {
                           <Button
                             size="sm"
                             onClick={() => updateOrderStatus(order.id, "preparing")}
+                            className="bg-slate-900 hover:bg-slate-800"
                           >
                             Hazırlamaya Başla
                           </Button>
@@ -220,6 +224,7 @@ export default function OrdersPage() {
                           <Button
                             size="sm"
                             onClick={() => updateOrderStatus(order.id, "ready")}
+                            className="bg-slate-900 hover:bg-slate-800"
                           >
                             Hazır Olarak İşaretle
                           </Button>
@@ -228,6 +233,7 @@ export default function OrdersPage() {
                           <Button
                             size="sm"
                             onClick={() => updateOrderStatus(order.id, "completed")}
+                            className="bg-slate-900 hover:bg-slate-800"
                           >
                             Tamamlandı
                           </Button>

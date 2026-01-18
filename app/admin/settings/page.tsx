@@ -92,77 +92,80 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild>
+    <div className="min-h-screen bg-slate-50">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
+          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
             <Link href="/admin/dashboard">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Geri
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">Restoran Ayarları</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Restoran Ayarları</h1>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card>
+      <main className="container mx-auto px-6 py-8 max-w-2xl">
+        <Card className="card-modern">
           <CardHeader>
-            <CardTitle>Genel Bilgiler</CardTitle>
-            <CardDescription>Restoran bilgilerinizi güncelleyin</CardDescription>
+            <CardTitle className="text-xl font-semibold text-slate-900">Genel Bilgiler</CardTitle>
+            <CardDescription className="text-slate-600">Restoran bilgilerinizi güncelleyin</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="name">Restoran Adı *</Label>
+                <Label htmlFor="name" className="text-sm font-medium text-slate-700">Restoran Adı *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
                   placeholder="Restoran Adı"
+                  className="h-11 border-slate-300 focus:border-slate-900"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="slug">Menü Linki (Slug)</Label>
+                <Label htmlFor="slug" className="text-sm font-medium text-slate-700">Menü Linki (Slug)</Label>
                 <Input
                   id="slug"
                   value={formData.slug}
                   disabled
-                  className="bg-gray-50"
+                  className="bg-slate-50 h-11"
                 />
-                <p className="text-xs text-gray-500">
-                  Menü linkiniz: /menu/{formData.slug}
+                <p className="text-xs text-slate-600 mt-1">
+                  Menü linkiniz: <span className="font-mono text-slate-900">/menu/{formData.slug}</span>
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Açıklama</Label>
+                <Label htmlFor="description" className="text-sm font-medium text-slate-700">Açıklama</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Restoran hakkında bilgi..."
                   rows={4}
+                  className="border-slate-300 focus:border-slate-900"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="logo">Logo URL</Label>
+                <Label htmlFor="logo" className="text-sm font-medium text-slate-700">Logo URL</Label>
                 <Input
                   id="logo"
                   type="url"
                   value={formData.logo}
                   onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
                   placeholder="https://example.com/logo.png"
+                  className="h-11 border-slate-300 focus:border-slate-900"
                 />
                 {formData.logo && (
-                  <div className="mt-2">
+                  <div className="mt-3 p-4 bg-slate-50 rounded-lg inline-block">
                     <img
                       src={formData.logo}
                       alt="Logo"
-                      className="w-24 h-24 object-contain border rounded"
+                      className="w-24 h-24 object-contain rounded-lg"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = "none";
                       }}
@@ -171,15 +174,15 @@ export default function SettingsPage() {
                 )}
               </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" disabled={saving} className="flex-1">
+              <div className="flex gap-4 pt-4">
+                <Button type="submit" disabled={saving} className="flex-1 bg-slate-900 hover:bg-slate-800 h-11">
                   {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => router.back()}
-                  className="flex-1"
+                  className="flex-1 border-slate-300 h-11"
                 >
                   İptal
                 </Button>
