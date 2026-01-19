@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, Clock, XCircle, ChefHat, ShoppingCart } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ArrowLeft, CheckCircle, Clock, XCircle, ChefHat, ShoppingCart, Trash2 } from "lucide-react";
 import { checkAuth } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -42,6 +43,7 @@ export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     checkAuth().then((session) => {
@@ -97,14 +99,62 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
-            <Link href="/admin/dashboard">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Geri
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
+                <Link href="/admin/dashboard">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Geri
+                </Link>
+              </Button>
+              <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
+              {orders.length > 0 && (
+                <span className="text-sm text-slate-600">({orders.length} sipariş)</span>
+              )}
+            </div>
+            {orders.length > 0 && (
+              <div className="flex items-center gap-2">
+                {selectedOrders.size > 0 && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={deleteSelectedOrders}
+                      className="text-red-600 border-red-300 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Seçili Olanları Sil ({selectedOrders.size})
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={clearSelection}
+                    >
+                      Seçimi Temizle
+                    </Button>
+                  </>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={selectAllOrders}
+                  className="border-slate-300"
+                >
+                  Tümünü Seç
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={deleteAllOrders}
+                  className="text-red-600 border-red-300 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Hepsini Temizle
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -120,17 +170,25 @@ export default function OrdersPage() {
           <div className="space-y-4">
             {orders.map((order) => {
               const StatusIcon = statusConfig[order.status]?.icon || Clock;
+              const isSelected = selectedOrders.has(order.id);
               return (
-                <Card key={order.id} className="card-modern">
+                <Card key={order.id} className={`card-modern ${isSelected ? 'ring-2 ring-slate-900' : ''}`}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg font-semibold text-slate-900">
-                          Sipariş #{order.id.slice(0, 8)}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          {new Date(order.createdAt).toLocaleString("tr-TR")}
-                        </CardDescription>
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={() => toggleOrderSelection(order.id)}
+                          className="mt-1"
+                        />
+                        <div>
+                          <CardTitle className="text-lg font-semibold text-slate-900">
+                            Sipariş #{order.id.slice(0, 8)}
+                          </CardTitle>
+                          <CardDescription className="text-sm">
+                            {new Date(order.createdAt).toLocaleString("tr-TR")}
+                          </CardDescription>
+                        </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <StatusIcon className="w-5 h-5 text-slate-400" />

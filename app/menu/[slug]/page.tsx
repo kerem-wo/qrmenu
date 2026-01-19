@@ -589,7 +589,11 @@ export default function MenuPage() {
       </div>
 
       {/* Sipariş Formu Dialog */}
-      <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
+      <Dialog open={showOrderDialog} onOpenChange={(open) => {
+        if (!open) {
+          closeOrderDialog();
+        }
+      }}>
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-slate-900">
