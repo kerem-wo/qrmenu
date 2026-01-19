@@ -283,7 +283,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className={`min-h-screen ${themeClass}`}>
+    <div className={`min-h-screen ${themeClass || ""}`}>
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
