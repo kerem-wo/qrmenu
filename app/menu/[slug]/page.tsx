@@ -68,8 +68,8 @@ export default function MenuPage() {
   };
 
   const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
-  const containerClassName = `min-h-screen ${themeClass || ""}`;
-  const loadingClassName = `min-h-screen flex items-center justify-center ${themeClass || ""}`;
+  const containerClassName = "min-h-screen " + (themeClass || "");
+  const loadingClassName = "min-h-screen flex items-center justify-center " + (themeClass || "");
 
   useEffect(() => {
     if (slug) {
