@@ -227,25 +227,25 @@ export default function MenuPage() {
     <div className="min-h-screen bg-soft-gradient relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Large Floating Circles */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-slate-200/25 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float-slow"></div>
-        <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-slate-300/25 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float-fast" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-0 left-1/2 w-[500px] h-[500px] bg-slate-100/30 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-drift" style={{ animationDelay: '4s' }}></div>
-        <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-slate-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-subtle-float" style={{ animationDelay: '6s' }}></div>
+        {/* Large Floating Circles - More Visible */}
+        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-slate-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float-slow"></div>
+        <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-slate-400/35 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float-fast" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-0 left-1/2 w-[500px] h-[500px] bg-slate-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-drift" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-slate-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-subtle-float" style={{ animationDelay: '6s' }}></div>
         
         {/* Medium Floating Shapes */}
-        <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-slate-300/20 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-float-slow" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 right-1/3 w-[350px] h-[350px] bg-slate-100/25 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-float-fast" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-slate-400/30 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-float-slow" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 right-1/3 w-[350px] h-[350px] bg-slate-200/35 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-float-fast" style={{ animationDelay: '3s' }}></div>
         
         {/* Small Floating Particles */}
-        <div className="absolute top-1/3 left-1/4 w-[200px] h-[200px] bg-slate-200/30 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-pulse-soft" style={{ animationDelay: '0.5s' }}></div>
-        <div className="absolute top-2/3 right-1/4 w-[180px] h-[180px] bg-slate-300/25 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-pulse-soft" style={{ animationDelay: '2.5s' }}></div>
-        <div className="absolute bottom-1/3 left-2/3 w-[220px] h-[220px] bg-slate-100/30 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-pulse-soft" style={{ animationDelay: '4.5s' }}></div>
+        <div className="absolute top-1/3 left-1/4 w-[200px] h-[200px] bg-slate-300/40 rounded-full mix-blend-multiply filter blur-xl opacity-45 animate-pulse-soft" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute top-2/3 right-1/4 w-[180px] h-[180px] bg-slate-400/35 rounded-full mix-blend-multiply filter blur-xl opacity-45 animate-pulse-soft" style={{ animationDelay: '2.5s' }}></div>
+        <div className="absolute bottom-1/3 left-2/3 w-[220px] h-[220px] bg-slate-200/40 rounded-full mix-blend-multiply filter blur-xl opacity-45 animate-pulse-soft" style={{ animationDelay: '4.5s' }}></div>
         
         {/* Subtle Geometric Shapes */}
-        <div className="absolute top-1/5 right-1/5 w-[150px] h-[150px] bg-slate-200/20 rounded-3xl mix-blend-multiply filter blur-lg opacity-30 rotate-45 animate-subtle-float" style={{ animationDelay: '1.5s' }}></div>
-        <div className="absolute bottom-1/5 left-1/5 w-[120px] h-[120px] bg-slate-300/20 rounded-3xl mix-blend-multiply filter blur-lg opacity-30 -rotate-45 animate-float-fast" style={{ animationDelay: '3.5s' }}></div>
-        <div className="absolute top-3/4 left-1/2 w-[100px] h-[100px] bg-slate-100/25 rounded-2xl mix-blend-multiply filter blur-lg opacity-30 rotate-12 animate-drift" style={{ animationDelay: '5s' }}></div>
+        <div className="absolute top-1/5 right-1/5 w-[150px] h-[150px] bg-slate-300/30 rounded-3xl mix-blend-multiply filter blur-lg opacity-40 rotate-45 animate-subtle-float" style={{ animationDelay: '1.5s' }}></div>
+        <div className="absolute bottom-1/5 left-1/5 w-[120px] h-[120px] bg-slate-400/30 rounded-3xl mix-blend-multiply filter blur-lg opacity-40 -rotate-45 animate-float-fast" style={{ animationDelay: '3.5s' }}></div>
+        <div className="absolute top-3/4 left-1/2 w-[100px] h-[100px] bg-slate-200/35 rounded-2xl mix-blend-multiply filter blur-lg opacity-40 rotate-12 animate-drift" style={{ animationDelay: '5s' }}></div>
       </div>
       {/* Header */}
       <header className="glass-soft border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
