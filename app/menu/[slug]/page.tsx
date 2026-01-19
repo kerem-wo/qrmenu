@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -300,15 +300,14 @@ export default function MenuPage() {
     );
   }
 
-  const themeClasses = useMemo(() => ({
+  const themeClasses: Record<string, string> = {
     default: "bg-slate-50",
     modern: "bg-gradient-to-br from-slate-50 to-slate-100",
     minimal: "bg-white",
     elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
-  } as const), []);
+  };
 
-  const currentTheme = restaurantTheme as keyof typeof themeClasses;
-  const themeClass = themeClasses[currentTheme] || themeClasses.default;
+  const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
 
   return (
     <div className={`min-h-screen ${themeClass}`}>
