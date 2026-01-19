@@ -47,6 +47,13 @@ export default function MenuPage() {
   const [priceFilter, setPriceFilter] = useState<"all" | "low" | "medium" | "high">("all");
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [showOrderDialog, setShowOrderDialog] = useState(false);
+  const [orderForm, setOrderForm] = useState({
+    customerName: "",
+    customerPhone: "",
+    tableNumber: "",
+  });
+  const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
 
   useEffect(() => {
     if (slug) {
