@@ -47,16 +47,9 @@ export function OrderNotifications() {
               
               // Show toast for each new order
               newOrders.forEach((order: Order) => {
-                toast.success(
-                  (t) => (
-                    <div onClick={() => { toast.dismiss(t.id); router.push("/admin/orders"); }} className="cursor-pointer">
-                      Yeni sipariş: #{order.orderNumber}
-                    </div>
-                  ),
-                  {
-                    duration: 5000,
-                  }
-                );
+                toast.success(`Yeni sipariş: #${order.orderNumber}`, {
+                  duration: 5000,
+                });
               });
             }
           }
