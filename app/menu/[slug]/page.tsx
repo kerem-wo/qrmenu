@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -154,12 +154,6 @@ export default function MenuPage() {
     return basePrice * item.quantity;
   };
 
-  const subtotal = cart.reduce(
-    (sum, item) => sum + calculateItemPrice(item),
-    0
-  );
-  const total = Math.max(0, subtotal - discount);
-
   const themeClasses: Record<string, string> = {
     default: "bg-slate-50",
     modern: "bg-gradient-to-br from-slate-50 to-slate-100",
@@ -168,6 +162,12 @@ export default function MenuPage() {
   };
 
   const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
+
+  const subtotal = cart.reduce(
+    (sum, item) => sum + calculateItemPrice(item),
+    0
+  );
+  const total = Math.max(0, subtotal - discount);
 
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
