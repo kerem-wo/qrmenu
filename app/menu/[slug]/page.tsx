@@ -59,6 +59,16 @@ export default function MenuPage() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [restaurantTheme, setRestaurantTheme] = useState<string>("default");
 
+  // Theme classes
+  const themeClasses: Record<string, string> = {
+    default: "bg-slate-50",
+    modern: "bg-gradient-to-br from-slate-50 to-slate-100",
+    minimal: "bg-white",
+    elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
+  };
+
+  const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
+
   useEffect(() => {
     if (slug) {
       fetchMenu();
@@ -153,15 +163,6 @@ export default function MenuPage() {
     }
     return basePrice * item.quantity;
   };
-
-  const themeClasses: Record<string, string> = {
-    default: "bg-slate-50",
-    modern: "bg-gradient-to-br from-slate-50 to-slate-100",
-    minimal: "bg-white",
-    elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
-  };
-
-  const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
 
   const subtotal = cart.reduce(
     (sum, item) => sum + calculateItemPrice(item),
