@@ -92,6 +92,88 @@ export default function OrdersPage() {
     }
   };
 
+  const toggleOrderSelection = (orderId: string) => {
+    setSelectedOrders((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(orderId)) {
+        newSet.delete(orderId);
+      } else {
+        newSet.add(orderId);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllOrders = () => {
+    setSelectedOrders(new Set(orders.map((order) => order.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedOrders(new Set());
+  };
+
+  const deleteSelectedOrders = async () => {
+    if (selectedOrders.size === 0) {
+      toast.error("Lütfen silmek için sipariş seçin!");
+      return;
+    }
+
+    if (!confirm(`${selectedOrders.size} siparişi silmek istediğinize emin misiniz?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/orders", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selectedOrders) }),
+      });
+
+      if (res.ok) {
+        toast.success(`${selectedOrders.size} sipariş silindi`);
+        setSelectedOrders(new Set());
+        fetchOrders();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Siparişler silinirken bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error deleting orders:", error);
+      toast.error("Bir hata oluştu");
+    }
+  };
+
+  const deleteAllOrders = async () => {
+    if (orders.length === 0) {
+      toast.error("Silinecek sipariş yok!");
+      return;
+    }
+
+    if (!confirm(`Tüm siparişleri (${orders.length} adet) silmek istediğinize emin misiniz? Bu işlem geri alınamaz!`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/admin/orders", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: orders.map((order) => order.id) }),
+      });
+
+      if (res.ok) {
+        toast.success(`Tüm siparişler (${orders.length} adet) silindi`);
+        setSelectedOrders(new Set());
+        fetchOrders();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Siparişler silinirken bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error deleting all orders:", error);
+      toast.error("Bir hata oluştu");
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>;
   }
