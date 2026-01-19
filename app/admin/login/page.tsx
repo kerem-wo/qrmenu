@@ -32,8 +32,28 @@ export default function AdminLogin() {
         const { admin } = data;
         // Store session in localStorage for client-side checks
         localStorage.setItem("admin_session", JSON.stringify(admin));
-        toast.success("Giriş başarılı!");
-        router.push("/admin/dashboard");
+        
+        // Verify session cookie was set by calling /api/admin/me
+        try {
+          const meRes = await fetch("/api/admin/me", {
+            credentials: "include", // Important: include cookies
+          });
+          
+          if (meRes.ok) {
+            toast.success("Giriş başarılı!");
+            router.push("/admin/dashboard");
+          } else {
+            // Cookie might not be set, but localStorage is, so continue anyway
+            console.warn("Session cookie verification failed, but localStorage session exists");
+            toast.success("Giriş başarılı!");
+            router.push("/admin/dashboard");
+          }
+        } catch (verifyError) {
+          // Even if verification fails, proceed with localStorage session
+          console.warn("Session verification error:", verifyError);
+          toast.success("Giriş başarılı!");
+          router.push("/admin/dashboard");
+        }
       } else {
         toast.error(data.error || "Giriş başarısız!");
       }

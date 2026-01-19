@@ -12,19 +12,31 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     const cookieStore = cookies();
     const sessionCookie = cookieStore.get("admin_session");
     
-    if (!sessionCookie) return null;
+    if (!sessionCookie) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("No admin_session cookie found");
+      }
+      return null;
+    }
     
     const session = JSON.parse(sessionCookie.value) as AdminSession;
     
     // Verify session is still valid
     const admin = await prisma.admin.findUnique({
       where: { id: session.id },
+      select: { id: true },
     });
     
-    if (!admin) return null;
+    if (!admin) {
+      if (process.env.NODE_ENV === "development") {
+        console.log("Admin not found for session:", session.id);
+      }
+      return null;
+    }
     
     return session;
-  } catch {
+  } catch (error: any) {
+    console.error("Error getting admin session:", error?.message || error);
     return null;
   }
 }
@@ -32,13 +44,20 @@ export async function getAdminSession(): Promise<AdminSession | null> {
 export async function setAdminSession(session: AdminSession) {
   try {
     const cookieStore = cookies();
-    cookieStore.set("admin_session", JSON.stringify(session), {
+    const cookieValue = JSON.stringify(session);
+    
+    cookieStore.set("admin_session", cookieValue, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
+    
+    // Log in development to help debug
+    if (process.env.NODE_ENV === "development") {
+      console.log("Session cookie set successfully");
+    }
   } catch (error: any) {
     console.error("Error setting admin session cookie:", error?.message || error);
     // Don't throw - let caller decide what to do
