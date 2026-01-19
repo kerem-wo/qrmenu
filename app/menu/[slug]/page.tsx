@@ -6,6 +6,8 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ShoppingCart, Search, Filter, X } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -143,12 +145,45 @@ export default function MenuPage() {
     }
   };
 
+  const openOrderDialog = () => {
+    if (cart.length === 0) {
+      toast.error("Sepetiniz boş!");
+      return;
+    }
+    setShowOrderDialog(true);
+  };
+
+  const closeOrderDialog = () => {
+    setShowOrderDialog(false);
+    setOrderForm({
+      customerName: "",
+      customerPhone: "",
+      tableNumber: "",
+    });
+  };
+
   const handleOrder = async () => {
     if (cart.length === 0) return;
 
-    const customerName = prompt("İsminiz:");
-    const customerPhone = prompt("Telefon numaranız:");
-    const tableNumber = prompt("Masa numaranız (opsiyonel):");
+    // Form validasyonu
+    if (!orderForm.customerName.trim()) {
+      toast.error("Lütfen isminizi girin!");
+      return;
+    }
+
+    if (!orderForm.customerPhone.trim()) {
+      toast.error("Lütfen telefon numaranızı girin!");
+      return;
+    }
+
+    // Telefon numarası validasyonu (basit)
+    const phoneRegex = /^[0-9+\-\s()]+$/;
+    if (!phoneRegex.test(orderForm.customerPhone.trim())) {
+      toast.error("Lütfen geçerli bir telefon numarası girin!");
+      return;
+    }
+
+    setIsSubmittingOrder(true);
 
     try {
       const res = await fetch("/api/orders", {
@@ -156,9 +191,9 @@ export default function MenuPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           restaurantId: restaurant?.id,
-          tableNumber: tableNumber || null,
-          customerName: customerName || null,
-          customerPhone: customerPhone || null,
+          tableNumber: orderForm.tableNumber.trim() || null,
+          customerName: orderForm.customerName.trim(),
+          customerPhone: orderForm.customerPhone.trim(),
           couponCode: couponCode || null,
           items: cart.map((item) => ({
             productId: item.product.id,
@@ -171,16 +206,23 @@ export default function MenuPage() {
       if (res.ok) {
         const data = await res.json();
         const orderNumber = data.orderNumber;
-        alert(`Siparişiniz alındı! Sipariş numaranız: ${orderNumber}\nSiparişinizi takip etmek için: /order/${orderNumber}`);
+        toast.success(`Siparişiniz alındı! Sipariş numaranız: ${orderNumber}`);
         setCart([]);
-        window.location.href = `/order/${orderNumber}`;
+        setCouponCode("");
+        setDiscount(0);
+        closeOrderDialog();
+        setTimeout(() => {
+          window.location.href = `/order/${orderNumber}`;
+        }, 1500);
       } else {
         const data = await res.json();
-        alert(data.error || "Sipariş verilirken bir hata oluştu!");
+        toast.error(data.error || "Sipariş verilirken bir hata oluştu!");
       }
     } catch (error) {
       console.error("Error creating order:", error);
-      alert("Bir hata oluştu! Lütfen tekrar deneyin.");
+      toast.error("Bir hata oluştu! Lütfen tekrar deneyin.");
+    } finally {
+      setIsSubmittingOrder(false);
     }
   };
 
@@ -538,6 +580,118 @@ export default function MenuPage() {
           </div>
         </div>
       </div>
+
+      {/* Sipariş Formu Dialog */}
+      <Dialog open={showOrderDialog} onOpenChange={setShowOrderDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-slate-900">
+              Sipariş Bilgileri
+            </DialogTitle>
+            <DialogDescription className="text-slate-600">
+              Lütfen siparişinizi tamamlamak için bilgilerinizi girin.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Sipariş Özeti */}
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <h3 className="font-semibold text-slate-900 mb-2">Sipariş Özeti</h3>
+              <div className="space-y-1 text-sm">
+                {cart.map((item) => (
+                  <div key={item.product.id} className="flex justify-between">
+                    <span className="text-slate-600">
+                      {item.product.name} x {item.quantity}
+                    </span>
+                    <span className="font-medium text-slate-900">
+                      {(item.product.price * item.quantity).toFixed(2)} ₺
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center">
+                <span className="font-semibold text-slate-900">Toplam:</span>
+                <span className="text-lg font-bold text-slate-900">
+                  {total.toFixed(2)} ₺
+                </span>
+              </div>
+            </div>
+
+            {/* Form Alanları */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="customerName" className="text-sm font-medium text-slate-700">
+                  İsim <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="customerName"
+                  type="text"
+                  placeholder="Adınız ve soyadınız"
+                  value={orderForm.customerName}
+                  onChange={(e) =>
+                    setOrderForm({ ...orderForm, customerName: e.target.value })
+                  }
+                  className="h-11"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="customerPhone" className="text-sm font-medium text-slate-700">
+                  Telefon <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="customerPhone"
+                  type="tel"
+                  placeholder="05XX XXX XX XX"
+                  value={orderForm.customerPhone}
+                  onChange={(e) =>
+                    setOrderForm({ ...orderForm, customerPhone: e.target.value })
+                  }
+                  className="h-11"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tableNumber" className="text-sm font-medium text-slate-700">
+                  Masa Numarası <span className="text-slate-400 text-xs">(Opsiyonel)</span>
+                </Label>
+                <Input
+                  id="tableNumber"
+                  type="text"
+                  placeholder="Örn: 5, A12"
+                  value={orderForm.tableNumber}
+                  onChange={(e) =>
+                    setOrderForm({ ...orderForm, tableNumber: e.target.value })
+                  }
+                  className="h-11"
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={closeOrderDialog}
+              disabled={isSubmittingOrder}
+              className="flex-1"
+            >
+              İptal
+            </Button>
+            <Button
+              type="button"
+              onClick={handleOrder}
+              disabled={isSubmittingOrder}
+              className="flex-1 bg-slate-900 hover:bg-slate-800"
+            >
+              {isSubmittingOrder ? "Gönderiliyor..." : "Siparişi Onayla"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
