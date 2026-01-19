@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import toast from "react-hot-toast";
 
-export default function CustomerLoginPage() {
+function CustomerLoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const restaurantId = searchParams.get("restaurantId");
