@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,6 +56,9 @@ export default function MenuPage() {
   const [discount, setDiscount] = useState(0);
   const [customer, setCustomer] = useState<any>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
+  const [showPayment, setShowPayment] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState<{ orderId: string; orderNumber: string; total: number } | null>(null);
+  const [restaurantTheme, setRestaurantTheme] = useState<string>("default");
 
   useEffect(() => {
     if (slug) {
@@ -72,6 +75,9 @@ export default function MenuPage() {
         const data = await res.json();
         setRestaurant(data.restaurant);
         setCategories(data.categories);
+        if (data.restaurant?.theme) {
+          setRestaurantTheme(data.restaurant.theme);
+        }
       } else {
         console.error("Menü yüklenemedi");
       }
@@ -243,7 +249,8 @@ export default function MenuPage() {
         const orderId = data.id;
         
         // Show payment modal if Stripe is configured
-        if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+        const stripeKey = typeof window !== 'undefined' ? (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY : null;
+        if (stripeKey || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
           setPendingOrder({ orderId, orderNumber, total });
           setShowPayment(true);
         } else {
@@ -301,15 +308,15 @@ export default function MenuPage() {
     );
   }
 
-  const themeClasses: Record<string, string> = {
+  const themeClasses = useMemo(() => ({
     default: "bg-slate-50",
     modern: "bg-gradient-to-br from-slate-50 to-slate-100",
     minimal: "bg-white",
     elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
-  };
+  }), []);
 
   return (
-    <div className={`min-h-screen ${themeClasses[restaurantTheme] || themeClasses.default}`}>
+    <div className={`min-h-screen ${themeClasses[restaurantTheme as keyof typeof themeClasses] || themeClasses.default}`}>
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
@@ -627,6 +634,36 @@ export default function MenuPage() {
           </div>
         </div>
       </div>
+
+      {/* Payment Modal */}
+      <Dialog open={showPayment} onOpenChange={setShowPayment}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Ödeme</DialogTitle>
+            <DialogDescription>
+              Siparişiniz oluşturuldu. Ödeme yapmak için aşağıdaki formu doldurun.
+            </DialogDescription>
+          </DialogHeader>
+          {pendingOrder && (
+            <StripeCheckout
+              amount={pendingOrder.total}
+              orderId={pendingOrder.orderId}
+              orderNumber={pendingOrder.orderNumber}
+              onSuccess={() => {
+                setShowPayment(false);
+                setCart([]);
+                toast.success("Ödeme başarılı! Siparişiniz hazırlanıyor.");
+                window.location.href = `/order/${pendingOrder.orderNumber}`;
+              }}
+              onCancel={() => {
+                setShowPayment(false);
+                setPendingOrder(null);
+                toast.info("Ödeme iptal edildi. Siparişiniz bekliyor.");
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

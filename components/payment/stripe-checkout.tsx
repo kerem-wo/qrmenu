@@ -14,9 +14,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import toast from "react-hot-toast";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""
-);
+const stripeKey = typeof window !== 'undefined' 
+  ? (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
+  : process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
+
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
 
 interface StripeCheckoutProps {
   amount: number;
@@ -131,7 +133,7 @@ export function StripeCheckout({ amount, orderId, orderNumber, onSuccess, onCanc
     createIntent();
   }, [amount, orderId, orderNumber, onCancel]);
 
-  if (!clientSecret || !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+  if (!clientSecret || !stripeKey) {
     return (
       <Card>
         <CardContent className="py-8 text-center">
@@ -149,7 +151,7 @@ export function StripeCheckout({ amount, orderId, orderNumber, onSuccess, onCanc
       </CardHeader>
       <CardContent>
         <Elements
-          stripe={stripePromise}
+          stripe={stripePromise || undefined}
           options={{
             clientSecret,
             appearance: {
