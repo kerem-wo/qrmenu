@@ -10,7 +10,6 @@ import { ShoppingCart, Search, Filter, X, User, Heart } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { LanguageSelector } from "@/components/language-selector";
-import { cn } from "@/lib/utils";
 
 interface ProductVariant {
   id: string;
@@ -58,17 +57,6 @@ export default function MenuPage() {
   const [discount, setDiscount] = useState(0);
   const [customer, setCustomer] = useState<any>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [restaurantTheme, setRestaurantTheme] = useState<string>("default");
-
-  // Theme classes
-  const themeClasses: Record<string, string> = {
-    default: "bg-slate-50",
-    modern: "bg-gradient-to-br from-slate-50 to-slate-100",
-    minimal: "bg-white",
-    elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
-  };
-
-  const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
 
   useEffect(() => {
     if (slug) {
@@ -85,9 +73,6 @@ export default function MenuPage() {
         const data = await res.json();
         setRestaurant(data.restaurant);
         setCategories(data.categories);
-        if (data.restaurant?.theme) {
-          setRestaurantTheme(data.restaurant.theme);
-        }
       } else {
         console.error("Menü yüklenemedi");
       }
