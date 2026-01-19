@@ -16,9 +16,15 @@ export async function POST(request: Request) {
       );
     }
 
+    // Select only needed fields to avoid schema mismatch issues
     const admin = await prisma.admin.findUnique({
       where: { email },
-      include: { restaurant: true },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        restaurantId: true,
+      },
     });
 
     if (!admin) {
@@ -43,12 +49,13 @@ export async function POST(request: Request) {
       restaurantId: admin.restaurantId,
     };
 
+    // Try to set session cookie, but don't fail if it doesn't work
+    // Client-side localStorage will handle it
     try {
       await setAdminSession(session);
     } catch (sessionError: any) {
-      console.error("Session error:", sessionError);
-      // Session hatası olsa bile login başarılı sayılabilir
-      // Çünkü client-side localStorage'da saklanıyor
+      console.error("Session cookie error (non-fatal):", sessionError?.message || sessionError);
+      // Continue anyway - client will use localStorage
     }
 
     return NextResponse.json({

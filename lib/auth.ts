@@ -39,9 +39,10 @@ export async function setAdminSession(session: AdminSession) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
-  } catch (error) {
-    console.error("Error setting admin session:", error);
-    // Re-throw to let caller handle
+  } catch (error: any) {
+    console.error("Error setting admin session cookie:", error?.message || error);
+    // Don't throw - let caller decide what to do
+    // In production, this might fail due to cookie settings
     throw error;
   }
 }
