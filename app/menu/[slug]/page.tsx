@@ -249,8 +249,8 @@ export default function MenuPage() {
         const orderId = data.id;
         
         // Show payment modal if Stripe is configured
-        const stripeKey = typeof window !== 'undefined' ? (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY : null;
-        if (stripeKey || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+        const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+        if (stripeKey) {
           setPendingOrder({ orderId, orderNumber, total });
           setShowPayment(true);
         } else {

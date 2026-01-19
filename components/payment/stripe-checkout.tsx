@@ -14,11 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import toast from "react-hot-toast";
 
-const stripeKey = typeof window !== 'undefined' 
-  ? (window as any).__NEXT_DATA__?.env?.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY 
-  : process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
+const getStripeKey = () => {
+  if (typeof window === 'undefined') return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
+  return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "";
+};
 
-const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
+const stripeKey = getStripeKey();
+const stripePromise = stripeKey ? loadStripe(stripeKey) : Promise.resolve(null);
 
 interface StripeCheckoutProps {
   amount: number;
@@ -133,11 +135,21 @@ export function StripeCheckout({ amount, orderId, orderNumber, onSuccess, onCanc
     createIntent();
   }, [amount, orderId, orderNumber, onCancel]);
 
-  if (!clientSecret || !stripeKey) {
+  if (!clientSecret) {
     return (
       <Card>
         <CardContent className="py-8 text-center">
           <p className="text-slate-600">Ödeme yükleniyor...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!stripeKey) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <p className="text-slate-600">Stripe yapılandırılmamış. Ödeme yapılamaz.</p>
         </CardContent>
       </Card>
     );
@@ -151,7 +163,7 @@ export function StripeCheckout({ amount, orderId, orderNumber, onSuccess, onCanc
       </CardHeader>
       <CardContent>
         <Elements
-          stripe={stripePromise || undefined}
+          stripe={stripePromise}
           options={{
             clientSecret,
             appearance: {
