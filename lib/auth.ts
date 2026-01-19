@@ -30,13 +30,20 @@ export async function getAdminSession(): Promise<AdminSession | null> {
 }
 
 export async function setAdminSession(session: AdminSession) {
-  const cookieStore = cookies();
-  cookieStore.set("admin_session", JSON.stringify(session), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
+  try {
+    const cookieStore = cookies();
+    cookieStore.set("admin_session", JSON.stringify(session), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+  } catch (error) {
+    console.error("Error setting admin session:", error);
+    // Re-throw to let caller handle
+    throw error;
+  }
 }
 
 export async function clearAdminSession() {

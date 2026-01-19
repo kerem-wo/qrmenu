@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { setAdminSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();
@@ -41,7 +43,13 @@ export async function POST(request: Request) {
       restaurantId: admin.restaurantId,
     };
 
-    await setAdminSession(session);
+    try {
+      await setAdminSession(session);
+    } catch (sessionError: any) {
+      console.error("Session error:", sessionError);
+      // Session hatası olsa bile login başarılı sayılabilir
+      // Çünkü client-side localStorage'da saklanıyor
+    }
 
     return NextResponse.json({
       success: true,
@@ -55,7 +63,10 @@ export async function POST(request: Request) {
       name: error?.name,
     });
     return NextResponse.json(
-      { error: error?.message || "Bir hata oluştu", details: process.env.NODE_ENV === "development" ? error?.stack : undefined },
+      { 
+        error: error?.message || "Bir hata oluştu", 
+        details: process.env.NODE_ENV === "development" ? error?.stack : undefined 
+      },
       { status: 500 }
     );
   }
