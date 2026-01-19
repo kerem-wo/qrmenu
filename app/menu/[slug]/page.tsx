@@ -575,7 +575,8 @@ export default function MenuPage() {
                       <Button 
                         className="w-full btn-soft-success text-lg py-6 font-bold shadow-lg" 
                         size="lg"
-                        onClick={() => handleOrder()}
+                        onClick={openOrderDialog}
+                        disabled={cart.length === 0}
                       >
                         Sipariş Ver
                       </Button>
