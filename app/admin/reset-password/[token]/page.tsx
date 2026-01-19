@@ -1,40 +1,61 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function AdminLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function ResetPasswordPage() {
+  const params = useParams();
   const router = useRouter();
+  const token = params?.token as string;
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!token) {
+      toast.error("Geçersiz token!");
+      router.push("/admin/forgot-password");
+    }
+  }, [token, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error("Şifreler eşleşmiyor!");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Şifre en az 6 karakter olmalıdır!");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/admin/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ token, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        const { admin } = data;
-        // Store session in localStorage for client-side checks
-        localStorage.setItem("admin_session", JSON.stringify(admin));
-        toast.success("Giriş başarılı!");
-        router.push("/admin/dashboard");
+        toast.success(data.message || "Şifre başarıyla sıfırlandı!");
+        setTimeout(() => {
+          router.push("/admin/login");
+        }, 1500);
       } else {
-        toast.error(data.error || "Giriş başarısız!");
+        toast.error(data.error || "Bir hata oluştu!");
       }
     } catch (error) {
       toast.error("Bir hata oluştu!");
@@ -52,27 +73,15 @@ export default function AdminLogin() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
-          <CardTitle className="text-2xl font-bold text-slate-900">Admin Girişi</CardTitle>
+          <CardTitle className="text-2xl font-bold text-slate-900">Yeni Şifre Belirle</CardTitle>
           <CardDescription className="text-slate-600">
-            Restoran yönetim paneline giriş yapın
+            Yeni şifrenizi girin
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-slate-700">E-posta</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@restoran.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-11 border-slate-300 focus:border-slate-900 focus:ring-slate-900"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-slate-700">Şifre</Label>
+              <Label htmlFor="password" className="text-sm font-medium text-slate-700">Yeni Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -80,6 +89,21 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
+                className="h-11 border-slate-300 focus:border-slate-900 focus:ring-slate-900"
+              />
+              <p className="text-xs text-slate-500">En az 6 karakter</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">Şifre Tekrar</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                minLength={6}
                 className="h-11 border-slate-300 focus:border-slate-900 focus:ring-slate-900"
               />
             </div>
@@ -88,14 +112,15 @@ export default function AdminLogin() {
               className="w-full bg-slate-900 hover:bg-slate-800 h-11 font-medium" 
               disabled={loading}
             >
-              {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+              {loading ? "Sıfırlanıyor..." : "Şifreyi Sıfırla"}
             </Button>
-            <div className="text-center pt-2">
+            <div className="text-center">
               <Link 
-                href="/admin/forgot-password" 
-                className="text-sm text-slate-600 hover:text-slate-900 underline"
+                href="/admin/login" 
+                className="text-sm text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2"
               >
-                Şifremi unuttum
+                <ArrowLeft className="w-4 h-4" />
+                Giriş sayfasına dön
               </Link>
             </div>
           </form>

@@ -60,13 +60,15 @@ model Campaign {
 }
 
 model Admin {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  password     String
-  restaurantId String   @unique
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  restaurantId     String   @unique
+  restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
 
 model Category {
