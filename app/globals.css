@@ -110,4 +110,169 @@
   .btn-secondary:hover {
     @apply bg-slate-50 border-slate-400;
   }
+
+  /* Vibrant Animated Background */
+  @keyframes gradient-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @keyframes color-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 40px rgba(236, 72, 153, 0.8);
+    }
+  }
+
+  .bg-animated-gradient {
+    background: linear-gradient(
+      -45deg,
+      #3b82f6,
+      #6366f1,
+      #8b5cf6,
+      #a855f7,
+      #ec4899,
+      #f97316,
+      #3b82f6
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  .bg-vibrant {
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 40% 20%, rgba(249, 115, 22, 0.2) 0%, transparent 50%),
+      linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    animation: color-pulse 8s ease-in-out infinite;
+  }
+
+  /* Glassmorphism Effect */
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Vibrant Card Styles */
+  .card-vibrant {
+    @apply bg-white rounded-xl border-2;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border-image: linear-gradient(135deg, #6366f1, #ec4899) 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-vibrant:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.3), 0 10px 10px -5px rgba(236, 72, 153, 0.2);
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  /* Gradient Button Styles */
+  .btn-gradient-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+    @apply text-white font-semibold px-6 py-3 rounded-lg;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+  }
+
+  .btn-gradient-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.5);
+    background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f97316 100%);
+  }
+
+  .btn-gradient-success {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    @apply text-white font-semibold px-6 py-3 rounded-lg;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  }
+
+  .btn-gradient-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 211, 153, 0.5);
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  }
+
+  /* Animated Input Styles */
+  .input-vibrant {
+    @apply border-2 rounded-lg px-4 py-2;
+    border-image: linear-gradient(135deg, #6366f1, #ec4899) 1;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .input-vibrant:focus {
+    outline: none;
+    border-image: linear-gradient(135deg, #8b5cf6, #f97316) 1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    transform: scale(1.02);
+  }
+
+  /* Staggered Animation */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.6s ease-out forwards;
+  }
+
+  .animate-delay-1 {
+    animation-delay: 0.1s;
+  }
+
+  .animate-delay-2 {
+    animation-delay: 0.2s;
+  }
+
+  .animate-delay-3 {
+    animation-delay: 0.3s;
+  }
+
+  .animate-delay-4 {
+    animation-delay: 0.4s;
+  }
 }
