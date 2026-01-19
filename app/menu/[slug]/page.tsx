@@ -214,25 +214,25 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-animated-gradient">
-        <div className="text-center glass-effect rounded-2xl p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-white font-semibold text-lg">Menü yükleniyor...</p>
+      <div className="min-h-screen flex items-center justify-center bg-soft-gradient">
+        <div className="text-center glass-soft rounded-2xl p-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-3 border-slate-300 border-t-slate-600 mx-auto"></div>
+          <p className="mt-4 text-slate-700 font-medium text-lg">Menü yükleniyor...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-vibrant relative overflow-hidden">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-soft-gradient relative overflow-hidden">
+      {/* Subtle Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-slate-200/20 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-subtle-float"></div>
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-slate-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-subtle-float" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute bottom-0 left-1/2 w-[500px] h-[500px] bg-slate-100/30 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-subtle-float" style={{ animationDelay: '6s' }}></div>
       </div>
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+      <header className="glass-soft border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
           {restaurant && (
             <div className="text-center">
@@ -262,23 +262,23 @@ export default function MenuPage() {
           {/* Menu Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Arama ve Filtreler */}
-            <div className="glass-effect p-6 rounded-2xl space-y-4 shadow-xl animate-fade-in-up">
+            <div className="glass-soft p-6 rounded-2xl space-y-4 shadow-lg animate-fade-in-up">
               {/* Arama */}
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-600" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500" />
                 <Input
                   type="text"
                   placeholder="Ürün ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 h-12 input-vibrant text-lg bg-white/90"
+                  className="pl-12 h-12 input-soft text-base"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 hover:scale-110 transition-transform"
                   >
-                    <X className="w-5 h-5 text-purple-600" />
+                    <X className="w-5 h-5 text-slate-500" />
                   </button>
                 )}
               </div>
@@ -286,12 +286,12 @@ export default function MenuPage() {
               {/* Filtreler */}
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-3">
-                  <Filter className="w-5 h-5 text-purple-600" />
-                  <span className="text-sm font-semibold text-white drop-shadow-md">Kategori:</span>
+                  <Filter className="w-5 h-5 text-slate-500" />
+                  <span className="text-sm font-medium text-slate-700">Kategori:</span>
                   <select
                     value={selectedCategory || ""}
                     onChange={(e) => setSelectedCategory(e.target.value || null)}
-                    className="text-sm input-vibrant px-4 py-2 bg-white/90 font-medium"
+                    className="text-sm input-soft px-4 py-2 font-medium"
                   >
                     <option value="">Tümü</option>
                     {categories.map(cat => (
@@ -301,11 +301,11 @@ export default function MenuPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-semibold text-white drop-shadow-md">Fiyat:</span>
+                  <span className="text-sm font-medium text-slate-700">Fiyat:</span>
                   <select
                     value={priceFilter}
                     onChange={(e) => setPriceFilter(e.target.value as any)}
-                    className="text-sm input-vibrant px-4 py-2 bg-white/90 font-medium"
+                    className="text-sm input-soft px-4 py-2 font-medium"
                   >
                     <option value="all">Tümü</option>
                     <option value="low">0-50 ₺</option>
@@ -318,35 +318,35 @@ export default function MenuPage() {
 
             {/* Menü İçeriği */}
             {filteredCategories.length === 0 ? (
-              <Card className="glass-effect">
+              <Card className="glass-soft">
                 <CardContent className="py-12 text-center">
-                  <p className="text-white font-semibold text-lg">Aradığınız kriterlere uygun ürün bulunamadı.</p>
+                  <p className="text-slate-700 font-medium text-lg">Aradığınız kriterlere uygun ürün bulunamadı.</p>
                 </CardContent>
               </Card>
             ) : (
               filteredCategories.map((category, catIndex) => (
                 <div key={category.id} className="space-y-6 animate-fade-in-up" style={{ animationDelay: `${catIndex * 0.1}s` }}>
                   <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2 drop-shadow-lg">
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 bg-clip-text text-transparent mb-2">
                       {category.name}
                     </h2>
                     {category.description && (
-                      <p className="text-white/90 font-medium drop-shadow-md">{category.description}</p>
+                      <p className="text-slate-600 font-medium">{category.description}</p>
                     )}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {category.products.map((product, prodIndex) => (
-                      <Card key={product.id} className="card-vibrant overflow-hidden animate-fade-in-up" style={{ animationDelay: `${(catIndex * 0.1) + (prodIndex * 0.05)}s` }}>
+                      <Card key={product.id} className="card-soft overflow-hidden animate-fade-in-up" style={{ animationDelay: `${(catIndex * 0.1) + (prodIndex * 0.05)}s` }}>
                         {product.image && (
-                          <div className="relative w-full h-56 bg-gradient-to-br from-blue-100 to-purple-100 overflow-hidden group">
+                          <div className="relative w-full h-56 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group">
                             <Image
                               src={product.image}
                               alt={product.name}
                               fill
-                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                           </div>
                         )}
                         <CardContent className="p-6">
@@ -357,13 +357,13 @@ export default function MenuPage() {
                               </h3>
                               {product.stock !== null && (
                                 <p className={`text-xs font-medium mt-1 ${
-                                  product.stock > 10 ? 'text-green-600' : product.stock > 0 ? 'text-orange-600' : 'text-red-600'
+                                  product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-600' : 'text-red-500'
                                 }`}>
                                   Stok: {product.stock} adet
                                 </p>
                               )}
                             </div>
-                            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                            <span className="text-2xl font-bold text-slate-800">
                               {product.price.toFixed(2)} ₺
                             </span>
                           </div>
@@ -374,7 +374,7 @@ export default function MenuPage() {
                           )}
                           <Button
                             onClick={() => addToCart(product)}
-                            className="w-full btn-gradient-primary"
+                            className="w-full btn-soft-primary"
                             size="sm"
                             disabled={product.stock !== null && product.stock <= 0}
                           >
@@ -393,10 +393,10 @@ export default function MenuPage() {
 
           {/* Cart Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-24 glass-effect shadow-2xl animate-fade-in-up animate-delay-4">
+            <Card className="sticky top-24 glass-soft shadow-xl animate-fade-in-up animate-delay-4">
               <CardContent className="p-6">
-                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-white drop-shadow-lg">
-                  <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-800">
+                  <div className="p-2 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl">
                     <ShoppingCart className="w-6 h-6 text-white" />
                   </div>
                   Sepetim
@@ -404,10 +404,10 @@ export default function MenuPage() {
 
                 {cart.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-                      <ShoppingCart className="w-10 h-10 text-white/50" />
+                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
+                      <ShoppingCart className="w-10 h-10 text-slate-400" />
                     </div>
-                    <p className="text-white/80 font-medium">Sepetiniz boş</p>
+                    <p className="text-slate-600 font-medium">Sepetiniz boş</p>
                   </div>
                 ) : (
                   <>
@@ -415,14 +415,14 @@ export default function MenuPage() {
                       {cart.map((item, index) => (
                         <div
                           key={item.product.id}
-                          className="flex items-center justify-between p-4 bg-white/90 rounded-xl shadow-md hover:shadow-lg transition-all animate-fade-in-up"
+                          className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all animate-fade-in-up border border-slate-200/60"
                           style={{ animationDelay: `${index * 0.05}s` }}
                         >
                           <div className="flex-1">
                             <p className="font-bold text-sm text-slate-900">
                               {item.product.name}
                             </p>
-                            <p className="text-xs font-semibold text-purple-600 mt-1">
+                            <p className="text-xs font-semibold text-slate-600 mt-1">
                               {item.product.price.toFixed(2)} ₺
                             </p>
                           </div>
@@ -430,7 +430,7 @@ export default function MenuPage() {
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-8 w-8 border-2 border-purple-300 hover:bg-purple-100 hover:border-purple-500 transition-all"
+                              className="h-8 w-8 border border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-all"
                               onClick={() =>
                                 updateQuantity(
                                   item.product.id,
@@ -438,15 +438,15 @@ export default function MenuPage() {
                                 )
                               }
                             >
-                              <span className="text-purple-600 font-bold">-</span>
+                              <span className="text-slate-700 font-bold">-</span>
                             </Button>
-                            <span className="w-10 text-center text-sm font-bold text-slate-900 bg-purple-50 px-2 py-1 rounded">
+                            <span className="w-10 text-center text-sm font-bold text-slate-900 bg-slate-50 px-2 py-1 rounded border border-slate-200">
                               {item.quantity}
                             </span>
                             <Button
                               variant="outline"
                               size="icon"
-                              className="h-8 w-8 border-2 border-purple-300 hover:bg-purple-100 hover:border-purple-500 transition-all"
+                              className="h-8 w-8 border border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-all"
                               onClick={() =>
                                 updateQuantity(
                                   item.product.id,
@@ -455,60 +455,60 @@ export default function MenuPage() {
                               }
                               disabled={item.product.stock !== null && item.quantity >= item.product.stock}
                             >
-                              <span className="text-purple-600 font-bold">+</span>
+                              <span className="text-slate-700 font-bold">+</span>
                             </Button>
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="border-t-2 border-white/20 pt-4 space-y-4">
+                    <div className="border-t border-slate-200 pt-4 space-y-4">
                       {/* Kupon Kodu */}
                       <div className="space-y-2">
-                        <label className="text-sm font-bold text-white drop-shadow-md">Kupon Kodu</label>
+                        <label className="text-sm font-medium text-slate-700">Kupon Kodu</label>
                         <div className="flex gap-2">
                           <Input
                             type="text"
                             placeholder="Kupon kodu girin"
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                            className="h-10 text-sm input-vibrant bg-white/90"
+                            className="h-10 text-sm input-soft"
                           />
                           <Button
                             type="button"
                             onClick={applyCoupon}
                             size="sm"
-                            className="h-10 btn-gradient-primary px-4"
+                            className="h-10 btn-soft-primary px-4"
                           >
                             Uygula
                           </Button>
                         </div>
                         {discount > 0 && (
-                          <p className="text-sm font-bold text-green-400 drop-shadow-md">İndirim: {discount.toFixed(2)} ₺</p>
+                          <p className="text-sm font-medium text-emerald-600">İndirim: {discount.toFixed(2)} ₺</p>
                         )}
                       </div>
 
                       {/* Fiyat Özeti */}
-                      <div className="space-y-3 text-sm bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                      <div className="space-y-3 text-sm bg-slate-50 rounded-xl p-4 border border-slate-200/60">
                         <div className="flex justify-between">
-                          <span className="text-white/90 font-medium">Ara Toplam:</span>
-                          <span className="text-white font-bold">{subtotal.toFixed(2)} ₺</span>
+                          <span className="text-slate-600 font-medium">Ara Toplam:</span>
+                          <span className="text-slate-900 font-bold">{subtotal.toFixed(2)} ₺</span>
                         </div>
                         {discount > 0 && (
-                          <div className="flex justify-between text-green-300">
+                          <div className="flex justify-between text-emerald-600">
                             <span className="font-medium">İndirim:</span>
                             <span className="font-bold">-{discount.toFixed(2)} ₺</span>
                           </div>
                         )}
-                        <div className="flex justify-between items-center pt-3 border-t-2 border-white/20">
-                          <span className="text-xl font-bold text-white">Toplam:</span>
-                          <span className="text-2xl font-extrabold bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                        <div className="flex justify-between items-center pt-3 border-t border-slate-200">
+                          <span className="text-xl font-bold text-slate-900">Toplam:</span>
+                          <span className="text-2xl font-extrabold text-slate-900">
                             {total.toFixed(2)} ₺
                           </span>
                         </div>
                       </div>
                       <Button 
-                        className="w-full btn-gradient-success text-lg py-6 font-bold shadow-xl" 
+                        className="w-full btn-soft-success text-lg py-6 font-bold shadow-lg" 
                         size="lg"
                         onClick={() => handleOrder()}
                       >
