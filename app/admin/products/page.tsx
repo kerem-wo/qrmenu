@@ -21,6 +21,11 @@ interface Product {
   category: {
     name: string;
   };
+  variants?: Array<{
+    id: string;
+    name: string;
+    price: number;
+  }>;
 }
 
 export default function ProductsPage() {
@@ -146,7 +151,7 @@ export default function ProductsPage() {
                     {product.description || "Açıklama yok"}
                   </p>
                   {product.stock !== null && (
-                    <p className={`text-xs mb-4 ${
+                    <p className={`text-xs mb-2 ${
                       product.stock === 0 
                         ? "text-red-600 font-semibold" 
                         : product.stock < 10 
@@ -156,9 +161,19 @@ export default function ProductsPage() {
                       Stok: {product.stock} adet
                     </p>
                   )}
+                  {product.variants && product.variants.length > 0 && (
+                    <p className="text-xs text-slate-500 mb-2">
+                      {product.variants.length} varyant mevcut
+                    </p>
+                  )}
                   <div className="flex justify-between items-center">
                     <span className="text-xl font-bold text-slate-900">
                       {product.price.toFixed(2)} ₺
+                      {product.variants && product.variants.length > 0 && (
+                        <span className="text-xs text-slate-500 ml-1 font-normal">
+                          +{product.variants.length} seçenek
+                        </span>
+                      )}
                     </span>
                     <div className="flex gap-2">
                       <Button variant="outline" size="icon" asChild className="border-slate-300">

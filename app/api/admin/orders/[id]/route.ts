@@ -30,6 +30,16 @@ export async function GET(
                 image: true,
               },
             },
+            variants: {
+              include: {
+                variant: {
+                  select: {
+                    name: true,
+                    price: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -96,6 +106,16 @@ export async function PUT(
             product: {
               select: {
                 name: true,
+              },
+            },
+            variants: {
+              include: {
+                variant: {
+                  select: {
+                    name: true,
+                    price: true,
+                  },
+                },
               },
             },
           },

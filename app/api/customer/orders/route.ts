@@ -25,6 +25,16 @@ export async function GET(request: Request) {
                 name: true,
               },
             },
+            variants: {
+              include: {
+                variant: {
+                  select: {
+                    name: true,
+                    price: true,
+                  },
+                },
+              },
+            },
           },
         },
       },

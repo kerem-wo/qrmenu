@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Package, Heart, LogOut } from "lucide-react";
 import toast from "react-hot-toast";
 
+interface OrderItemVariant {
+  variant: {
+    name: string;
+    price: number;
+  };
+}
+
 interface Order {
   id: string;
   orderNumber: string;
@@ -17,9 +24,11 @@ interface Order {
   items: Array<{
     quantity: number;
     price: number;
+    notes?: string | null;
     product: {
       name: string;
     };
+    variants?: OrderItemVariant[];
   }>;
 }
 
@@ -187,9 +196,27 @@ export default function CustomerDashboard() {
                     </div>
                     <div className="space-y-1 mb-3">
                       {order.items.map((item, idx) => (
-                        <p key={idx} className="text-sm text-slate-700">
-                          {item.product.name} x {item.quantity} - {item.price.toFixed(2)} ₺
-                        </p>
+                        <div key={idx} className="text-sm text-slate-700">
+                          <p>
+                            {item.product.name} x {item.quantity} - {item.price.toFixed(2)} ₺
+                          </p>
+                          {item.variants && item.variants.length > 0 && (
+                            <p className="text-xs text-slate-500 ml-4">
+                              {item.variants.map((v, vIdx) => (
+                                <span key={vIdx}>
+                                  {v.variant.name}
+                                  {v.variant.price > 0 && ` (+${v.variant.price.toFixed(2)}₺)`}
+                                  {vIdx < item.variants!.length - 1 && ", "}
+                                </span>
+                              ))}
+                            </p>
+                          )}
+                          {item.notes && (
+                            <p className="text-xs text-slate-500 ml-4 italic">
+                              Not: {item.notes}
+                            </p>
+                          )}
+                        </div>
                       ))}
                     </div>
                     <div className="flex justify-between items-center">
