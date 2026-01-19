@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -270,28 +270,6 @@ export default function MenuPage() {
     }
   };
 
-  // Filtreleme ve arama
-  const filteredCategories = categories.map((category) => {
-    return {
-      ...category,
-      products: category.products.filter((product) => {
-        if (!product.isAvailable) return false;
-        if (product.stock !== null && product.stock <= 0) return false;
-        if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-            !product.description?.toLowerCase().includes(searchQuery.toLowerCase())) {
-          return false;
-        }
-        if (selectedCategory && category.id !== selectedCategory) {
-          return false;
-        }
-        if (priceFilter === "low" && product.price > 50) return false;
-        if (priceFilter === "medium" && (product.price <= 50 || product.price > 150)) return false;
-        if (priceFilter === "high" && product.price <= 150) return false;
-        return true;
-      })
-    };
-  }).filter((category) => category.products.length > 0);
-
   if (loading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${themeClass}`}>
@@ -414,14 +392,37 @@ export default function MenuPage() {
             </div>
 
             {/* Menü İçeriği */}
-            {filteredCategories.length === 0 ? (
-              <Card className="card-modern">
-                <CardContent className="py-12 text-center">
-                  <p className="text-slate-600">Aradığınız kriterlere uygun ürün bulunamadı.</p>
-                </CardContent>
-              </Card>
-            ) : (
-              filteredCategories.map((category) => (
+            {(() => {
+              const filtered = categories.map((category) => ({
+                ...category,
+                products: category.products.filter((product) => {
+                  if (!product.isAvailable) return false;
+                  if (product.stock !== null && product.stock <= 0) return false;
+                  if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
+                      !product.description?.toLowerCase().includes(searchQuery.toLowerCase())) {
+                    return false;
+                  }
+                  if (selectedCategory && category.id !== selectedCategory) {
+                    return false;
+                  }
+                  if (priceFilter === "low" && product.price > 50) return false;
+                  if (priceFilter === "medium" && (product.price <= 50 || product.price > 150)) return false;
+                  if (priceFilter === "high" && product.price <= 150) return false;
+                  return true;
+                })
+              })).filter((category) => category.products.length > 0);
+              
+              if (filtered.length === 0) {
+                return (
+                  <Card className="card-modern">
+                    <CardContent className="py-12 text-center">
+                      <p className="text-slate-600">Aradığınız kriterlere uygun ürün bulunamadı.</p>
+                    </CardContent>
+                  </Card>
+                );
+              }
+              
+              return filtered.map((category) => (
                 <div key={category.id} className="space-y-6">
                   <div>
                     <h2 className="text-2xl font-bold text-slate-900 mb-2">
@@ -481,8 +482,8 @@ export default function MenuPage() {
                     ))}
                   </div>
                 </div>
-              ))
-            )}
+              ));
+            })()}
           </div>
 
           {/* Cart Sidebar */}
