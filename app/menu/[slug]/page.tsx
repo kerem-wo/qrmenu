@@ -271,32 +271,26 @@ export default function MenuPage() {
   };
 
   // Filtreleme ve arama
-  const filteredCategories = categories.map(category => ({
-    ...category,
-    products: category.products.filter(product => {
-      // Stok kontrolü
-      if (!product.isAvailable) return false;
-      if (product.stock !== null && product.stock <= 0) return false;
-
-      // Arama filtresi
-      if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-          !product.description?.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
-
-      // Kategori filtresi
-      if (selectedCategory && category.id !== selectedCategory) {
-        return false;
-      }
-
-      // Fiyat filtresi
-      if (priceFilter === "low" && product.price > 50) return false;
-      if (priceFilter === "medium" && (product.price <= 50 || product.price > 150)) return false;
-      if (priceFilter === "high" && product.price <= 150) return false;
-
-      return true;
-    })
-  })).filter(category => category.products.length > 0);
+  const filteredCategories = categories.map((category) => {
+    return {
+      ...category,
+      products: category.products.filter((product) => {
+        if (!product.isAvailable) return false;
+        if (product.stock !== null && product.stock <= 0) return false;
+        if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
+            !product.description?.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return false;
+        }
+        if (selectedCategory && category.id !== selectedCategory) {
+          return false;
+        }
+        if (priceFilter === "low" && product.price > 50) return false;
+        if (priceFilter === "medium" && (product.price <= 50 || product.price > 150)) return false;
+        if (priceFilter === "high" && product.price <= 150) return false;
+        return true;
+      })
+    };
+  }).filter((category) => category.products.length > 0);
 
   if (loading) {
     return (
