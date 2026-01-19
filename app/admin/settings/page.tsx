@@ -11,7 +11,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { checkAuth } from "@/lib/auth-client";
-import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -46,7 +45,6 @@ export default function SettingsPage() {
           logo: data.logo || "",
           theme: data.theme || "default",
           slug: data.slug,
-          language: data.language || "tr",
         });
       }
     } catch (error) {
@@ -152,41 +150,28 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <ImageUpload
-                value={formData.logo}
-                onChange={(url) => setFormData({ ...formData, logo: url })}
-                label="Restoran Logosu"
-              />
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="theme" className="text-sm font-medium text-slate-700">Tema</Label>
-                  <select
-                    id="theme"
-                    value={formData.theme}
-                    onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                    className="flex h-11 w-full rounded-md border border-slate-300 bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="default">Varsayılan</option>
-                    <option value="modern">Modern</option>
-                    <option value="minimal">Minimal</option>
-                    <option value="elegant">Şık</option>
-                  </select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="language" className="text-sm font-medium text-slate-700">Dil</Label>
-                  <select
-                    id="language"
-                    value={formData.language}
-                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                    className="flex h-11 w-full rounded-md border border-slate-300 bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="tr">Türkçe</option>
-                    <option value="en">English</option>
-                    <option value="de">Deutsch</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="logo" className="text-sm font-medium text-slate-700">Logo URL</Label>
+                <Input
+                  id="logo"
+                  type="url"
+                  value={formData.logo}
+                  onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                  placeholder="https://example.com/logo.png"
+                  className="h-11 border-slate-300 focus:border-slate-900"
+                />
+                {formData.logo && (
+                  <div className="mt-3 p-4 bg-slate-50 rounded-lg inline-block">
+                    <img
+                      src={formData.logo}
+                      alt="Logo"
+                      className="w-24 h-24 object-contain rounded-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-4 pt-4">
