@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
-import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function EditCategoryPage() {
   const router = useRouter();
@@ -150,11 +149,17 @@ export default function EditCategoryPage() {
                   />
                 </div>
 
-              <ImageUpload
-                value={formData.image}
-                onChange={(url) => setFormData({ ...formData, image: url })}
-                label="Kategori Görseli"
-              />
+                <div className="space-y-2">
+                  <Label htmlFor="image" className="text-sm font-medium text-slate-700">Görsel URL</Label>
+                  <Input
+                    id="image"
+                    type="url"
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                    className="h-11 border-slate-300 focus:border-slate-900"
+                  />
+                </div>
               </div>
 
               <div className="flex gap-4 pt-4">

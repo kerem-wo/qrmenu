@@ -27,35 +27,46 @@ export function OrderNotifications() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+    
     const checkNotifications = async () => {
+      if (!mounted) return;
+      
       try {
         const url = lastOrderId
           ? `/api/notifications?lastOrderId=${lastOrderId}`
           : "/api/notifications";
         
         const res = await fetch(url);
-        if (res.ok) {
+        if (res.ok && mounted) {
           const data = await res.json();
-          if (data.orders && data.orders.length > 0) {
-            const newOrders = data.orders.filter((order: Order) => 
-              !notifications.find(n => n.id === order.id)
-            );
-            
-            if (newOrders.length > 0) {
-              setNotifications(prev => [...newOrders, ...prev]);
-              setLastOrderId(newOrders[0].id);
+          if (data.orders && data.orders.length > 0 && mounted) {
+            setNotifications(prev => {
+              const newOrders = data.orders.filter((order: Order) => 
+                !prev.find(n => n.id === order.id)
+              );
               
-              // Show toast for each new order
-              newOrders.forEach((order: Order) => {
-                toast.success(`Yeni sipariş: #${order.orderNumber}`, {
-                  duration: 5000,
+              if (newOrders.length > 0 && mounted) {
+                setLastOrderId(newOrders[0].id);
+                
+                // Show toast for each new order
+                newOrders.forEach((order: Order) => {
+                  toast.success(`Yeni sipariş: #${order.orderNumber}`, {
+                    duration: 5000,
+                  });
                 });
-              });
-            }
+                
+                return [...newOrders, ...prev];
+              }
+              
+              return prev;
+            });
           }
         }
       } catch (error) {
-        console.error("Error checking notifications:", error);
+        if (mounted) {
+          console.error("Error checking notifications:", error);
+        }
       }
     };
 
@@ -65,8 +76,11 @@ export function OrderNotifications() {
     // Check every 5 seconds
     const interval = setInterval(checkNotifications, 5000);
 
-    return () => clearInterval(interval);
-  }, [lastOrderId, notifications, router]);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [lastOrderId]);
 
   const clearNotifications = () => {
     setNotifications([]);

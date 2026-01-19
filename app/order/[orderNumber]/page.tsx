@@ -5,22 +5,13 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, CheckCircle, ChefHat, XCircle } from "lucide-react";
 
-interface OrderItemVariant {
-  variant: {
-    name: string;
-    price: number;
-  };
-}
-
 interface OrderItem {
   id: string;
   quantity: number;
   price: number;
-  notes?: string | null;
   product: {
     name: string;
   };
-  variants?: OrderItemVariant[];
 }
 
 interface Order {
@@ -186,31 +177,13 @@ export default function OrderTrackingPage() {
               <h3 className="font-semibold text-slate-900 mb-3">Sipariş Detayları</h3>
               <div className="space-y-2">
                 {order.items.map((item) => (
-                  <div key={item.id} className="py-2 border-b border-slate-200">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-slate-700">
-                        {item.product.name} x {item.quantity}
-                      </span>
-                      <span className="font-medium text-slate-900">
-                        {(item.price * item.quantity).toFixed(2)} ₺
-                      </span>
-                    </div>
-                    {item.variants && item.variants.length > 0 && (
-                      <div className="text-xs text-slate-500 mt-1 ml-4">
-                        {item.variants.map((v, idx) => (
-                          <span key={idx}>
-                            {v.variant.name}
-                            {v.variant.price > 0 && ` (+${v.variant.price.toFixed(2)}₺)`}
-                            {idx < item.variants!.length - 1 && ", "}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    {item.notes && (
-                      <div className="text-xs text-slate-500 mt-1 ml-4 italic">
-                        Not: {item.notes}
-                      </div>
-                    )}
+                  <div key={item.id} className="flex justify-between text-sm py-2 border-b border-slate-200">
+                    <span className="text-slate-700">
+                      {item.product.name} x {item.quantity}
+                    </span>
+                    <span className="font-medium text-slate-900">
+                      {(item.price * item.quantity).toFixed(2)} ₺
+                    </span>
                   </div>
                 ))}
               </div>

@@ -4,28 +4,18 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle, Clock, XCircle, ChefHat, ShoppingCart, Download } from "lucide-react";
+import { ArrowLeft, CheckCircle, Clock, XCircle, ChefHat, ShoppingCart } from "lucide-react";
 import { checkAuth } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { OrderNotifications } from "@/components/notifications/order-notifications";
-
-interface OrderItemVariant {
-  variant: {
-    name: string;
-    price: number;
-  };
-}
 
 interface OrderItem {
   id: string;
   quantity: number;
   price: number;
-  notes?: string | null;
   product: {
     name: string;
   };
-  variants?: OrderItemVariant[];
 }
 
 interface Order {
@@ -34,7 +24,6 @@ interface Order {
   customerName: string | null;
   customerPhone: string | null;
   status: string;
-  orderNumber: string;
   total: number;
   items: OrderItem[];
   createdAt: string;
@@ -61,10 +50,6 @@ export default function OrdersPage() {
         return;
       }
       fetchOrders();
-      
-      // Auto-refresh orders every 10 seconds
-      const interval = setInterval(fetchOrders, 10000);
-      return () => clearInterval(interval);
     });
   }, []);
 
@@ -112,47 +97,14 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
-              <Link href="/admin/dashboard">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Geri
-              </Link>
-            </Button>
-            <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                try {
-                  const res = await fetch("/api/admin/orders/export?format=csv");
-                  if (res.ok) {
-                    const blob = await res.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = `siparisler-${new Date().toISOString().split("T")[0]}.csv`;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                    toast.success("Siparişler CSV olarak indirildi");
-                  } else {
-                    toast.error("Export başarısız");
-                  }
-                } catch (error) {
-                  toast.error("Bir hata oluştu");
-                }
-              }}
-            >
-              <Download className="w-4 h-4 mr-2" />
-              CSV İndir
-            </Button>
-            <OrderNotifications />
-          </div>
+        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
+          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
+            <Link href="/admin/dashboard">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Geri
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
         </div>
       </header>
 
@@ -174,7 +126,7 @@ export default function OrdersPage() {
                     <div className="flex justify-between items-start">
                       <div>
                         <CardTitle className="text-lg font-semibold text-slate-900">
-                          Sipariş #{order.orderNumber || order.id.slice(0, 8)}
+                          Sipariş #{order.id.slice(0, 8)}
                         </CardTitle>
                         <CardDescription className="text-sm">
                           {new Date(order.createdAt).toLocaleString("tr-TR")}
@@ -218,31 +170,13 @@ export default function OrdersPage() {
                         <h4 className="font-semibold text-slate-900 mb-2">Ürünler:</h4>
                         <div className="space-y-2">
                           {order.items.map((item) => (
-                            <div key={item.id} className="py-2 border-b border-slate-100 last:border-0">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-slate-700">
-                                  {item.product.name} x {item.quantity}
-                                </span>
-                                <span className="font-medium text-slate-900">
-                                  {(item.price * item.quantity).toFixed(2)} ₺
-                                </span>
-                              </div>
-                              {item.variants && item.variants.length > 0 && (
-                                <div className="text-xs text-slate-500 mt-1 ml-4">
-                                  {item.variants.map((v, idx) => (
-                                    <span key={idx}>
-                                      {v.variant.name}
-                                      {v.variant.price > 0 && ` (+${v.variant.price.toFixed(2)}₺)`}
-                                      {idx < item.variants!.length - 1 && ", "}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                              {item.notes && (
-                                <div className="text-xs text-slate-500 mt-1 ml-4 italic">
-                                  Not: {item.notes}
-                                </div>
-                              )}
+                            <div key={item.id} className="flex justify-between text-sm py-2">
+                              <span className="text-slate-700">
+                                {item.product.name} x {item.quantity}
+                              </span>
+                              <span className="font-medium text-slate-900">
+                                {(item.price * item.quantity).toFixed(2)} ₺
+                              </span>
                             </div>
                           ))}
                         </div>

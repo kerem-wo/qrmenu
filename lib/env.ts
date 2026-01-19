@@ -46,19 +46,9 @@ export function validateEnv() {
 }
 
 /**
- * Get validated environment variables (lazy evaluation)
+ * Get validated environment variables
  */
-let cachedEnv: z.infer<typeof envSchema> | null = null;
-
-export function getEnv() {
-  if (!cachedEnv) {
-    cachedEnv = validateEnv();
-  }
-  return cachedEnv;
-}
-
-// For backward compatibility
-export const env = getEnv();
+export const env = validateEnv();
 
 /**
  * Type-safe environment variable access
