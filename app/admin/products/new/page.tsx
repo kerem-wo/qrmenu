@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { checkAuth } from "@/lib/auth-client";
+import { ImageUpload } from "@/components/ui/image-upload";
+import { Plus, Trash2 } from "lucide-react";
 
 interface Category {
   id: string;
@@ -92,6 +94,21 @@ export default function NewProductPage() {
       const data = await res.json();
 
       if (res.ok) {
+        // Save variants if any
+        if (variants.length > 0) {
+          for (const variant of variants) {
+            if (variant.name.trim()) {
+              await fetch(`/api/admin/products/${data.id}/variants`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  name: variant.name.trim(),
+                  price: parseFloat(variant.price) || 0,
+                }),
+              });
+            }
+          }
+        }
         toast.success("Ürün başarıyla eklendi!");
         router.push("/admin/products");
       } else {
@@ -104,6 +121,20 @@ export default function NewProductPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const addVariant = () => {
+    setVariants([...variants, { name: "", price: "0" }]);
+  };
+
+  const updateVariant = (index: number, field: string, value: string) => {
+    const updated = [...variants];
+    updated[index] = { ...updated[index], [field]: value };
+    setVariants(updated);
+  };
+
+  const removeVariant = (index: number) => {
+    setVariants(variants.filter((_, i) => i !== index));
   };
 
   return (
@@ -210,17 +241,11 @@ export default function NewProductPage() {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="image" className="text-sm font-medium text-slate-700">Görsel URL</Label>
-                <Input
-                  id="image"
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  className="h-11 border-slate-300 focus:border-slate-900"
-                />
-              </div>
+              <ImageUpload
+                value={formData.image}
+                onChange={(url) => setFormData({ ...formData, image: url })}
+                label="Ürün Görseli"
+              />
 
               <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg">
                 <input
@@ -233,6 +258,62 @@ export default function NewProductPage() {
                 <Label htmlFor="isAvailable" className="cursor-pointer text-sm font-medium text-slate-700">
                   Ürün aktif (müşteriler görebilir)
                 </Label>
+              </div>
+
+              {/* Ürün Varyantları */}
+              <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <Label className="text-sm font-medium text-slate-700">Ürün Varyantları</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addVariant}
+                    className="h-8"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Varyant Ekle
+                  </Button>
+                </div>
+                <p className="text-xs text-slate-500 mb-3">
+                  Örn: Küçük (+0₺), Büyük (+10₺), Ekstra Peynir (+5₺)
+                </p>
+                {variants.length === 0 ? (
+                  <p className="text-sm text-slate-500 text-center py-4">
+                    Henüz varyant eklenmemiş
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {variants.map((variant, index) => (
+                      <div key={index} className="flex gap-2 items-center">
+                        <Input
+                          placeholder="Varyant adı (örn: Büyük)"
+                          value={variant.name}
+                          onChange={(e) => updateVariant(index, "name", e.target.value)}
+                          className="flex-1 h-9"
+                        />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Ek fiyat"
+                          value={variant.price}
+                          onChange={(e) => updateVariant(index, "price", e.target.value)}
+                          className="w-32 h-9"
+                        />
+                        <span className="text-sm text-slate-600">₺</span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeVariant(index)}
+                          className="h-9 w-9 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-4 pt-4">

@@ -8,6 +8,7 @@ import { ArrowLeft, CheckCircle, Clock, XCircle, ChefHat, ShoppingCart } from "l
 import { checkAuth } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { OrderNotifications } from "@/components/notifications/order-notifications";
 
 interface OrderItem {
   id: string;
@@ -50,6 +51,10 @@ export default function OrdersPage() {
         return;
       }
       fetchOrders();
+      
+      // Auto-refresh orders every 10 seconds
+      const interval = setInterval(fetchOrders, 10000);
+      return () => clearInterval(interval);
     });
   }, []);
 
@@ -97,14 +102,17 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
-            <Link href="/admin/dashboard">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Geri
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
+              <Link href="/admin/dashboard">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Geri
+              </Link>
+            </Button>
+            <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
+          </div>
+          <OrderNotifications />
         </div>
       </header>
 

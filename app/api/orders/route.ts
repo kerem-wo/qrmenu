@@ -41,9 +41,9 @@ export async function POST(request: Request) {
       }
     }
 
-    // Calculate total
+    // Calculate total (items already include variant prices)
     let total = data.items.reduce(
-      (sum: number, item: any) => sum + item.price * item.quantity,
+      (sum: number, item: any) => sum + (item.price || 0) * item.quantity,
       0
     );
 
@@ -112,12 +112,30 @@ export async function POST(request: Request) {
           paymentStatus: data.paymentStatus || "pending",
           paymentMethod: data.paymentMethod || null,
           items: {
-            create: data.items.map((item: any) => ({
-              productId: item.productId,
-              quantity: item.quantity,
-              price: item.price,
-              notes: item.notes || null,
-            })),
+            create: await Promise.all(
+              data.items.map(async (item: any) => {
+                const orderItem = {
+                  productId: item.productId,
+                  quantity: item.quantity,
+                  price: item.price,
+                  notes: item.notes || null,
+                };
+
+                // Create order item with variants if any
+                if (item.variants && item.variants.length > 0) {
+                  return {
+                    ...orderItem,
+                    variants: {
+                      create: item.variants.map((variantId: string) => ({
+                        variantId,
+                      })),
+                    },
+                  };
+                }
+
+                return orderItem;
+              })
+            ),
           },
         },
         include: {
@@ -135,8 +153,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ 
-      ...order,
-      orderNumber: order.orderNumber 
+      id: order.id,
+      orderNumber: order.orderNumber,
+      total: order.total,
     }, { status: 201 });
   } catch (error: any) {
     console.error("Error creating order:", error);

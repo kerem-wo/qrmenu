@@ -25,6 +25,9 @@ export async function GET(
       },
       include: {
         category: true,
+        variants: {
+          orderBy: { createdAt: "asc" },
+        },
       },
     });
 

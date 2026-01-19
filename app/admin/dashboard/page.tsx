@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Plus, Package, ShoppingCart, Users, Settings } from "lucide-react";
 import { checkAuth, clearSessionFromStorage } from "@/lib/auth-client";
 import toast from "react-hot-toast";
+import { OrderNotifications } from "@/components/notifications/order-notifications";
+import { LanguageSelector } from "@/components/language-selector";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -81,6 +83,8 @@ export default function AdminDashboard() {
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-slate-900">Admin Panel</h1>
           <div className="flex gap-3">
+            <LanguageSelector />
+            <OrderNotifications />
             <Button variant="outline" asChild className="border-slate-300">
               <Link href="/admin/settings">
                 <Settings className="w-4 h-4 mr-2" />

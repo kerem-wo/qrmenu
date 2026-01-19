@@ -6,8 +6,15 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ShoppingCart, Search, Filter, X } from "lucide-react";
+import { ShoppingCart, Search, Filter, X, User, Heart } from "lucide-react";
 import toast from "react-hot-toast";
+import Link from "next/link";
+
+interface ProductVariant {
+  id: string;
+  name: string;
+  price: number;
+}
 
 interface Product {
   id: string;
@@ -17,6 +24,7 @@ interface Product {
   image: string | null;
   isAvailable: boolean;
   stock: number | null;
+  variants?: ProductVariant[];
 }
 
 interface Category {
@@ -38,13 +46,16 @@ export default function MenuPage() {
   const slug = params?.slug as string;
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
+  const [cart, setCart] = useState<{ product: Product; quantity: number; selectedVariants?: string[] }[]>([]);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceFilter, setPriceFilter] = useState<"all" | "low" | "medium" | "high">("all");
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [customer, setCustomer] = useState<any>(null);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
     if (slug) {
@@ -71,22 +82,40 @@ export default function MenuPage() {
     }
   };
 
+  const toggleVariant = (productId: string, variantId: string) => {
+    setSelectedVariants((prev) => {
+      const current = prev[productId] || [];
+      const updated = current.includes(variantId)
+        ? current.filter((id) => id !== variantId)
+        : [...current, variantId];
+      return { ...prev, [productId]: updated };
+    });
+  };
+
   const addToCart = (product: Product) => {
     if (!product.isAvailable) return;
     if (product.stock !== null && product.stock <= 0) return;
 
+    const variants = selectedVariants[product.id] || [];
+    const cartKey = `${product.id}-${variants.sort().join(",")}`;
+
     setCart((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
+      const existing = prev.find((item) => {
+        const itemVariants = item.selectedVariants?.sort().join(",") || "";
+        return item.product.id === product.id && itemVariants === variants.sort().join(",");
+      });
+      
       if (existing) {
         const newQuantity = existing.quantity + 1;
         if (product.stock !== null && newQuantity > product.stock) return prev;
         return prev.map((item) =>
-          item.product.id === product.id
+          item.product.id === product.id && 
+          (item.selectedVariants?.sort().join(",") || "") === variants.sort().join(",")
             ? { ...item, quantity: newQuantity }
             : item
         );
       }
-      return [...prev, { product, quantity: 1 }];
+      return [...prev, { product, quantity: 1, selectedVariants: variants.length > 0 ? variants : undefined }];
     });
   };
 
@@ -109,8 +138,19 @@ export default function MenuPage() {
     );
   };
 
+  const calculateItemPrice = (item: { product: Product; quantity: number; selectedVariants?: string[] }) => {
+    let basePrice = item.product.price;
+    if (item.selectedVariants && item.product.variants) {
+      const variantPrices = item.product.variants
+        .filter(v => item.selectedVariants?.includes(v.id))
+        .reduce((sum, v) => sum + v.price, 0);
+      basePrice += variantPrices;
+    }
+    return basePrice * item.quantity;
+  };
+
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + calculateItemPrice(item),
     0
   );
   const total = Math.max(0, subtotal - discount);
@@ -146,11 +186,43 @@ export default function MenuPage() {
   const handleOrder = async () => {
     if (cart.length === 0) return;
 
-    const customerName = prompt("İsminiz:");
-    const customerPhone = prompt("Telefon numaranız:");
+    // Check if customer is logged in
+    const customerSession = localStorage.getItem("customer_session");
+    let customerId = null;
+    let customerName = null;
+    let customerPhone = null;
+
+    if (customerSession) {
+      const customer = JSON.parse(customerSession);
+      customerId = customer.id;
+      customerName = customer.name;
+      customerPhone = customer.phone;
+    } else {
+      customerName = prompt("İsminiz:");
+      if (!customerName) return;
+      customerPhone = prompt("Telefon numaranız:");
+      if (!customerPhone) return;
+    }
+
     const tableNumber = prompt("Masa numaranız (opsiyonel):");
 
     try {
+      const orderItems = cart.map(item => {
+        let itemPrice = item.product.price;
+        if (item.selectedVariants && item.product.variants) {
+          const variantPrices = item.product.variants
+            .filter(v => item.selectedVariants?.includes(v.id))
+            .reduce((sum, v) => sum + v.price, 0);
+          itemPrice += variantPrices;
+        }
+        return {
+          productId: item.product.id,
+          quantity: item.quantity,
+          price: itemPrice,
+          variants: item.selectedVariants || [],
+        };
+      });
+
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -159,24 +231,30 @@ export default function MenuPage() {
           tableNumber: tableNumber || null,
           customerName: customerName || null,
           customerPhone: customerPhone || null,
+          customerId: customerId || null,
           couponCode: couponCode || null,
-          items: cart.map((item) => ({
-            productId: item.product.id,
-            quantity: item.quantity,
-            price: item.product.price,
-          })),
+          items: orderItems,
         }),
       });
 
       if (res.ok) {
         const data = await res.json();
         const orderNumber = data.orderNumber;
-        alert(`Siparişiniz alındı! Sipariş numaranız: ${orderNumber}\nSiparişinizi takip etmek için: /order/${orderNumber}`);
-        setCart([]);
-        window.location.href = `/order/${orderNumber}`;
+        const orderId = data.id;
+        
+        // Show payment modal if Stripe is configured
+        if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+          setPendingOrder({ orderId, orderNumber, total });
+          setShowPayment(true);
+        } else {
+          // No payment, just redirect
+          toast.success(`Siparişiniz alındı! Sipariş numaranız: ${orderNumber}`);
+          setCart([]);
+          window.location.href = `/order/${orderNumber}`;
+        }
       } else {
         const data = await res.json();
-        alert(data.error || "Sipariş verilirken bir hata oluştu!");
+        toast.error(data.error || "Sipariş verilirken bir hata oluştu!");
       }
     } catch (error) {
       console.error("Error creating order:", error);
@@ -223,11 +301,41 @@ export default function MenuPage() {
     );
   }
 
+  const themeClasses: Record<string, string> = {
+    default: "bg-slate-50",
+    modern: "bg-gradient-to-br from-slate-50 to-slate-100",
+    minimal: "bg-white",
+    elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className={`min-h-screen ${themeClasses[restaurantTheme] || themeClasses.default}`}>
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex-1"></div>
+            <div className="flex gap-2">
+              <LanguageSelector />
+              {customer ? (
+                <>
+                  <Link href="/customer/dashboard">
+                    <Button variant="outline" size="sm">
+                      <User className="w-4 h-4 mr-2" />
+                      Hesabım
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Link href={`/customer/login?restaurantId=${restaurant?.id || ""}`}>
+                  <Button variant="outline" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Giriş Yap
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
           {restaurant && (
             <div className="text-center">
               {restaurant.logo && (
@@ -399,17 +507,27 @@ export default function MenuPage() {
                 ) : (
                   <>
                     <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
-                      {cart.map((item) => (
+                      {cart.map((item, index) => {
+                        const itemPrice = calculateItemPrice(item) / item.quantity;
+                        return (
                         <div
-                          key={item.product.id}
+                          key={`${item.product.id}-${index}`}
                           className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
                         >
                           <div className="flex-1">
                             <p className="font-medium text-sm text-slate-900">
                               {item.product.name}
                             </p>
+                            {item.selectedVariants && item.selectedVariants.length > 0 && item.product.variants && (
+                              <p className="text-xs text-slate-500 mt-1">
+                                {item.product.variants
+                                  .filter(v => item.selectedVariants?.includes(v.id))
+                                  .map(v => v.name)
+                                  .join(", ")}
+                              </p>
+                            )}
                             <p className="text-xs text-slate-600 mt-1">
-                              {item.product.price.toFixed(2)} ₺
+                              {itemPrice.toFixed(2)} ₺
                             </p>
                           </div>
                           <div className="flex items-center gap-2">

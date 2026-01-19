@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { checkAuth } from "@/lib/auth-client";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 interface Category {
   id: string;
@@ -23,6 +24,7 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [variants, setVariants] = useState<Array<{ id: string; name: string; price: string }>>([]);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -74,6 +76,15 @@ export default function EditProductPage() {
           isAvailable: product.isAvailable,
           order: product.order?.toString() || "0",
         });
+        
+        // Load variants
+        if (product.variants) {
+          setVariants(product.variants.map((v: any) => ({
+            id: v.id,
+            name: v.name,
+            price: v.price.toString(),
+          })));
+        }
       } else {
         toast.error("Ürün bulunamadı!");
       }
@@ -81,6 +92,85 @@ export default function EditProductPage() {
       toast.error("Ürün yüklenirken bir hata oluştu!");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const addVariant = () => {
+    setVariants([...variants, { id: `temp-${Date.now()}`, name: "", price: "0" }]);
+  };
+
+  const updateVariant = (index: number, field: string, value: string) => {
+    const updated = [...variants];
+    updated[index] = { ...updated[index], [field]: value };
+    setVariants(updated);
+  };
+
+  const removeVariant = async (index: number, variantId: string) => {
+    if (variantId.startsWith("temp-")) {
+      // Remove unsaved variant
+      setVariants(variants.filter((_, i) => i !== index));
+      return;
+    }
+
+    // Delete saved variant
+    if (!confirm("Bu varyantı silmek istediğinize emin misiniz?")) return;
+
+    try {
+      const res = await fetch(`/api/admin/products/${params.id}/variants/${variantId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        setVariants(variants.filter((_, i) => i !== index));
+        toast.success("Varyant silindi!");
+      } else {
+        toast.error("Varyant silinirken bir hata oluştu!");
+      }
+    } catch (error) {
+      toast.error("Bir hata oluştu!");
+    }
+  };
+
+  const saveVariants = async () => {
+    if (!params?.id) return;
+
+    try {
+      // Save new variants
+      for (const variant of variants) {
+        if (variant.id.startsWith("temp-")) {
+          const res = await fetch(`/api/admin/products/${params.id}/variants`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: variant.name,
+              price: parseFloat(variant.price) || 0,
+            }),
+          });
+
+          if (res.ok) {
+            const newVariant = await res.json();
+            setVariants(variants.map(v => 
+              v.id === variant.id ? { id: newVariant.id, name: newVariant.name, price: newVariant.price.toString() } : v
+            ));
+          }
+        } else {
+          // Update existing variant
+          const res = await fetch(`/api/admin/products/${params.id}/variants/${variant.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: variant.name,
+              price: parseFloat(variant.price) || 0,
+            }),
+          });
+
+          if (!res.ok) {
+            toast.error("Varyant güncellenirken bir hata oluştu!");
+          }
+        }
+      }
+    } catch (error) {
+      toast.error("Varyantlar kaydedilirken bir hata oluştu!");
     }
   };
 
@@ -228,17 +318,11 @@ export default function EditProductPage() {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="image" className="text-sm font-medium text-slate-700">Görsel URL</Label>
-                <Input
-                  id="image"
-                  type="url"
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                  className="h-11 border-slate-300 focus:border-slate-900"
-                />
-              </div>
+              <ImageUpload
+                value={formData.image}
+                onChange={(url) => setFormData({ ...formData, image: url })}
+                label="Ürün Görseli"
+              />
 
               <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg">
                 <input
@@ -251,6 +335,62 @@ export default function EditProductPage() {
                 <Label htmlFor="isAvailable" className="cursor-pointer text-sm font-medium text-slate-700">
                   Ürün aktif (müşteriler görebilir)
                 </Label>
+              </div>
+
+              {/* Ürün Varyantları */}
+              <div className="space-y-3 p-4 bg-slate-50 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <Label className="text-sm font-medium text-slate-700">Ürün Varyantları</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addVariant}
+                    className="h-8"
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Varyant Ekle
+                  </Button>
+                </div>
+                <p className="text-xs text-slate-500 mb-3">
+                  Örn: Küçük (+0₺), Büyük (+10₺), Ekstra Peynir (+5₺)
+                </p>
+                {variants.length === 0 ? (
+                  <p className="text-sm text-slate-500 text-center py-4">
+                    Henüz varyant eklenmemiş
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {variants.map((variant, index) => (
+                      <div key={variant.id} className="flex gap-2 items-center">
+                        <Input
+                          placeholder="Varyant adı (örn: Büyük)"
+                          value={variant.name}
+                          onChange={(e) => updateVariant(index, "name", e.target.value)}
+                          className="flex-1 h-9"
+                        />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Ek fiyat"
+                          value={variant.price}
+                          onChange={(e) => updateVariant(index, "price", e.target.value)}
+                          className="w-32 h-9"
+                        />
+                        <span className="text-sm text-slate-600">₺</span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeVariant(index, variant.id)}
+                          className="h-9 w-9 text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-4 pt-4">
