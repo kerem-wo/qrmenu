@@ -68,8 +68,6 @@ export default function MenuPage() {
   };
 
   const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
-  const containerClassName = "min-h-screen " + (themeClass || "");
-  const loadingClassName = "min-h-screen flex items-center justify-center " + (themeClass || "");
 
   useEffect(() => {
     if (slug) {
@@ -275,7 +273,7 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className={loadingClassName}>
+      <div className={"min-h-screen flex items-center justify-center " + (themeClass || "")}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto"></div>
           <p className="mt-4 text-slate-600">Menü yükleniyor...</p>
@@ -285,7 +283,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className={containerClassName}>
+    <div className={"min-h-screen " + (themeClass || "")}>
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
