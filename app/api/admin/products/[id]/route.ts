@@ -25,9 +25,6 @@ export async function GET(
       },
       include: {
         category: true,
-        variants: {
-          orderBy: { createdAt: "asc" },
-        },
       },
     });
 
@@ -50,7 +47,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getAdminSession();
@@ -61,12 +58,13 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const data = await request.json();
 
     // Verify product belongs to restaurant
     const existingProduct = await prisma.product.findFirst({
       where: {
-        id: params.id,
+        id,
         category: {
           restaurantId: session.restaurantId,
         },

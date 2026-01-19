@@ -33,11 +33,6 @@ export async function GET(
           where: {
             isAvailable: true,
           },
-          include: {
-            variants: {
-              orderBy: { createdAt: "asc" },
-            },
-          },
           orderBy: {
             order: "asc",
           },

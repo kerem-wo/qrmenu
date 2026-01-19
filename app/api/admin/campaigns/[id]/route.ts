@@ -1,152 +1,157 @@
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/auth";
-import { createApiHandler, getValidatedBody } from "@/lib/api-handler";
-import { successResponse, notFoundResponse, unauthorizedResponse } from "@/lib/api-response";
-import { updateCampaignSchema } from "@/lib/validation";
-import { logger } from "@/lib/logger";
-import { authRateLimit } from "@/middleware/rate-limit";
-import { ConflictError, NotFoundError } from "@/lib/errors";
 
-async function GETHandler(
-  req: NextRequest,
+export async function GET(
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getAdminSession();
-  if (!session) {
-    return unauthorizedResponse("Unauthorized");
-  }
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const { id } = await params;
-  const campaign = await prisma.campaign.findFirst({
-    where: {
-      id,
-      restaurantId: session.restaurantId,
-    },
-  });
-
-  if (!campaign) {
-    return notFoundResponse("Kampanya bulunamadı");
-  }
-
-  return successResponse(campaign);
-}
-
-async function PUTHandler(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await getAdminSession();
-  if (!session) {
-    return unauthorizedResponse("Unauthorized");
-  }
-
-  const { id } = await params;
-  const validatedData = getValidatedBody(req);
-
-  // Verify campaign belongs to restaurant
-  const existingCampaign = await prisma.campaign.findFirst({
-    where: {
-      id,
-      restaurantId: session.restaurantId,
-    },
-  });
-
-  if (!existingCampaign) {
-    throw new NotFoundError("Kampanya bulunamadı");
-  }
-
-  // Check if code is being changed and if it's unique
-  if (validatedData.code && validatedData.code.toUpperCase() !== existingCampaign.code) {
-    const codeExists = await prisma.campaign.findFirst({
+    const { id } = await params;
+    const campaign = await prisma.campaign.findFirst({
       where: {
-        code: validatedData.code.toUpperCase(),
-        id: { not: id },
+        id,
+        restaurantId: session.restaurantId,
       },
     });
 
-    if (codeExists) {
-      throw new ConflictError("Bu kupon kodu zaten kullanılıyor");
+    if (!campaign) {
+      return NextResponse.json(
+        { error: "Kampanya bulunamadı" },
+        { status: 404 }
+      );
     }
+
+    return NextResponse.json(campaign);
+  } catch (error) {
+    console.error("Error fetching campaign:", error);
+    return NextResponse.json(
+      { error: "Kampanya yüklenirken bir hata oluştu" },
+      { status: 500 }
+    );
   }
-
-  const updateData: any = {};
-  if (validatedData.name !== undefined) updateData.name = validatedData.name;
-  if (validatedData.code !== undefined) updateData.code = validatedData.code.toUpperCase();
-  if (validatedData.type !== undefined) updateData.type = validatedData.type;
-  if (validatedData.value !== undefined) updateData.value = validatedData.value;
-  if (validatedData.minAmount !== undefined) updateData.minAmount = validatedData.minAmount;
-  if (validatedData.maxDiscount !== undefined) updateData.maxDiscount = validatedData.maxDiscount;
-  if (validatedData.startDate !== undefined) updateData.startDate = new Date(validatedData.startDate);
-  if (validatedData.endDate !== undefined) updateData.endDate = new Date(validatedData.endDate);
-  if (validatedData.isActive !== undefined) updateData.isActive = validatedData.isActive;
-  if (validatedData.usageLimit !== undefined) updateData.usageLimit = validatedData.usageLimit;
-
-  const campaign = await prisma.campaign.updateMany({
-    where: {
-      id,
-      restaurantId: session.restaurantId,
-    },
-    data: updateData,
-  });
-
-  if (campaign.count === 0) {
-    throw new NotFoundError("Kampanya bulunamadı");
-  }
-
-  const updatedCampaign = await prisma.campaign.findUnique({
-    where: { id },
-  });
-
-  logger.info("Campaign updated", { campaignId: id, restaurantId: session.restaurantId });
-  return successResponse(updatedCampaign, "Kampanya başarıyla güncellendi");
 }
 
-async function DELETEHandler(
-  req: NextRequest,
+export async function PUT(
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getAdminSession();
-  if (!session) {
-    return unauthorizedResponse("Unauthorized");
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const data = await request.json();
+
+    // Verify campaign belongs to restaurant
+    const existingCampaign = await prisma.campaign.findFirst({
+      where: {
+        id,
+        restaurantId: session.restaurantId,
+      },
+    });
+
+    if (!existingCampaign) {
+      return NextResponse.json(
+        { error: "Kampanya bulunamadı" },
+        { status: 404 }
+      );
+    }
+
+    // Check if code is being changed and if it's unique
+    if (data.code && data.code.toUpperCase() !== existingCampaign.code) {
+      const codeExists = await prisma.campaign.findFirst({
+        where: {
+          code: data.code.toUpperCase(),
+          id: { not: id },
+        },
+      });
+
+      if (codeExists) {
+        return NextResponse.json(
+          { error: "Bu kupon kodu zaten kullanılıyor" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const campaign = await prisma.campaign.updateMany({
+      where: {
+        id,
+        restaurantId: session.restaurantId,
+      },
+      data: {
+        name: data.name,
+        code: data.code ? data.code.toUpperCase() : undefined,
+        type: data.type,
+        value: data.value,
+        minAmount: data.minAmount || null,
+        maxDiscount: data.maxDiscount || null,
+        startDate: data.startDate ? new Date(data.startDate) : undefined,
+        endDate: data.endDate ? new Date(data.endDate) : undefined,
+        isActive: data.isActive ?? true,
+        usageLimit: data.usageLimit || null,
+      },
+    });
+
+    if (campaign.count === 0) {
+      return NextResponse.json(
+        { error: "Kampanya bulunamadı" },
+        { status: 404 }
+      );
+    }
+
+    const updatedCampaign = await prisma.campaign.findUnique({
+      where: { id },
+    });
+
+    return NextResponse.json(updatedCampaign);
+  } catch (error: any) {
+    console.error("Error updating campaign:", error);
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Bu kupon kodu zaten kullanılıyor" },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: error.message || "Kampanya güncellenirken bir hata oluştu" },
+      { status: 500 }
+    );
   }
-
-  const { id } = await params;
-  
-  const campaign = await prisma.campaign.findFirst({
-    where: {
-      id,
-      restaurantId: session.restaurantId,
-    },
-  });
-
-  if (!campaign) {
-    return notFoundResponse("Kampanya bulunamadı");
-  }
-
-  await prisma.campaign.deleteMany({
-    where: {
-      id,
-      restaurantId: session.restaurantId,
-    },
-  });
-
-  logger.info("Campaign deleted", { campaignId: id, restaurantId: session.restaurantId });
-  return successResponse({ success: true }, "Kampanya başarıyla silindi");
 }
 
-export const GET = createApiHandler(GETHandler, {
-  requireAuth: true,
-  rateLimit: authRateLimit,
-});
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-export const PUT = createApiHandler(PUTHandler, {
-  requireAuth: true,
-  validate: { body: updateCampaignSchema },
-  rateLimit: authRateLimit,
-});
+    const { id } = await params;
+    await prisma.campaign.deleteMany({
+      where: {
+        id,
+        restaurantId: session.restaurantId,
+      },
+    });
 
-export const DELETE = createApiHandler(DELETEHandler, {
-  requireAuth: true,
-  rateLimit: authRateLimit,
-});
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting campaign:", error);
+    return NextResponse.json(
+      { error: "Kampanya silinirken bir hata oluştu" },
+      { status: 500 }
+    );
+  }
+}

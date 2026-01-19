@@ -1,70 +1,66 @@
-import { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/auth";
-import { createApiHandler, getValidatedBody } from "@/lib/api-handler";
-import { successResponse, errorResponse, unauthorizedResponse, internalErrorResponse } from "@/lib/api-response";
-import { createCampaignSchema } from "@/lib/validation";
-import { logger } from "@/lib/logger";
-import { authRateLimit } from "@/middleware/rate-limit";
-import { ConflictError } from "@/lib/errors";
 
-async function GETHandler(req: NextRequest) {
-  const session = await getAdminSession();
-  if (!session) {
-    return unauthorizedResponse("Unauthorized");
+export async function GET() {
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const campaigns = await prisma.campaign.findMany({
+      where: { restaurantId: session.restaurantId },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json(campaigns);
+  } catch (error) {
+    console.error("Error fetching campaigns:", error);
+    return NextResponse.json(
+      { error: "Kampanyalar yüklenirken bir hata oluştu" },
+      { status: 500 }
+    );
   }
-
-  const campaigns = await prisma.campaign.findMany({
-    where: { restaurantId: session.restaurantId },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return successResponse(campaigns);
 }
 
-async function POSTHandler(req: NextRequest) {
-  const session = await getAdminSession();
-  if (!session) {
-    return unauthorizedResponse("Unauthorized");
-  }
-
-  const validatedData = getValidatedBody(req);
-
+export async function POST(request: Request) {
   try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const data = await request.json();
+
     const campaign = await prisma.campaign.create({
       data: {
-        name: validatedData.name,
-        code: validatedData.code.toUpperCase(),
-        type: validatedData.type,
-        value: validatedData.value,
-        minAmount: validatedData.minAmount || null,
-        maxDiscount: validatedData.maxDiscount || null,
-        startDate: new Date(validatedData.startDate),
-        endDate: new Date(validatedData.endDate),
-        isActive: validatedData.isActive ?? true,
-        usageLimit: validatedData.usageLimit || null,
+        name: data.name,
+        code: data.code.toUpperCase(),
+        type: data.type,
+        value: data.value,
+        minAmount: data.minAmount || null,
+        maxDiscount: data.maxDiscount || null,
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate),
+        isActive: data.isActive ?? true,
+        usageLimit: data.usageLimit || null,
         restaurantId: session.restaurantId,
       },
     });
 
-    logger.info("Campaign created", { campaignId: campaign.id, restaurantId: session.restaurantId });
-    return successResponse(campaign, "Kampanya başarıyla oluşturuldu", 201);
+    return NextResponse.json(campaign, { status: 201 });
   } catch (error: any) {
-    logger.error("Error creating campaign", error);
+    console.error("Error creating campaign:", error);
     if (error.code === "P2002") {
-      throw new ConflictError("Bu kupon kodu zaten kullanılıyor");
+      return NextResponse.json(
+        { error: "Bu kupon kodu zaten kullanılıyor" },
+        { status: 400 }
+      );
     }
-    throw error;
+    return NextResponse.json(
+      { error: error.message || "Kampanya oluşturulurken bir hata oluştu" },
+      { status: 500 }
+    );
   }
 }
-
-export const GET = createApiHandler(GETHandler, {
-  requireAuth: true,
-  rateLimit: authRateLimit,
-});
-
-export const POST = createApiHandler(POSTHandler, {
-  requireAuth: true,
-  validate: { body: createCampaignSchema },
-  rateLimit: authRateLimit,
-});

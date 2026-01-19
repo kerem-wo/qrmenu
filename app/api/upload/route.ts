@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Simple image upload handler
+// In production, use a proper service like Cloudinary, AWS S3, etc.
 
 export async function POST(request: Request) {
   try {
@@ -28,81 +23,29 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "Dosya boyutu 10MB'dan küçük olmalıdır" },
+        { error: "Dosya boyutu 5MB'dan küçük olmalıdır" },
         { status: 400 }
       );
     }
 
-    // Check if Cloudinary is configured
-    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
-      // Fallback to base64 if Cloudinary is not configured
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      const base64 = buffer.toString("base64");
-      const dataUrl = `data:${file.type};base64,${base64}`;
-
-      return NextResponse.json({
-        url: dataUrl,
-        message: "Dosya yüklendi (base64 formatında - Cloudinary yapılandırılmamış)",
-      });
-    }
-
-    // Convert file to buffer
+    // Convert to base64 for simple storage
+    // In production, upload to cloud storage
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const base64String = buffer.toString("base64");
-    const dataUri = `data:${file.type};base64,${base64String}`;
-
-    // Upload to Cloudinary
-    const uploadResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload(
-        dataUri,
-        {
-          folder: "qr-menu",
-          resource_type: "auto",
-          transformation: [
-            { width: 800, height: 800, crop: "limit", quality: "auto" },
-          ],
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-    }) as any;
+    const base64 = buffer.toString("base64");
+    const dataUrl = `data:${file.type};base64,${base64}`;
 
     return NextResponse.json({
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id,
-      message: "Dosya Cloudinary'ye yüklendi",
+      url: dataUrl,
+      message: "Dosya yüklendi (base64 formatında)",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error uploading file:", error);
-    
-    // Fallback to base64 on error
-    try {
-      const formData = await request.formData();
-      const file = formData.get("file") as File;
-      if (file) {
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const base64 = buffer.toString("base64");
-        const dataUrl = `data:${file.type};base64,${base64}`;
-
-        return NextResponse.json({
-          url: dataUrl,
-          message: "Dosya yüklendi (base64 formatında - Cloudinary hatası)",
-        });
-      }
-    } catch (fallbackError) {
-      console.error("Fallback upload error:", fallbackError);
-    }
-
     return NextResponse.json(
-      { error: error?.message || "Dosya yüklenirken bir hata oluştu" },
+      { error: "Dosya yüklenirken bir hata oluştu" },
       { status: 500 }
     );
   }

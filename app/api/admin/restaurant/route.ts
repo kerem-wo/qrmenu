@@ -52,7 +52,6 @@ export async function PUT(request: Request) {
         description: data.description || null,
         logo: data.logo || null,
         theme: data.theme || "default",
-        language: data.language || "tr",
       },
     });
 

@@ -49,8 +49,16 @@ export function OrderNotifications() {
               newOrders.forEach((order: Order) => {
                 toast.success(`Yeni sipariş: #${order.orderNumber}`, {
                   duration: 5000,
-                  onClick: () => router.push("/admin/orders"),
                 });
+                // Navigate on click using a wrapper
+                setTimeout(() => {
+                  const toastElement = document.querySelector('[data-testid="toast"]');
+                  if (toastElement) {
+                    toastElement.addEventListener('click', () => {
+                      router.push("/admin/orders");
+                    });
+                  }
+                }, 100);
               });
             }
           }

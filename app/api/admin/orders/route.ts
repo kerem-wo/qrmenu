@@ -24,16 +24,6 @@ export async function GET() {
                 name: true,
               },
             },
-            variants: {
-              include: {
-                variant: {
-                  select: {
-                    name: true,
-                    price: true,
-                  },
-                },
-              },
-            },
           },
         },
       },
