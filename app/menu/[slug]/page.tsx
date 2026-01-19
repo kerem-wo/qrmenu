@@ -160,6 +160,15 @@ export default function MenuPage() {
   );
   const total = Math.max(0, subtotal - discount);
 
+  const themeClasses: Record<string, string> = {
+    default: "bg-slate-50",
+    modern: "bg-gradient-to-br from-slate-50 to-slate-100",
+    minimal: "bg-white",
+    elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
+  };
+
+  const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
+
   const applyCoupon = async () => {
     if (!couponCode.trim()) {
       setDiscount(0);
@@ -291,7 +300,7 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className={`min-h-screen flex items-center justify-center ${themeClass}`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto"></div>
           <p className="mt-4 text-slate-600">Menü yükleniyor...</p>
@@ -299,15 +308,6 @@ export default function MenuPage() {
       </div>
     );
   }
-
-  const themeClasses: Record<string, string> = {
-    default: "bg-slate-50",
-    modern: "bg-gradient-to-br from-slate-50 to-slate-100",
-    minimal: "bg-white",
-    elegant: "bg-gradient-to-br from-gray-50 to-gray-100",
-  };
-
-  const themeClass = themeClasses[restaurantTheme] || themeClasses.default;
 
   return (
     <div className={`min-h-screen ${themeClass}`}>
