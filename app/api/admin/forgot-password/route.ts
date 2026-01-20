@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { randomBytes } from "crypto";
 
 export const dynamic = 'force-dynamic';
+
+// Simple token generator without crypto dependency issues
+function generateResetToken(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 64; i++) {
+    token += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return token;
+}
 
 export async function POST(request: Request) {
   try {
@@ -17,6 +26,10 @@ export async function POST(request: Request) {
 
     const admin = await prisma.admin.findUnique({
       where: { email },
+      select: {
+        id: true,
+        email: true,
+      },
     });
 
     // Güvenlik için: Admin bulunmasa bile başarılı mesajı döndür
@@ -27,18 +40,20 @@ export async function POST(request: Request) {
       });
     }
 
-    // Reset token oluştur - unique constraint için önceki token'ı temizle
+    // Reset token oluştur
     let resetToken: string;
     let attempts = 0;
-    const maxAttempts = 5;
+    const maxAttempts = 10;
 
+    // Unique token oluştur
     do {
-      resetToken = randomBytes(32).toString("hex");
+      resetToken = generateResetToken();
       attempts++;
       
       // Mevcut token'ı kontrol et
       const existingAdmin = await prisma.admin.findUnique({
         where: { resetToken },
+        select: { id: true },
       });
       
       if (!existingAdmin) {
@@ -53,36 +68,21 @@ export async function POST(request: Request) {
     const resetTokenExpiry = new Date();
     resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // 1 saat geçerli
 
-    try {
-      await prisma.admin.update({
-        where: { id: admin.id },
-        data: {
-          resetToken,
-          resetTokenExpiry,
-        },
-      });
-    } catch (updateError: any) {
-      console.error("Error updating admin reset token:", updateError);
-      // Unique constraint hatası olabilir, tekrar dene
-      if (updateError.code === 'P2002' && attempts < maxAttempts) {
-        // Recursive call yerine basit bir retry
-        const newToken = randomBytes(32).toString("hex");
-        await prisma.admin.update({
-          where: { id: admin.id },
-          data: {
-            resetToken: newToken,
-            resetTokenExpiry,
-          },
-        });
-        resetToken = newToken;
-      } else {
-        throw updateError;
-      }
-    }
+    // Update admin with reset token
+    await prisma.admin.update({
+      where: { id: admin.id },
+      data: {
+        resetToken,
+        resetTokenExpiry,
+      },
+    });
 
     // Production'da burada email gönderilir
     // Şimdilik token'ı response'da döndürüyoruz (güvenlik için sadece development'ta)
-    const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/admin/reset-password/${resetToken}`;
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    const resetUrl = `${baseUrl}/admin/reset-password/${resetToken}`;
 
     return NextResponse.json({
       success: true,
@@ -99,12 +99,16 @@ export async function POST(request: Request) {
     console.error("Error details:", {
       message: error?.message,
       code: error?.code,
-      stack: error?.stack,
+      name: error?.name,
+      stack: process.env.NODE_ENV === "development" ? error?.stack : undefined,
     });
     return NextResponse.json(
       { 
         error: error?.message || "Bir hata oluştu",
-        details: process.env.NODE_ENV === "development" ? error?.stack : undefined,
+        ...(process.env.NODE_ENV === "development" && {
+          details: error?.stack,
+          code: error?.code,
+        }),
       },
       { status: 500 }
     );
