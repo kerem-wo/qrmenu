@@ -340,16 +340,16 @@ export default function MenuPage() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Close Button - Slightly Inside, Protruding */}
-        {isMobileMenuOpen && (
-          <button
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="absolute -right-6 top-1/2 -translate-y-1/2 z-[55] p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 border-2 border-slate-200"
-            aria-label="Menüyü kapat"
-          >
-            <X className="w-6 h-6 text-slate-700" />
-          </button>
-        )}
+        {/* Close Button - Slightly Inside, Protruding with Rotate Animation */}
+        <button
+          onClick={() => setIsMobileMenuOpen(false)}
+          className={`absolute -right-6 top-1/2 -translate-y-1/2 z-[55] p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 border-2 border-slate-200 ${
+            isMobileMenuOpen ? 'animate-rotate-in' : 'animate-rotate-out opacity-0 pointer-events-none'
+          }`}
+          aria-label="Menüyü kapat"
+        >
+          <X className="w-6 h-6 text-slate-700" />
+        </button>
 
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
