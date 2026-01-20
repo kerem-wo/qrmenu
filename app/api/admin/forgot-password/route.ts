@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendEmail, generatePasswordResetEmail } from "@/lib/email";
 
 export const dynamic = 'force-dynamic';
 
@@ -24,12 +25,19 @@ export async function POST(request: Request) {
       );
     }
 
-    // Admin'i bul - select kullanarak sadece gerekli alanları al
+    // Admin'i bul - restaurant bilgisi ile birlikte
     const admin = await prisma.admin.findUnique({
       where: { email },
       select: {
         id: true,
         email: true,
+        restaurant: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+          },
+        },
       },
     });
 
@@ -118,21 +126,45 @@ export async function POST(request: Request) {
       }
     }
 
-    // Production'da burada email gönderilir
-    // Şimdilik token'ı response'da döndürüyoruz (güvenlik için sadece development'ta)
+    // Email gönderimi
     const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000');
     const resetUrl = `${baseUrl}/admin/reset-password/${resetToken}`;
+    
+    const restaurantName = admin.restaurant?.name || 'Restoranınız';
+    const emailHtml = generatePasswordResetEmail(resetUrl, restaurantName);
+    
+    // Email gönder
+    const emailResult = await sendEmail({
+      to: admin.email,
+      subject: `${restaurantName} - Şifre Sıfırlama`,
+      html: emailHtml,
+    });
+
+    if (!emailResult.success) {
+      console.error('Email gönderilemedi:', emailResult.error);
+      // Email gönderilemese bile token oluşturuldu, kullanıcıya bilgi ver
+      return NextResponse.json({
+        success: true,
+        message: "Şifre sıfırlama linki oluşturuldu. Email gönderiminde bir sorun oluştu, lütfen destek ekibiyle iletişime geçin.",
+        // Development için token'ı gösteriyoruz
+        ...(process.env.NODE_ENV === "development" && {
+          resetToken,
+          resetUrl,
+          note: "Development modunda token gösteriliyor.",
+        }),
+      });
+    }
 
     return NextResponse.json({
       success: true,
-      message: "Şifre sıfırlama linki oluşturuldu.",
+      message: "Şifre sıfırlama linki e-posta adresinize gönderildi. Lütfen e-posta kutunuzu kontrol edin.",
       // Development için token'ı gösteriyoruz
       ...(process.env.NODE_ENV === "development" && {
         resetToken,
         resetUrl,
-        note: "Development modunda token gösteriliyor. Production'da email gönderilir.",
+        note: "Development modunda token gösteriliyor. Production'da sadece email gönderilir.",
       }),
     });
   } catch (error: any) {

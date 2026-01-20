@@ -31,17 +31,17 @@ export default function ForgotPasswordPage() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(data.message || "Şifre sıfırlama linki gönderildi!");
+        toast.success(data.message || "Şifre sıfırlama linki e-posta adresinize gönderildi!");
         
         // Development modunda token gösteriliyor
-        if (data.resetToken && data.resetUrl) {
+        if (data.resetToken && data.resetUrl && process.env.NODE_ENV === "development") {
           setResetToken(data.resetToken);
           setResetUrl(data.resetUrl);
         } else {
           // Production'da email gönderilir, kullanıcıya bilgi ver
           setTimeout(() => {
             router.push("/admin/login");
-          }, 2000);
+          }, 3000);
         }
       } else {
         toast.error(data.error || "Bir hata oluştu!");

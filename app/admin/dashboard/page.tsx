@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Package, ShoppingCart, Users, Settings } from "lucide-react";
+import { Plus, Package, ShoppingCart, Users, Settings, ExternalLink, Copy, QrCode } from "lucide-react";
 import { checkAuth, clearSessionFromStorage } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
@@ -29,6 +29,13 @@ export default function AdminDashboard() {
       if (!session) {
         router.push("/admin/login");
         return;
+      }
+
+      // Load restaurant info
+      const restaurantRes = await fetch("/api/admin/restaurant");
+      if (restaurantRes.ok) {
+        const restaurantData = await restaurantRes.json();
+        setRestaurant(restaurantData);
       }
 
       // Load stats
@@ -79,7 +86,16 @@ export default function AdminDashboard() {
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-slate-900">Admin Panel</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {restaurant?.name || 'Admin Panel'}
+            </h1>
+            {restaurant?.slug && (
+              <p className="text-sm text-slate-600 mt-1">
+                Menü Linki: <span className="font-mono text-slate-900">/menu/{restaurant.slug}</span>
+              </p>
+            )}
+          </div>
           <div className="flex gap-3">
             <Button variant="outline" asChild className="border-slate-300">
               <Link href="/admin/settings">
@@ -137,6 +153,97 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Restaurant Links Section */}
+        {restaurant && (
+          <Card className="card-modern mb-8">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-slate-900">Restoran Linkleri</CardTitle>
+              <CardDescription className="text-slate-600">
+                Müşterileriniz bu linkleri kullanarak menünüze erişebilir
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Menü Linki */}
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-slate-900 text-sm">Menü Linki</h3>
+                    <ExternalLink className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={typeof window !== "undefined" ? `${window.location.origin}/menu/${restaurant.slug}` : `/menu/${restaurant.slug}`}
+                      readOnly
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm font-mono focus:outline-none"
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const menuUrl = typeof window !== "undefined" ? `${window.location.origin}/menu/${restaurant.slug}` : `/menu/${restaurant.slug}`;
+                        navigator.clipboard.writeText(menuUrl);
+                        toast.success("Menü linki kopyalandı!");
+                      }}
+                      className="border-slate-300"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      asChild
+                      className="border-slate-300"
+                    >
+                      <Link href={`/menu/${restaurant.slug}`} target="_blank">
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Admin Panel Linki */}
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-slate-900 text-sm">Admin Panel Linki</h3>
+                    <Settings className="w-4 h-4 text-slate-400" />
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={typeof window !== "undefined" ? `${window.location.origin}/admin/login` : `/admin/login`}
+                      readOnly
+                      className="flex-1 px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm font-mono focus:outline-none"
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const adminUrl = typeof window !== "undefined" ? `${window.location.origin}/admin/login` : `/admin/login`;
+                        navigator.clipboard.writeText(adminUrl);
+                        toast.success("Admin panel linki kopyalandı!");
+                      }}
+                      className="border-slate-300"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Kod Hızlı Erişim */}
+              <div className="flex gap-3 pt-2">
+                <Button asChild variant="outline" className="flex-1 border-slate-300">
+                  <Link href="/admin/qr">
+                    <QrCode className="w-4 h-4 mr-2" />
+                    QR Kod Oluştur ve İndir
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
