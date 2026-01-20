@@ -340,57 +340,124 @@ export default function MenuPage() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Close Button - Top Right, Half Outside */}
-        <button
-          onClick={() => setIsMobileMenuOpen(false)}
-          className="absolute -right-12 top-1/2 -translate-y-1/2 z-[55] p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 border-2 border-slate-200"
-          aria-label="Menüyü kapat"
-        >
-          <X className="w-6 h-6 text-slate-700" />
-        </button>
+        {/* Close Button - Slightly Inside, Protruding */}
+        {isMobileMenuOpen && (
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute -right-6 top-1/2 -translate-y-1/2 z-[55] p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 border-2 border-slate-200"
+            aria-label="Menüyü kapat"
+          >
+            <X className="w-6 h-6 text-slate-700" />
+          </button>
+        )}
 
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
           <div className="p-6 border-b border-slate-200">
-            <h2 className="text-xl font-bold text-slate-900">Kategoriler</h2>
+            <h2 className="text-xl font-bold text-slate-900">Filtreler</h2>
           </div>
 
-          {/* Category List */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <button
-              onClick={() => {
-                setSelectedCategory(null);
-                setIsMobileMenuOpen(false);
-              }}
-              className={`w-full text-left px-4 py-3 rounded-xl mb-2 transition-all ${
-                selectedCategory === null
-                  ? "bg-slate-900 text-white font-semibold"
-                  : "bg-slate-50 text-slate-700 hover:bg-slate-100"
-              }`}
-            >
-              Tüm Kategoriler
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => {
-                  setSelectedCategory(category.id);
-                  setIsMobileMenuOpen(false);
-                }}
-                className={`w-full text-left px-4 py-3 rounded-xl mb-2 transition-all ${
-                  selectedCategory === category.id
-                    ? "bg-slate-900 text-white font-semibold"
-                    : "bg-slate-50 text-slate-700 hover:bg-slate-100"
-                }`}
-              >
-                <div className="font-medium">{category.name}</div>
-                {category.description && (
-                  <div className="text-xs mt-1 opacity-75">
-                    {category.description}
-                  </div>
-                )}
-              </button>
-            ))}
+          {/* Filters Content */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Kategoriler */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Kategoriler</h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
+                    selectedCategory === null
+                      ? "bg-slate-900 text-white font-semibold"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  Tüm Kategoriler
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setSelectedCategory(category.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
+                      selectedCategory === category.id
+                        ? "bg-slate-900 text-white font-semibold"
+                        : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                    }`}
+                  >
+                    <div className="font-medium">{category.name}</div>
+                    {category.description && (
+                      <div className="text-xs mt-1 opacity-75">
+                        {category.description}
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Fiyat Filtresi */}
+            <div>
+              <h3 className="text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Fiyat Aralığı</h3>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setPriceFilter("all");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
+                    priceFilter === "all"
+                      ? "bg-slate-900 text-white font-semibold"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  Tümü
+                </button>
+                <button
+                  onClick={() => {
+                    setPriceFilter("low");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
+                    priceFilter === "low"
+                      ? "bg-slate-900 text-white font-semibold"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  0 - 50 ₺
+                </button>
+                <button
+                  onClick={() => {
+                    setPriceFilter("medium");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
+                    priceFilter === "medium"
+                      ? "bg-slate-900 text-white font-semibold"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  50 - 150 ₺
+                </button>
+                <button
+                  onClick={() => {
+                    setPriceFilter("high");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
+                    priceFilter === "high"
+                      ? "bg-slate-900 text-white font-semibold"
+                      : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  150+ ₺
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -429,10 +496,10 @@ export default function MenuPage() {
                 )}
               </div>
 
-              {/* Filtreler */}
-              <div className="flex flex-wrap gap-4">
-                {/* Kategori Filtresi - Desktop Only */}
-                <div className="hidden md:flex items-center gap-3">
+              {/* Filtreler - Desktop Only */}
+              <div className="hidden md:flex flex-wrap gap-4">
+                {/* Kategori Filtresi */}
+                <div className="flex items-center gap-3">
                   <Filter className="w-5 h-5 text-slate-500" />
                   <span className="text-sm font-medium text-slate-700">Kategori:</span>
                   <select
@@ -447,7 +514,7 @@ export default function MenuPage() {
                   </select>
                 </div>
 
-
+                {/* Fiyat Filtresi */}
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-slate-700">Fiyat:</span>
                   <select
