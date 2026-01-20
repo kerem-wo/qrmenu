@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import crypto from "crypto";
+import { randomBytes } from "crypto";
 
 export const dynamic = 'force-dynamic';
 
@@ -27,18 +27,58 @@ export async function POST(request: Request) {
       });
     }
 
-    // Reset token oluştur
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // Reset token oluştur - unique constraint için önceki token'ı temizle
+    let resetToken: string;
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    do {
+      resetToken = randomBytes(32).toString("hex");
+      attempts++;
+      
+      // Mevcut token'ı kontrol et
+      const existingAdmin = await prisma.admin.findUnique({
+        where: { resetToken },
+      });
+      
+      if (!existingAdmin) {
+        break; // Token benzersiz, devam et
+      }
+      
+      if (attempts >= maxAttempts) {
+        throw new Error("Token oluşturulamadı, lütfen tekrar deneyin");
+      }
+    } while (attempts < maxAttempts);
+
     const resetTokenExpiry = new Date();
     resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // 1 saat geçerli
 
-    await prisma.admin.update({
-      where: { id: admin.id },
-      data: {
-        resetToken,
-        resetTokenExpiry,
-      },
-    });
+    try {
+      await prisma.admin.update({
+        where: { id: admin.id },
+        data: {
+          resetToken,
+          resetTokenExpiry,
+        },
+      });
+    } catch (updateError: any) {
+      console.error("Error updating admin reset token:", updateError);
+      // Unique constraint hatası olabilir, tekrar dene
+      if (updateError.code === 'P2002' && attempts < maxAttempts) {
+        // Recursive call yerine basit bir retry
+        const newToken = randomBytes(32).toString("hex");
+        await prisma.admin.update({
+          where: { id: admin.id },
+          data: {
+            resetToken: newToken,
+            resetTokenExpiry,
+          },
+        });
+        resetToken = newToken;
+      } else {
+        throw updateError;
+      }
+    }
 
     // Production'da burada email gönderilir
     // Şimdilik token'ı response'da döndürüyoruz (güvenlik için sadece development'ta)
@@ -56,8 +96,16 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error("Forgot password error:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+    });
     return NextResponse.json(
-      { error: "Bir hata oluştu" },
+      { 
+        error: error?.message || "Bir hata oluştu",
+        details: process.env.NODE_ENV === "development" ? error?.stack : undefined,
+      },
       { status: 500 }
     );
   }
