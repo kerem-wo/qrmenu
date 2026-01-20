@@ -479,12 +479,12 @@ export default function MenuPage() {
               {/* Arama */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500 z-10 pointer-events-none" />
-                <Input
+                <input
                   type="text"
                   placeholder="Ürün ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-12 input-soft text-base"
+                  className="h-12 w-full rounded-xl border border-slate-300/60 bg-white/90 text-base focus:outline-none focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200 transition-all"
                   style={{ 
                     paddingLeft: '3rem', 
                     paddingRight: searchQuery ? '3rem' : '1rem',
