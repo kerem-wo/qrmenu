@@ -484,8 +484,8 @@ export default function MenuPage() {
                   placeholder="Ürün ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`h-12 input-soft text-base ${searchQuery ? 'pr-11' : 'pr-4'}`}
-                  style={{ paddingLeft: '2.75rem' }}
+                  className={`h-12 input-soft text-base !px-0 ${searchQuery ? 'pr-11' : 'pr-4'}`}
+                  style={{ paddingLeft: '2.75rem', paddingRight: searchQuery ? '2.75rem' : '1rem' }}
                 />
                 {searchQuery && (
                   <button
