@@ -44,18 +44,17 @@ export async function POST(request: Request) {
     // Reset token oluştur - timestamp ile benzersizlik garantisi
     const timestamp = Date.now().toString(36);
     const randomPart = Math.random().toString(36).substring(2, 15);
-    const resetToken = `${timestamp}-${randomPart}-${generateResetToken().substring(0, 32)}`;
+    let resetToken = `${timestamp}-${randomPart}-${generateResetToken().substring(0, 32)}`;
     
     const resetTokenExpiry = new Date();
     resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // 1 saat geçerli
 
     // Update admin with reset token - try-catch ile güvenli update
-    let finalToken = resetToken;
     try {
       await prisma.admin.update({
         where: { id: admin.id },
         data: {
-          resetToken: finalToken,
+          resetToken,
           resetTokenExpiry,
         },
       });
@@ -73,11 +72,13 @@ export async function POST(request: Request) {
         });
         
         // Yeni token ile tekrar dene
-        finalToken = `${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 15)}-${generateResetToken().substring(0, 32)}`;
+        const newTimestamp = Date.now().toString(36);
+        const newRandomPart = Math.random().toString(36).substring(2, 15);
+        resetToken = `${newTimestamp}-${newRandomPart}-${generateResetToken().substring(0, 32)}`;
         await prisma.admin.update({
           where: { id: admin.id },
           data: {
-            resetToken: finalToken,
+            resetToken,
             resetTokenExpiry,
           },
         });
@@ -91,14 +92,14 @@ export async function POST(request: Request) {
     const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000');
-    const resetUrl = `${baseUrl}/admin/reset-password/${finalToken}`;
+    const resetUrl = `${baseUrl}/admin/reset-password/${resetToken}`;
 
     return NextResponse.json({
       success: true,
       message: "Şifre sıfırlama linki oluşturuldu.",
       // Development için token'ı gösteriyoruz
       ...(process.env.NODE_ENV === "development" && {
-        resetToken: finalToken,
+        resetToken,
         resetUrl,
         note: "Development modunda token gösteriliyor. Production'da email gönderilir.",
       }),
