@@ -298,13 +298,15 @@ export default function MenuPage() {
         <div className="absolute top-3/4 left-1/2 w-[100px] h-[100px] bg-slate-200/35 rounded-2xl mix-blend-multiply filter blur-lg opacity-40 rotate-12 animate-drift" style={{ animationDelay: '5s' }}></div>
       </div>
       {/* Hamburger Menu Button - Fixed Top Left - Mobile Only */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="fixed top-4 left-4 z-[60] md:hidden p-3 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
-        aria-label="Menüyü aç"
-      >
-        <Menu className="w-6 h-6 text-slate-700" />
-      </button>
+      {!isMobileMenuOpen && (
+        <button
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="fixed top-4 left-4 z-[60] md:hidden p-3 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
+          aria-label="Menüyü aç"
+        >
+          <Menu className="w-6 h-6 text-slate-700" />
+        </button>
+      )}
 
       {/* Header */}
       <header className="glass-soft border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
@@ -338,17 +340,19 @@ export default function MenuPage() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
+        {/* Close Button - Top Right, Half Outside */}
+        <button
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="absolute -right-12 top-1/2 -translate-y-1/2 z-[55] p-3 bg-white rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 border-2 border-slate-200"
+          aria-label="Menüyü kapat"
+        >
+          <X className="w-6 h-6 text-slate-700" />
+        </button>
+
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200">
+          <div className="p-6 border-b border-slate-200">
             <h2 className="text-xl font-bold text-slate-900">Kategoriler</h2>
-            <button
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
-              aria-label="Menüyü kapat"
-            >
-              <X className="w-6 h-6 text-slate-700" />
-            </button>
           </div>
 
           {/* Category List */}
@@ -443,18 +447,6 @@ export default function MenuPage() {
                   </select>
                 </div>
 
-                {/* Mobile Category Button */}
-                <button
-                  onClick={() => setIsMobileMenuOpen(true)}
-                  className="md:hidden flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                >
-                  <Menu className="w-5 h-5 text-slate-700" />
-                  <span className="text-sm font-medium text-slate-700">
-                    {selectedCategory 
-                      ? categories.find(c => c.id === selectedCategory)?.name || "Kategori"
-                      : "Kategoriler"}
-                  </span>
-                </button>
 
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-medium text-slate-700">Fiyat:</span>
