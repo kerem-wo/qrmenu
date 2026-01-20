@@ -64,3 +64,40 @@ export async function PUT(request: Request) {
     );
   }
 }
+
+export async function DELETE() {
+  try {
+    const session = await getAdminSession();
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    // Restaurant'ı sil (Cascade delete ile admin, categories, products, orders, campaigns otomatik silinir)
+    await prisma.restaurant.delete({
+      where: { id: session.restaurantId },
+    });
+
+    return NextResponse.json({ 
+      success: true,
+      message: "Restoran hesabı başarıyla silindi"
+    });
+  } catch (error: any) {
+    console.error("Error deleting restaurant:", error);
+    
+    // Restaurant bulunamadı hatası
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: "Restoran bulunamadı" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Restoran silinirken bir hata oluştu" },
+      { status: 500 }
+    );
+  }
+}
