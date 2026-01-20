@@ -86,6 +86,41 @@ export default function SettingsPage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+
+    try {
+      const res = await fetch("/api/admin/restaurant", {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        toast.success("Hesabınız başarıyla silindi");
+        clearSessionFromStorage();
+        
+        // Logout API'sini de çağır
+        try {
+          await fetch("/api/admin/logout", { method: "POST" });
+        } catch (error) {
+          // Logout hatası önemli değil, session zaten temizlendi
+        }
+
+        // Ana sayfaya yönlendir
+        setTimeout(() => {
+          router.push("/");
+        }, 1500);
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Hesap silinirken bir hata oluştu!");
+        setDeleting(false);
+      }
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      toast.error("Bir hata oluştu! Lütfen tekrar deneyin.");
+      setDeleting(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
