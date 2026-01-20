@@ -478,18 +478,19 @@ export default function MenuPage() {
             <div className="glass-soft p-6 rounded-2xl space-y-4 shadow-lg animate-fade-in-up">
               {/* Arama */}
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500 z-10 pointer-events-none" />
                 <Input
                   type="text"
                   placeholder="Ürün ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 h-12 input-soft text-base"
+                  className={`h-12 input-soft text-base ${searchQuery ? 'pl-12 pr-12' : 'pl-12 pr-4'}`}
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 hover:scale-110 transition-transform"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 hover:scale-110 transition-transform p-1"
+                    aria-label="Aramayı temizle"
                   >
                     <X className="w-5 h-5 text-slate-500" />
                   </button>
