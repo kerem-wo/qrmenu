@@ -14,12 +14,20 @@ export default function Home() {
               </div>
               <span className="text-xl font-bold text-slate-900">QR Menü</span>
             </div>
-            <Link
-              href="/admin/login"
-              className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
-            >
-              Giriş Yap
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link
+                href="/restaurant/register"
+                className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
+              >
+                Kayıt Ol
+              </Link>
+              <Link
+                href="/admin/login"
+                className="text-slate-600 hover:text-slate-900 font-medium transition-colors"
+              >
+                Giriş Yap
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -42,16 +50,22 @@ export default function Home() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/admin/login"
+              href="/restaurant/register"
               className="btn-primary inline-flex items-center justify-center"
             >
-              Admin Paneline Giriş
+              Ücretsiz Kayıt Ol
+            </Link>
+            <Link
+              href="/admin/login"
+              className="btn-secondary inline-flex items-center justify-center"
+            >
+              Giriş Yap
             </Link>
             <Link
               href="/menu/demo-restoran"
               className="btn-secondary inline-flex items-center justify-center"
             >
-              Demo Menüyü Görüntüle
+              Demo Menü
             </Link>
           </div>
         </div>

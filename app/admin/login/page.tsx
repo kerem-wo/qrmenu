@@ -111,13 +111,22 @@ export default function AdminLogin() {
             >
               {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
             </Button>
-            <div className="text-center pt-2">
+            <div className="text-center pt-2 space-y-2">
               <Link 
                 href="/admin/forgot-password" 
-                className="text-sm text-slate-600 hover:text-slate-900 underline"
+                className="text-sm text-slate-600 hover:text-slate-900 underline block"
               >
                 Şifremi unuttum
               </Link>
+              <div className="text-sm text-slate-600">
+                Hesabınız yok mu?{" "}
+                <Link 
+                  href="/restaurant/register" 
+                  className="text-slate-900 font-medium hover:underline"
+                >
+                  Restoran Kaydı Oluştur
+                </Link>
+              </div>
             </div>
           </form>
         </CardContent>
