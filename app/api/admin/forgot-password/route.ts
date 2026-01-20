@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Admin'i bul - select kullanarak sadece gerekli alanları al
     const admin = await prisma.admin.findUnique({
       where: { email },
       select: {
@@ -40,56 +41,64 @@ export async function POST(request: Request) {
       });
     }
 
-    // Reset token oluştur
-    let resetToken: string;
-    let attempts = 0;
-    const maxAttempts = 10;
-
-    // Unique token oluştur
-    do {
-      resetToken = generateResetToken();
-      attempts++;
-      
-      // Mevcut token'ı kontrol et
-      const existingAdmin = await prisma.admin.findUnique({
-        where: { resetToken },
-        select: { id: true },
-      });
-      
-      if (!existingAdmin) {
-        break; // Token benzersiz, devam et
-      }
-      
-      if (attempts >= maxAttempts) {
-        throw new Error("Token oluşturulamadı, lütfen tekrar deneyin");
-      }
-    } while (attempts < maxAttempts);
-
+    // Reset token oluştur - timestamp ile benzersizlik garantisi
+    const timestamp = Date.now().toString(36);
+    const randomPart = Math.random().toString(36).substring(2, 15);
+    const resetToken = `${timestamp}-${randomPart}-${generateResetToken().substring(0, 32)}`;
+    
     const resetTokenExpiry = new Date();
     resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // 1 saat geçerli
 
-    // Update admin with reset token
-    await prisma.admin.update({
-      where: { id: admin.id },
-      data: {
-        resetToken,
-        resetTokenExpiry,
-      },
-    });
+    // Update admin with reset token - try-catch ile güvenli update
+    let finalToken = resetToken;
+    try {
+      await prisma.admin.update({
+        where: { id: admin.id },
+        data: {
+          resetToken: finalToken,
+          resetTokenExpiry,
+        },
+      });
+    } catch (updateError: any) {
+      console.error("Update error:", updateError);
+      // Eğer unique constraint hatası varsa, null yapıp tekrar dene
+      if (updateError.code === 'P2002') {
+        // Önce mevcut token'ı null yap
+        await prisma.admin.update({
+          where: { id: admin.id },
+          data: {
+            resetToken: null,
+            resetTokenExpiry: null,
+          },
+        });
+        
+        // Yeni token ile tekrar dene
+        finalToken = `${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 15)}-${generateResetToken().substring(0, 32)}`;
+        await prisma.admin.update({
+          where: { id: admin.id },
+          data: {
+            resetToken: finalToken,
+            resetTokenExpiry,
+          },
+        });
+      } else {
+        throw updateError;
+      }
+    }
 
     // Production'da burada email gönderilir
     // Şimdilik token'ı response'da döndürüyoruz (güvenlik için sadece development'ta)
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
+    const baseUrl = process.env.NEXTAUTH_URL || (process.env.VERCEL_URL 
       ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
-    const resetUrl = `${baseUrl}/admin/reset-password/${resetToken}`;
+      : 'http://localhost:3000');
+    const resetUrl = `${baseUrl}/admin/reset-password/${finalToken}`;
 
     return NextResponse.json({
       success: true,
       message: "Şifre sıfırlama linki oluşturuldu.",
       // Development için token'ı gösteriyoruz
       ...(process.env.NODE_ENV === "development" && {
-        resetToken,
+        resetToken: finalToken,
         resetUrl,
         note: "Development modunda token gösteriliyor. Production'da email gönderilir.",
       }),
