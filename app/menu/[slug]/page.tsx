@@ -297,42 +297,36 @@ export default function MenuPage() {
         <div className="absolute bottom-1/5 left-1/5 w-[120px] h-[120px] bg-slate-400/30 rounded-3xl mix-blend-multiply filter blur-lg opacity-40 -rotate-45 animate-float-fast" style={{ animationDelay: '3.5s' }}></div>
         <div className="absolute top-3/4 left-1/2 w-[100px] h-[100px] bg-slate-200/35 rounded-2xl mix-blend-multiply filter blur-lg opacity-40 rotate-12 animate-drift" style={{ animationDelay: '5s' }}></div>
       </div>
+      {/* Hamburger Menu Button - Fixed Top Left - Mobile Only */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed top-4 left-4 z-[60] md:hidden p-3 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
+        aria-label="Menüyü aç"
+      >
+        <Menu className="w-6 h-6 text-slate-700" />
+      </button>
+
       {/* Header */}
       <header className="glass-soft border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-6">
           {restaurant && (
-            <div className="flex items-center justify-between md:justify-center">
-              {/* Hamburger Menu Button - Mobile Only */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg hover:bg-slate-100/50 transition-colors"
-                aria-label="Menüyü aç"
-              >
-                <Menu className="w-6 h-6 text-slate-700" />
-              </button>
-
-              {/* Restaurant Info */}
-              <div className="text-center flex-1 md:flex-none">
-                {restaurant.logo && (
-                  <div className="relative w-20 h-20 mx-auto mb-4">
-                    <Image
-                      src={restaurant.logo}
-                      alt={restaurant.name}
-                      fill
-                      className="object-contain rounded-lg"
-                    />
-                  </div>
-                )}
-                <h1 className="text-3xl font-bold text-slate-900 mb-2">
-                  {restaurant.name}
-                </h1>
-                {restaurant.description && (
-                  <p className="text-slate-600">{restaurant.description}</p>
-                )}
-              </div>
-
-              {/* Spacer for mobile layout */}
-              <div className="md:hidden w-10"></div>
+            <div className="text-center">
+              {restaurant.logo && (
+                <div className="relative w-20 h-20 mx-auto mb-4">
+                  <Image
+                    src={restaurant.logo}
+                    alt={restaurant.name}
+                    fill
+                    className="object-contain rounded-lg"
+                  />
+                </div>
+              )}
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                {restaurant.name}
+              </h1>
+              {restaurant.description && (
+                <p className="text-slate-600">{restaurant.description}</p>
+              )}
             </div>
           )}
         </div>
