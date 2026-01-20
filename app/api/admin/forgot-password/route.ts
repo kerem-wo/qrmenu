@@ -96,10 +96,17 @@ export async function POST(request: Request) {
       } else if (updateError.code === 'P2025' || updateError.message?.includes('Record to update not found')) {
         // Admin bulunamadı hatası
         throw new Error("Admin kaydı bulunamadı");
-      } else if (updateError.message?.includes('Unknown argument') || updateError.message?.includes('resetToken')) {
+      } else if (updateError.message?.includes('Unknown argument') || updateError.message?.includes('resetToken') || updateError.message?.includes('Unknown field')) {
         // Veritabanında alan yok hatası
         console.error("Database schema mismatch: resetToken field may not exist");
-        throw new Error("Veritabanı şeması güncel değil. Lütfen Vercel dashboard'dan 'prisma db push' komutunu çalıştırın.");
+        console.error("Full error:", JSON.stringify(updateError, null, 2));
+        return NextResponse.json(
+          { 
+            error: "Veritabanı şeması güncel değil. Lütfen Vercel dashboard'dan veritabanı migration'ını çalıştırın veya destek ekibiyle iletişime geçin.",
+            code: "SCHEMA_MISMATCH",
+          },
+          { status: 500 }
+        );
       } else {
         // Diğer hatalar için detaylı log ve throw
         console.error("Unexpected Prisma error:", {
