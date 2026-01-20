@@ -51,20 +51,6 @@ export async function POST(request: Request) {
 
     // Update admin with reset token - try-catch ile güvenli update
     try {
-      // Önce mevcut token'ı temizle (eğer varsa)
-      try {
-        await prisma.admin.update({
-          where: { id: admin.id },
-          data: {
-            resetToken: null,
-            resetTokenExpiry: null,
-          },
-        });
-      } catch (clearError: any) {
-        // Eğer alanlar yoksa veya başka bir hata varsa devam et
-        console.warn("Could not clear existing token:", clearError?.message);
-      }
-
       // Yeni token ile update yap
       await prisma.admin.update({
         where: { id: admin.id },
@@ -77,13 +63,29 @@ export async function POST(request: Request) {
       console.error("Update error:", updateError);
       console.error("Error code:", updateError?.code);
       console.error("Error message:", updateError?.message);
+      console.error("Error meta:", updateError?.meta);
       
       // Eğer unique constraint hatası varsa, yeni token oluştur ve tekrar dene
       if (updateError.code === 'P2002') {
+        // Önce mevcut token'ı null yap
+        try {
+          await prisma.admin.update({
+            where: { id: admin.id },
+            data: {
+              resetToken: null,
+              resetTokenExpiry: null,
+            },
+          });
+        } catch (clearError: any) {
+          console.warn("Could not clear existing token:", clearError?.message);
+        }
+        
+        // Yeni token oluştur
         const newTimestamp = Date.now().toString(36);
         const newRandomPart = Math.random().toString(36).substring(2, 15);
         resetToken = `${newTimestamp}-${newRandomPart}-${generateResetToken().substring(0, 32)}`;
         
+        // Yeni token ile tekrar dene
         await prisma.admin.update({
           where: { id: admin.id },
           data: {
@@ -94,6 +96,10 @@ export async function POST(request: Request) {
       } else if (updateError.code === 'P2025' || updateError.message?.includes('Record to update not found')) {
         // Admin bulunamadı hatası
         throw new Error("Admin kaydı bulunamadı");
+      } else if (updateError.message?.includes('Unknown argument') || updateError.message?.includes('resetToken')) {
+        // Veritabanında alan yok hatası
+        console.error("Database schema mismatch: resetToken field may not exist");
+        throw new Error("Veritabanı şeması güncel değil. Lütfen Vercel dashboard'dan 'prisma db push' komutunu çalıştırın.");
       } else {
         // Diğer hatalar için detaylı log ve throw
         console.error("Unexpected Prisma error:", {
