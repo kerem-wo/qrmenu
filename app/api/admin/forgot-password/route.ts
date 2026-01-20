@@ -51,6 +51,21 @@ export async function POST(request: Request) {
 
     // Update admin with reset token - try-catch ile güvenli update
     try {
+      // Önce mevcut token'ı temizle (eğer varsa)
+      try {
+        await prisma.admin.update({
+          where: { id: admin.id },
+          data: {
+            resetToken: null,
+            resetTokenExpiry: null,
+          },
+        });
+      } catch (clearError: any) {
+        // Eğer alanlar yoksa veya başka bir hata varsa devam et
+        console.warn("Could not clear existing token:", clearError?.message);
+      }
+
+      // Yeni token ile update yap
       await prisma.admin.update({
         where: { id: admin.id },
         data: {
@@ -60,21 +75,15 @@ export async function POST(request: Request) {
       });
     } catch (updateError: any) {
       console.error("Update error:", updateError);
-      // Eğer unique constraint hatası varsa, null yapıp tekrar dene
+      console.error("Error code:", updateError?.code);
+      console.error("Error message:", updateError?.message);
+      
+      // Eğer unique constraint hatası varsa, yeni token oluştur ve tekrar dene
       if (updateError.code === 'P2002') {
-        // Önce mevcut token'ı null yap
-        await prisma.admin.update({
-          where: { id: admin.id },
-          data: {
-            resetToken: null,
-            resetTokenExpiry: null,
-          },
-        });
-        
-        // Yeni token ile tekrar dene
         const newTimestamp = Date.now().toString(36);
         const newRandomPart = Math.random().toString(36).substring(2, 15);
         resetToken = `${newTimestamp}-${newRandomPart}-${generateResetToken().substring(0, 32)}`;
+        
         await prisma.admin.update({
           where: { id: admin.id },
           data: {
@@ -82,7 +91,16 @@ export async function POST(request: Request) {
             resetTokenExpiry,
           },
         });
+      } else if (updateError.code === 'P2025' || updateError.message?.includes('Record to update not found')) {
+        // Admin bulunamadı hatası
+        throw new Error("Admin kaydı bulunamadı");
       } else {
+        // Diğer hatalar için detaylı log ve throw
+        console.error("Unexpected Prisma error:", {
+          code: updateError.code,
+          message: updateError.message,
+          meta: updateError.meta,
+        });
         throw updateError;
       }
     }
