@@ -57,6 +57,7 @@ export default function SettingsPage() {
     }
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -226,6 +227,27 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </form>
+          </CardContent>
+        </Card>
+
+        {/* Hesap Durumu */}
+        <Card className="card-modern mt-8">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold text-slate-900">Hesap Durumu</CardTitle>
+            <CardDescription className="text-slate-600">
+              Hesabınızın onay durumu
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <p className="text-sm text-slate-600 mb-2">
+                Hesabınız platform yöneticileri tarafından incelenmektedir. 
+                Belgeleriniz ve bilgileriniz kontrol edildikten sonra hesabınız aktif hale gelecektir.
+              </p>
+              <p className="text-xs text-slate-500">
+                Belgelerinizi görmek için platform yöneticileri ile iletişime geçiniz.
+              </p>
+            </div>
           </CardContent>
         </Card>
 

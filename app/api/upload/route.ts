@@ -15,18 +15,22 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
+    // Validate file type - accept images and PDFs for documents
+    const allowedTypes = ['image/', 'application/pdf'];
+    const isValidType = allowedTypes.some(type => file.type.startsWith(type));
+    
+    if (!isValidType) {
       return NextResponse.json(
-        { error: "Sadece resim dosyaları yüklenebilir" },
+        { error: "Sadece resim (JPG, PNG) ve PDF dosyaları yüklenebilir" },
         { status: 400 }
       );
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Validate file size (max 10MB for documents)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "Dosya boyutu 5MB'dan küçük olmalıdır" },
+        { error: "Dosya boyutu 10MB'dan küçük olmalıdır" },
         { status: 400 }
       );
     }

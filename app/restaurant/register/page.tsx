@@ -7,8 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Building2, Mail, Lock, User } from "lucide-react";
+import { ArrowLeft, Building2, Mail, Lock, User, FileText, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DocumentUpload } from "@/components/DocumentUpload";
 
 export default function RestaurantRegisterPage() {
   const router = useRouter();
@@ -18,7 +20,80 @@ export default function RestaurantRegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    kvkkConsent: false,
+    privacyConsent: false,
+    marketingSmsConsent: false,
   });
+  
+  const [documents, setDocuments] = useState({
+    taxDocument: null as File | null,
+    businessLicense: null as File | null,
+    tradeRegistry: null as File | null,
+    identityDocument: null as File | null,
+  });
+  
+  const [uploadingDocs, setUploadingDocs] = useState({
+    taxDocument: false,
+    businessLicense: false,
+    tradeRegistry: false,
+    identityDocument: false,
+  });
+  
+  const [uploadedDocs, setUploadedDocs] = useState({
+    taxDocument: "",
+    businessLicense: "",
+    tradeRegistry: "",
+    identityDocument: "",
+  });
+
+  const handleDocumentUpload = async (file: File, docType: keyof typeof documents) => {
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Sadece JPG, PNG veya PDF dosyaları yüklenebilir");
+      return;
+    }
+
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Dosya boyutu 10MB'dan küçük olmalıdır");
+      return;
+    }
+
+    setUploadingDocs((prev) => ({ ...prev, [docType]: true }));
+    setDocuments((prev) => ({ ...prev, [docType]: file }));
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setUploadedDocs((prev) => ({ ...prev, [docType]: data.url }));
+        toast.success(`${docType === 'taxDocument' ? 'Vergi Levhası' : docType === 'businessLicense' ? 'İşletme Ruhsatı' : docType === 'tradeRegistry' ? 'Ticaret Sicil Belgesi' : 'Kimlik Belgesi'} yüklendi`);
+      } else {
+        const error = await res.json();
+        toast.error(error.error || "Dosya yüklenirken bir hata oluştu");
+        setDocuments((prev) => ({ ...prev, [docType]: null }));
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error("Dosya yüklenirken bir hata oluştu");
+      setDocuments((prev) => ({ ...prev, [docType]: null }));
+    } finally {
+      setUploadingDocs((prev) => ({ ...prev, [docType]: false }));
+    }
+  };
+
+  const handleDocumentRemove = (docType: keyof typeof documents) => {
+    setDocuments((prev) => ({ ...prev, [docType]: null }));
+    setUploadedDocs((prev) => ({ ...prev, [docType]: '' }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +124,44 @@ export default function RestaurantRegisterPage() {
       return;
     }
 
+    // KVKK onayları kontrolü
+    if (!formData.kvkkConsent) {
+      toast.error("KVKK Aydınlatma Metni'ni onaylamanız zorunludur");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.privacyConsent) {
+      toast.error("Gizlilik Politikası'nı onaylamanız zorunludur");
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.marketingSmsConsent) {
+      toast.error("SMS ile ticari pazarlama bildirimi onayını vermeniz zorunludur");
+      setLoading(false);
+      return;
+    }
+
+    // Zorunlu belgeler kontrolü
+    if (!uploadedDocs.taxDocument) {
+      toast.error("Vergi Levhası yüklenmesi zorunludur");
+      setLoading(false);
+      return;
+    }
+
+    if (!uploadedDocs.businessLicense) {
+      toast.error("İşletme Ruhsatı yüklenmesi zorunludur");
+      setLoading(false);
+      return;
+    }
+
+    if (!uploadedDocs.identityDocument) {
+      toast.error("Yetkili Kişi Kimlik Belgesi yüklenmesi zorunludur");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/restaurant/register", {
         method: "POST",
@@ -57,41 +170,26 @@ export default function RestaurantRegisterPage() {
           restaurantName: formData.restaurantName.trim(),
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
+          kvkkConsent: formData.kvkkConsent,
+          privacyConsent: formData.privacyConsent,
+          marketingSmsConsent: formData.marketingSmsConsent,
+          taxDocument: uploadedDocs.taxDocument,
+          businessLicense: uploadedDocs.businessLicense,
+          tradeRegistry: uploadedDocs.tradeRegistry,
+          identityDocument: uploadedDocs.identityDocument,
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        toast.success("Restoran kaydı başarıyla oluşturuldu!");
+        toast.success(data.message || "Restoran kaydı başarıyla oluşturuldu! Hesabınız incelendikten sonra aktif olacaktır.");
         
-        // Otomatik login
-        const loginRes = await fetch("/api/admin/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email.trim().toLowerCase(),
-            password: formData.password,
-          }),
-        });
-
-        if (loginRes.ok) {
-          const loginData = await loginRes.json();
-          if (loginData.success) {
-            // Session'ı localStorage'a kaydet
-            localStorage.setItem("admin_session", JSON.stringify(loginData.admin));
-            
-            // Dashboard'a yönlendir
-            setTimeout(() => {
-              router.push("/admin/dashboard");
-            }, 1000);
-          }
-        } else {
-          // Login başarısız olsa bile kayıt başarılı, login sayfasına yönlendir
-          setTimeout(() => {
-            router.push("/admin/login");
-          }, 2000);
-        }
+        // Platform admin onayı bekleniyor, otomatik login yapma
+        // Kullanıcıyı login sayfasına yönlendir
+        setTimeout(() => {
+          router.push("/admin/login");
+        }, 3000);
       } else {
         toast.error(data.error || "Kayıt sırasında bir hata oluştu");
       }
@@ -104,8 +202,8 @@ export default function RestaurantRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4 py-8">
+      <div className="w-full max-w-2xl">
         <Card className="card-modern shadow-xl">
           <CardHeader className="text-center space-y-2">
             <div className="flex justify-center mb-4">
@@ -208,6 +306,134 @@ export default function RestaurantRegisterPage() {
                     required
                     minLength={6}
                   />
+                </div>
+              </div>
+
+              {/* Resmi Belgeler */}
+              <div className="space-y-4 pt-4 border-t border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900">Resmi Belgeler *</h3>
+                <p className="text-xs text-slate-600">
+                  Lütfen aşağıdaki belgeleri yükleyiniz. Belgeler JPG, PNG veya PDF formatında olmalıdır (Max: 10MB).
+                </p>
+
+                {/* Vergi Levhası */}
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">
+                    Vergi Levhası *
+                  </Label>
+                  <DocumentUpload
+                    label="Vergi Levhası"
+                    file={documents.taxDocument}
+                    uploading={uploadingDocs.taxDocument}
+                    uploadedUrl={uploadedDocs.taxDocument}
+                    onFileSelect={(file) => handleDocumentUpload(file, 'taxDocument')}
+                    onRemove={() => handleDocumentRemove('taxDocument')}
+                  />
+                </div>
+
+                {/* İşletme Ruhsatı */}
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">
+                    İşletme Ruhsatı *
+                  </Label>
+                  <DocumentUpload
+                    label="İşletme Ruhsatı"
+                    file={documents.businessLicense}
+                    uploading={uploadingDocs.businessLicense}
+                    uploadedUrl={uploadedDocs.businessLicense}
+                    onFileSelect={(file) => handleDocumentUpload(file, 'businessLicense')}
+                    onRemove={() => handleDocumentRemove('businessLicense')}
+                  />
+                </div>
+
+                {/* Ticaret Sicil Belgesi */}
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">
+                    Ticaret Sicil Belgesi
+                  </Label>
+                  <DocumentUpload
+                    label="Ticaret Sicil Belgesi (Opsiyonel)"
+                    file={documents.tradeRegistry}
+                    uploading={uploadingDocs.tradeRegistry}
+                    uploadedUrl={uploadedDocs.tradeRegistry}
+                    onFileSelect={(file) => handleDocumentUpload(file, 'tradeRegistry')}
+                    onRemove={() => handleDocumentRemove('tradeRegistry')}
+                    optional
+                  />
+                </div>
+
+                {/* Kimlik Belgesi */}
+                <div className="space-y-2">
+                  <Label className="text-slate-700 font-medium">
+                    Yetkili Kişi Kimlik Belgesi *
+                  </Label>
+                  <DocumentUpload
+                    label="Kimlik Belgesi"
+                    file={documents.identityDocument}
+                    uploading={uploadingDocs.identityDocument}
+                    uploadedUrl={uploadedDocs.identityDocument}
+                    onFileSelect={(file) => handleDocumentUpload(file, 'identityDocument')}
+                    onRemove={() => handleDocumentRemove('identityDocument')}
+                  />
+                </div>
+              </div>
+
+              {/* KVKK ve Onaylar */}
+              <div className="space-y-4 pt-4 border-t border-slate-200">
+                <h3 className="text-lg font-semibold text-slate-900">Yasal Onaylar *</h3>
+                
+                {/* KVKK Onayı */}
+                <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <Checkbox
+                    id="kvkkConsent"
+                    checked={formData.kvkkConsent}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, kvkkConsent: checked === true })
+                    }
+                    className="mt-1"
+                    required
+                  />
+                  <Label htmlFor="kvkkConsent" className="text-sm text-slate-700 cursor-pointer flex-1">
+                    <Link href="/kvkk" target="_blank" className="text-slate-900 font-semibold hover:underline">
+                      KVKK Aydınlatma Metni
+                    </Link>
+                    {' '}ni okudum, anladım ve kabul ediyorum. *
+                  </Label>
+                </div>
+
+                {/* Gizlilik Politikası */}
+                <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <Checkbox
+                    id="privacyConsent"
+                    checked={formData.privacyConsent}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, privacyConsent: checked === true })
+                    }
+                    className="mt-1"
+                    required
+                  />
+                  <Label htmlFor="privacyConsent" className="text-sm text-slate-700 cursor-pointer flex-1">
+                    <Link href="/gizlilik-politikasi" target="_blank" className="text-slate-900 font-semibold hover:underline">
+                      Gizlilik Politikası
+                    </Link>
+                    {' '}nı okudum, anladım ve kabul ediyorum. *
+                  </Label>
+                </div>
+
+                {/* SMS Pazarlama */}
+                <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                  <Checkbox
+                    id="marketingSmsConsent"
+                    checked={formData.marketingSmsConsent}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, marketingSmsConsent: checked === true })
+                    }
+                    className="mt-1"
+                    required
+                  />
+                  <Label htmlFor="marketingSmsConsent" className="text-sm text-slate-700 cursor-pointer flex-1">
+                    SMS ile ticari pazarlama bildirimlerinin gönderilmesine onay veriyorum. *
+                  </Label>
                 </div>
               </div>
 

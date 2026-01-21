@@ -18,6 +18,24 @@ model Restaurant {
   logo        String?
   theme       String   @default("default")
   language    String   @default("tr") // tr, en, de, vb.
+  
+  // KVKK ve Onaylar
+  kvkkConsent          Boolean   @default(false) // KVKK Aydınlatma Metni onayı
+  privacyConsent       Boolean   @default(false) // Gizlilik Politikası onayı
+  marketingSmsConsent  Boolean   @default(false) // SMS ile ticari pazarlama bildirimi onayı
+  
+  // Resmi Belgeler
+  taxDocument          String?   // Vergi Levhası (base64 veya URL)
+  businessLicense      String?   // İşletme Ruhsatı
+  tradeRegistry        String?   // Ticaret Sicil Belgesi
+  identityDocument     String?   // Kimlik Belgesi (Yetkili Kişi)
+  
+  // Platform Admin Onay Durumu
+  status               String   @default("pending") // pending, approved, rejected
+  rejectionReason      String?  // Red nedeni
+  reviewedAt           DateTime? // İncelenme tarihi
+  reviewedBy           String?  // İnceleyen platform admin ID
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -25,6 +43,15 @@ model Restaurant {
   orders      Order[]
   campaigns   Campaign[]
   admin       Admin?
+}
+
+model PlatformAdmin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Customer {

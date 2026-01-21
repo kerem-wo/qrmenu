@@ -11,7 +11,7 @@ config();
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create a demo restaurant
+  // Create a demo restaurant (approved for demo purposes)
   const restaurant = await prisma.restaurant.upsert({
     where: { slug: 'demo-restoran' },
     update: {},
@@ -20,6 +20,7 @@ async function main() {
       slug: 'demo-restoran',
       description: 'Lezzetli yemekler için doğru adres',
       theme: 'default',
+      status: 'approved', // Demo için onaylandı
     },
   });
 
@@ -168,7 +169,20 @@ async function main() {
     },
   });
 
+  // Create platform admin (default credentials: admin@platform.com / admin123)
+  const platformAdminPassword = await bcrypt.hash('admin123', 10);
+  await prisma.platformAdmin.upsert({
+    where: { email: 'admin@platform.com' },
+    update: {},
+    create: {
+      email: 'admin@platform.com',
+      password: platformAdminPassword,
+      name: 'Platform Yöneticisi',
+    },
+  });
+
   console.log('Seed data created successfully!');
+  console.log('Platform Admin: admin@platform.com / admin123');
 }
 
 main()

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { setAdminSession } from "@/lib/auth";
+import { setPlatformAdminSession } from "@/lib/platform-auth";
 import bcrypt from "bcryptjs";
 
 export const dynamic = 'force-dynamic';
@@ -16,19 +16,13 @@ export async function POST(request: Request) {
       );
     }
 
-    // Select only needed fields to avoid schema mismatch issues
-    const admin = await prisma.admin.findUnique({
+    const admin = await prisma.platformAdmin.findUnique({
       where: { email },
       select: {
         id: true,
         email: true,
         password: true,
-        restaurantId: true,
-        restaurant: {
-          select: {
-            status: true,
-          },
-        },
+        name: true,
       },
     });
 
@@ -48,24 +42,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if restaurant is approved
-    if (admin.restaurant.status !== 'approved') {
-      return NextResponse.json(
-        { error: "Hesabınız henüz onaylanmamış. Lütfen platform yöneticilerinin onayını bekleyin." },
-        { status: 403 }
-      );
-    }
-
     const session = {
       id: admin.id,
       email: admin.email,
-      restaurantId: admin.restaurantId,
+      name: admin.name,
     };
 
-    // Try to set session cookie, but don't fail if it doesn't work
-    // Client-side localStorage will handle it
+    // Set session cookie
     try {
-      await setAdminSession(session);
+      await setPlatformAdminSession(session);
     } catch (sessionError: any) {
       console.error("Session cookie error (non-fatal):", sessionError?.message || sessionError);
       // Continue anyway - client will use localStorage
@@ -76,17 +61,9 @@ export async function POST(request: Request) {
       admin: session,
     });
   } catch (error: any) {
-    console.error("Login error:", error);
-    console.error("Error details:", {
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name,
-    });
+    console.error("Platform admin login error:", error);
     return NextResponse.json(
-      { 
-        error: error?.message || "Bir hata oluştu", 
-        details: process.env.NODE_ENV === "development" ? error?.stack : undefined 
-      },
+      { error: "Giriş sırasında bir hata oluştu" },
       { status: 500 }
     );
   }

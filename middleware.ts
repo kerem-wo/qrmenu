@@ -13,11 +13,21 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Protect platform admin routes
+  if (pathname.startsWith("/platform-admin") && !pathname.startsWith("/platform-admin/login")) {
+    const sessionCookie = request.cookies.get("platform_admin_session");
+    
+    if (!sessionCookie) {
+      return NextResponse.redirect(new URL("/platform-admin/login", request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
     "/admin/:path*",
+    "/platform-admin/:path*",
   ],
 };

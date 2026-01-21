@@ -56,7 +56,18 @@ async function getUniqueSlug(baseSlug: string): Promise<string> {
 
 export async function POST(request: Request) {
   try {
-    const { restaurantName, email, password } = await request.json();
+    const { 
+      restaurantName, 
+      email, 
+      password,
+      kvkkConsent,
+      privacyConsent,
+      marketingSmsConsent,
+      taxDocument,
+      businessLicense,
+      tradeRegistry,
+      identityDocument,
+    } = await request.json();
 
     // Validation
     if (!restaurantName || !restaurantName.trim()) {
@@ -111,7 +122,7 @@ export async function POST(request: Request) {
 
     // Transaction ile restaurant ve admin oluştur
     const result = await prisma.$transaction(async (tx) => {
-      // Restaurant oluştur
+      // Restaurant oluştur (status: pending - platform admin onayı bekliyor)
       const restaurant = await tx.restaurant.create({
         data: {
           name: restaurantName.trim(),
@@ -120,6 +131,14 @@ export async function POST(request: Request) {
           logo: null,
           theme: "default",
           language: "tr",
+          kvkkConsent: kvkkConsent === true,
+          privacyConsent: privacyConsent === true,
+          marketingSmsConsent: marketingSmsConsent === true,
+          taxDocument: taxDocument || null,
+          businessLicense: businessLicense || null,
+          tradeRegistry: tradeRegistry || null,
+          identityDocument: identityDocument || null,
+          status: 'pending', // Platform admin onayı bekliyor
         },
       });
 
@@ -142,11 +161,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: "Restoran başarıyla kaydedildi",
+      message: "Restoran kaydı başarıyla oluşturuldu. Hesabınız platform yöneticileri tarafından incelendikten sonra aktif hale gelecektir.",
       restaurant: {
         id: result.restaurant.id,
         name: result.restaurant.name,
         slug: result.restaurant.slug,
+        status: result.restaurant.status,
       },
       admin: result.admin,
     });
