@@ -32,11 +32,11 @@ export default function ProductsPage() {
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
-        return;
+      } else {
+        fetchProducts();
       }
-      fetchProducts();
     });
-  }, []);
+  }, [router]);
 
   const fetchProducts = async () => {
     try {

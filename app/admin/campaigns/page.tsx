@@ -30,11 +30,11 @@ export default function CampaignsPage() {
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
-        return;
+      } else {
+        fetchCampaigns();
       }
-      fetchCampaigns();
     });
-  }, []);
+  }, [router]);
 
   const fetchCampaigns = async () => {
     try {

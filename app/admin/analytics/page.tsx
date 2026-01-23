@@ -16,11 +16,11 @@ export default function AnalyticsPage() {
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
-        return;
+      } else {
+        fetchAnalytics();
       }
-      fetchAnalytics();
     });
-  }, [period]);
+  }, [period, router]);
 
   const fetchAnalytics = async () => {
     try {

@@ -31,10 +31,10 @@ export default function PlatformAdminDashboard() {
     const session = localStorage.getItem("platform_admin_session");
     if (!session) {
       router.push("/platform-admin/login");
-      return;
+    } else {
+      fetchRestaurants();
     }
-    fetchRestaurants();
-  }, [filter]);
+  }, [filter, router]);
 
   const fetchRestaurants = async () => {
     try {

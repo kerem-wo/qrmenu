@@ -31,11 +31,11 @@ export default function SettingsPage() {
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
-        return;
+      } else {
+        fetchRestaurant();
       }
-      fetchRestaurant();
     });
-  }, []);
+  }, [router]);
 
   const fetchRestaurant = async () => {
     try {
