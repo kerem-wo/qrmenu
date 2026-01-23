@@ -12,17 +12,7 @@ export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [period, setPeriod] = useState("7");
 
-  useEffect(() => {
-    checkAuth().then((session) => {
-      if (!session) {
-        router.push("/admin/login");
-      } else {
-        fetchAnalytics();
-      }
-    });
-  }, [period, router]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     try {
       const res = await fetch(`/api/admin/analytics?period=${period}`);
       if (res.ok) {
@@ -34,7 +24,17 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
+
+  useEffect(() => {
+    checkAuth().then((session) => {
+      if (!session) {
+        router.push("/admin/login");
+      } else {
+        fetchAnalytics();
+      }
+    });
+  }, [fetchAnalytics, router]);
 
   if (loading) {
     return (
