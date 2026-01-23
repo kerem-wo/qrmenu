@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,7 +35,7 @@ export default function SettingsPage() {
         fetchRestaurant();
       }
     });
-  }, [router]);
+  }, [fetchRestaurant, router]);
 
   const fetchRestaurant = async () => {
     try {
