@@ -260,35 +260,33 @@ export default function OrdersPage() {
               const StatusIcon = statusConfig[order.status]?.icon || Clock;
               const isSelected = selectedOrders.has(order.id);
               return (
-                <div key={order.id} className={`premium-card ${isSelected ? 'ring-2 ring-green-500' : ''} animate-premium-fade-in`} style={{ animationDelay: `${index * 0.05}s` }}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-start gap-3">
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={() => toggleOrderSelection(order.id)}
-                          className="mt-1"
-                        />
-                        <div>
-                          <CardTitle className="text-lg font-semibold text-slate-900">
-                            Sipariş #{order.id.slice(0, 8)}
-                          </CardTitle>
-                          <CardDescription className="text-sm">
-                            {new Date(order.createdAt).toLocaleString("tr-TR")}
-                          </CardDescription>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <StatusIcon className="w-5 h-5 text-slate-400" />
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          statusConfig[order.status]?.color || "bg-slate-100 text-slate-800"
-                        }`}>
-                          {statusConfig[order.status]?.label || order.status}
-                        </span>
+                <div key={order.id} className={`premium-card p-6 ${isSelected ? 'ring-2 ring-green-500' : ''} animate-premium-fade-in`} style={{ animationDelay: `${index * 0.05}s` }}>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => toggleOrderSelection(order.id)}
+                        className="mt-1"
+                      />
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900">
+                          Sipariş #{order.id.slice(0, 8)}
+                        </h3>
+                        <p className="text-sm text-gray-600 font-medium">
+                          {new Date(order.createdAt).toLocaleString("tr-TR")}
+                        </p>
                       </div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                    <div className="flex items-center gap-2">
+                      <StatusIcon className="w-5 h-5 text-gray-400" />
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
+                      }`}>
+                        {statusConfig[order.status]?.label || order.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
                     <div className="space-y-4">
                       {/* Customer Info */}
                       {(order.tableNumber || order.customerName || order.customerPhone) && (

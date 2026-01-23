@@ -391,8 +391,8 @@ export default function RestaurantRegisterPage() {
                     className="mt-1"
                     required
                   />
-                  <Label htmlFor="kvkkConsent" className="text-sm text-slate-700 cursor-pointer flex-1">
-                    <Link href="/kvkk" target="_blank" className="text-slate-900 font-semibold hover:underline">
+                  <Label htmlFor="kvkkConsent" className="text-sm text-gray-700 cursor-pointer flex-1 font-medium">
+                    <Link href="/kvkk" target="_blank" className="text-gray-900 font-bold hover:text-green-600 transition-colors">
                       KVKK Aydınlatma Metni
                     </Link>
                     {' '}ni okudum, anladım ve kabul ediyorum. *
@@ -438,7 +438,7 @@ export default function RestaurantRegisterPage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-slate-900 hover:bg-slate-800 h-11"
+                className="premium-btn-primary w-full"
                 disabled={loading}
               >
                 {loading ? "Kaydediliyor..." : "Restoran Kaydet"}
