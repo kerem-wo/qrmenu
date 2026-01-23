@@ -131,7 +131,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen premium-bg-gradient">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-6 py-4 flex items-center gap-4">
           <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">

@@ -80,24 +80,34 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Kampanyalar</h1>
-          <Link href="/admin/campaigns/new">
-            <Button className="bg-slate-900 hover:bg-slate-800">
-              <Plus className="w-4 h-4 mr-2" />
-              Yeni Kampanya
-            </Button>
-          </Link>
+    <div className="min-h-screen premium-bg-gradient">
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex justify-between items-center py-5">
+            <h1 className="premium-heading-3">Kampanyalar</h1>
+            <Link href="/admin/campaigns/new">
+              <Button className="premium-btn-primary">
+                <Plus className="w-5 h-5 mr-2" />
+                Yeni Kampanya
+              </Button>
+            </Link>
+          </div>
         </div>
+      </header>
 
+      <main className="premium-container py-10">
         {campaigns.length === 0 ? (
-          <Card className="card-modern">
-            <CardContent className="py-12 text-center">
-              <p className="text-slate-600 mb-4">Henüz kampanya eklenmemiş.</p>
-              <Link href="/admin/campaigns/new">
-                <Button className="bg-slate-900 hover:bg-slate-800">
+          <div className="premium-card p-16 text-center animate-premium-fade-in">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gray-200 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center">
+                <Plus className="w-10 h-10 text-gray-400" />
+              </div>
+            </div>
+            <h3 className="premium-heading-3 mb-4">Henüz kampanya eklenmemiş</h3>
+            <p className="text-gray-600 mb-8 font-medium">İlk kampanyanızı ekleyerek başlayın</p>
+            <Link href="/admin/campaigns/new">
+              <Button className="premium-btn-primary">
                   İlk Kampanyayı Oluştur
                 </Button>
               </Link>

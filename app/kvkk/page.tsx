@@ -1,13 +1,13 @@
 export default function KVKKPage() {
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4">
-      <div className="container mx-auto max-w-4xl">
-        <div className="bg-white rounded-xl shadow-lg p-8 md:p-12">
-          <h1 className="text-3xl font-bold text-slate-900 mb-6">
+    <div className="min-h-screen premium-bg-gradient py-12 px-4">
+      <div className="premium-container max-w-4xl mx-auto">
+        <div className="premium-card p-8 md:p-12 animate-premium-fade-in">
+          <h1 className="premium-heading-2 mb-8">
             KVKK Aydınlatma Metni
           </h1>
           
-          <div className="prose prose-slate max-w-none space-y-6 text-slate-700">
+          <div className="prose prose-slate max-w-none space-y-6 text-gray-700">
             <section>
               <h2 className="text-2xl font-semibold text-slate-900 mt-8 mb-4">
                 1. Veri Sorumlusu
@@ -104,8 +104,8 @@ export default function KVKKPage() {
               </p>
             </section>
 
-            <div className="mt-8 p-4 bg-slate-100 rounded-lg">
-              <p className="text-sm text-slate-600">
+            <div className="mt-8 p-4 bg-gray-100 rounded-xl">
+              <p className="text-sm text-gray-600 font-medium">
                 <strong>Son Güncelleme:</strong> {new Date().toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>

@@ -45,15 +45,16 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Analitik & Raporlar</h1>
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            className="border border-slate-300 rounded px-4 py-2"
-          >
+    <div className="min-h-screen premium-bg-gradient">
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex justify-between items-center py-5">
+            <h1 className="premium-heading-3">Analitik & Raporlar</h1>
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="premium-input px-6 py-2.5 max-w-xs"
+            >
             <option value="7">Son 7 Gün</option>
             <option value="30">Son 30 Gün</option>
             <option value="90">Son 90 Gün</option>
@@ -62,42 +63,47 @@ export default function AnalyticsPage() {
 
         {analytics && (
           <>
-            {/* İstatistik Kartları */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <Card className="card-modern">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-600 mb-1">Toplam Sipariş</p>
-                      <p className="text-2xl font-bold text-slate-900">{analytics.totalOrders}</p>
-                    </div>
-                    <ShoppingCart className="w-8 h-8 text-blue-500" />
+            {/* Premium İstatistik Kartları */}
+            <div className="premium-grid premium-grid-4 mb-10">
+              <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2">Toplam Sipariş</p>
+                    <p className="text-4xl font-black text-gray-900">{analytics.totalOrders}</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card className="card-modern">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-600 mb-1">Toplam Gelir</p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {analytics.totalRevenue.toFixed(2)} ₺
-                      </p>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-blue-400 rounded-2xl blur-lg opacity-30"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                      <ShoppingCart className="w-7 h-7 text-white" />
                     </div>
-                    <DollarSign className="w-8 h-8 text-green-500" />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="card-modern">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-600 mb-1">Ortalama Sipariş</p>
-                      <p className="text-2xl font-bold text-slate-900">
-                        {analytics.avgOrderValue.toFixed(2)} ₺
-                      </p>
+              <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2">Toplam Gelir</p>
+                    <p className="text-4xl font-black text-gray-900">
+                      {analytics.totalRevenue.toFixed(2)} ₺
+                    </p>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-green-400 rounded-2xl blur-lg opacity-30"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
+                      <DollarSign className="w-7 h-7 text-white" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.2s' }}>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2">Ortalama Sipariş</p>
+                    <p className="text-4xl font-black text-gray-900">
+                      {analytics.avgOrderValue.toFixed(2)} ₺
+                    </p>
                     </div>
                     <TrendingUp className="w-8 h-8 text-purple-500" />
                   </div>

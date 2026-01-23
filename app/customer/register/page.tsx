@@ -65,14 +65,22 @@ function CustomerRegisterContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md card-modern">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-slate-900">Müşteri Kaydı</CardTitle>
-          <CardDescription>Hesap oluşturun ve sipariş geçmişinizi görüntüleyin</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
+      <div className="w-full max-w-md animate-premium-scale-in">
+        <div className="premium-card p-10">
+          <div className="text-center mb-8">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-blue-600 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="premium-heading-2 mb-3">Müşteri Kaydı</h1>
+            <p className="text-gray-600 font-medium">Hesap oluşturun ve sipariş geçmişinizi görüntüleyin</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name">İsim *</Label>
               <Input
@@ -81,7 +89,7 @@ function CustomerRegisterContent() {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 placeholder="Adınız Soyadınız"
-                className="h-11"
+                className="premium-input"
               />
             </div>
 
@@ -93,7 +101,7 @@ function CustomerRegisterContent() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="ornek@email.com"
-                className="h-11"
+                className="premium-input"
               />
             </div>
 
@@ -106,7 +114,7 @@ function CustomerRegisterContent() {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
                 placeholder="05XX XXX XX XX"
-                className="h-11"
+                className="premium-input"
               />
             </div>
 
@@ -120,7 +128,7 @@ function CustomerRegisterContent() {
                 required
                 minLength={6}
                 placeholder="En az 6 karakter"
-                className="h-11"
+                className="premium-input"
               />
             </div>
 
@@ -134,7 +142,7 @@ function CustomerRegisterContent() {
                 required
                 minLength={6}
                 placeholder="Şifrenizi tekrar girin"
-                className="h-11"
+                className="premium-input"
               />
             </div>
 

@@ -72,31 +72,38 @@ export default function QRCodePage() {
   const menuUrl = restaurant ? `${typeof window !== "undefined" ? window.location.origin : ""}/menu/${restaurant.slug}` : "";
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
-            <Link href="/admin/dashboard">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Geri
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold text-slate-900">QR Kod</h1>
+    <div className="min-h-screen premium-bg-gradient">
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex items-center gap-4 py-5">
+            <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
+              <Link href="/admin/dashboard">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Geri
+              </Link>
+            </Button>
+            <h1 className="premium-heading-3">QR Kod</h1>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-2xl">
-        <Card className="card-modern">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900">
-              <QrCode className="w-5 h-5" />
-              Menü QR Kodu
-            </CardTitle>
-            <CardDescription className="text-slate-600">
+      <main className="premium-container py-10 max-w-2xl mx-auto">
+        <div className="premium-card p-10 animate-premium-fade-in">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-400 rounded-xl blur-lg opacity-30"></div>
+                <div className="relative w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                  <QrCode className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <h2 className="premium-heading-3">Menü QR Kodu</h2>
+            </div>
+            <p className="text-gray-600 font-medium">
               Müşterileriniz bu QR kodu okutarak menünüze erişebilir
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            </p>
+          </div>
+          <div className="space-y-6">
             {qrCodeUrl && (
               <div className="flex flex-col items-center space-y-6">
                 <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
