@@ -84,9 +84,9 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
-  };
+  }, [formData]);
 
-  const handleDeleteAccount = async () => {
+  const handleDeleteAccount = useCallback(async () => {
     setDeleting(true);
 
     try {
