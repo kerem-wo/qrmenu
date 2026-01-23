@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, CheckCircle, Clock, XCircle, ChefHat, ShoppingCart, Trash2 } from "lucide-react";
@@ -293,35 +292,35 @@ export default function OrdersPage() {
                     <div className="space-y-4">
                       {/* Customer Info */}
                       {(order.tableNumber || order.customerName || order.customerPhone) && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-slate-50 p-4 rounded-lg">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm bg-gray-50 p-4 rounded-xl mb-4">
                           {order.tableNumber && (
                             <div>
-                              <span className="font-medium text-slate-600">Masa:</span> <span className="text-slate-900">{order.tableNumber}</span>
+                              <span className="font-bold text-gray-600">Masa:</span> <span className="text-gray-900 font-semibold">{order.tableNumber}</span>
                             </div>
                           )}
                           {order.customerName && (
                             <div>
-                              <span className="font-medium text-slate-600">İsim:</span> <span className="text-slate-900">{order.customerName}</span>
+                              <span className="font-bold text-gray-600">İsim:</span> <span className="text-gray-900 font-semibold">{order.customerName}</span>
                             </div>
                           )}
                           {order.customerPhone && (
                             <div>
-                              <span className="font-medium text-slate-600">Telefon:</span> <span className="text-slate-900">{order.customerPhone}</span>
+                              <span className="font-bold text-gray-600">Telefon:</span> <span className="text-gray-900 font-semibold">{order.customerPhone}</span>
                             </div>
                           )}
                         </div>
                       )}
 
                       {/* Order Items */}
-                      <div className="border-t border-slate-200 pt-4">
-                        <h4 className="font-semibold text-slate-900 mb-2">Ürünler:</h4>
+                      <div className="border-t border-gray-200 pt-4 mb-4">
+                        <h4 className="font-bold text-gray-900 mb-3">Ürünler:</h4>
                         <div className="space-y-2">
                           {order.items.map((item) => (
                             <div key={item.id} className="flex justify-between text-sm py-2">
-                              <span className="text-slate-700">
+                              <span className="text-gray-700 font-medium">
                                 {item.product.name} x {item.quantity}
                               </span>
-                              <span className="font-medium text-slate-900">
+                              <span className="font-bold text-gray-900">
                                 {(item.price * item.quantity).toFixed(2)} ₺
                               </span>
                             </div>
@@ -330,21 +329,21 @@ export default function OrdersPage() {
                       </div>
 
                       {/* Total */}
-                      <div className="border-t border-slate-200 pt-4 flex justify-between items-center">
-                        <span className="text-lg font-semibold text-slate-900">Toplam:</span>
-                        <span className="text-xl font-bold text-slate-900">
+                      <div className="border-t border-gray-200 pt-4 flex justify-between items-center mb-4">
+                        <span className="text-lg font-bold text-gray-900">Toplam:</span>
+                        <span className="text-2xl font-black text-gray-900">
                           {order.total.toFixed(2)} ₺
                         </span>
                       </div>
 
                       {/* Status Actions */}
-                      <div className="border-t border-slate-200 pt-4 flex gap-2 flex-wrap">
+                      <div className="border-t border-gray-200 pt-4 flex gap-2 flex-wrap">
                         {order.status === "pending" && (
                           <>
                             <Button
                               size="sm"
                               onClick={() => updateOrderStatus(order.id, "confirmed")}
-                              className="bg-slate-900 hover:bg-slate-800"
+                              className="premium-btn-primary px-4 py-2"
                             >
                               Onayla
                             </Button>
@@ -352,7 +351,7 @@ export default function OrdersPage() {
                               size="sm"
                               variant="outline"
                               onClick={() => updateOrderStatus(order.id, "cancelled")}
-                              className="border-slate-300 hover:bg-red-50 hover:border-red-300"
+                              className="premium-btn-secondary px-4 py-2 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
                             >
                               İptal Et
                             </Button>
@@ -362,7 +361,7 @@ export default function OrdersPage() {
                           <Button
                             size="sm"
                             onClick={() => updateOrderStatus(order.id, "preparing")}
-                            className="bg-slate-900 hover:bg-slate-800"
+                            className="premium-btn-primary px-4 py-2"
                           >
                             Hazırlamaya Başla
                           </Button>
@@ -371,7 +370,7 @@ export default function OrdersPage() {
                           <Button
                             size="sm"
                             onClick={() => updateOrderStatus(order.id, "ready")}
-                            className="bg-slate-900 hover:bg-slate-800"
+                            className="premium-btn-primary px-4 py-2"
                           >
                             Hazır Olarak İşaretle
                           </Button>
@@ -380,15 +379,15 @@ export default function OrdersPage() {
                           <Button
                             size="sm"
                             onClick={() => updateOrderStatus(order.id, "completed")}
-                            className="bg-slate-900 hover:bg-slate-800"
+                            className="premium-btn-primary px-4 py-2"
                           >
                             Tamamlandı
                           </Button>
                         )}
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               );
             })}
           </div>

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -221,7 +220,7 @@ export default function RestaurantRegisterPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Restoran Adı */}
               <div className="space-y-2">
-                <Label htmlFor="restaurantName" className="text-slate-700 font-medium">
+                <Label htmlFor="restaurantName" className="text-gray-700 font-bold">
                   Restoran Adı *
                 </Label>
                 <div className="relative">
@@ -242,7 +241,7 @@ export default function RestaurantRegisterPage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">
+                <Label htmlFor="email" className="text-gray-700 font-bold">
                   E-posta Adresi *
                 </Label>
                 <div className="relative">
@@ -259,14 +258,14 @@ export default function RestaurantRegisterPage() {
                     required
                   />
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-gray-500 font-medium">
                   Bu e-posta admin paneli girişi için kullanılacak
                 </p>
               </div>
 
               {/* Şifre */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700 font-medium">
+                <Label htmlFor="password" className="text-gray-700 font-bold">
                   Şifre *
                 </Label>
                 <div className="relative">
@@ -288,7 +287,7 @@ export default function RestaurantRegisterPage() {
 
               {/* Şifre Tekrar */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-slate-700 font-medium">
+                <Label htmlFor="confirmPassword" className="text-gray-700 font-bold">
                   Şifre Tekrar *
                 </Label>
                 <div className="relative">
@@ -309,15 +308,15 @@ export default function RestaurantRegisterPage() {
               </div>
 
               {/* Resmi Belgeler */}
-              <div className="space-y-4 pt-4 border-t border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900">Resmi Belgeler *</h3>
-                <p className="text-xs text-slate-600">
+              <div className="space-y-4 pt-6 border-t border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900">Resmi Belgeler *</h3>
+                <p className="text-xs text-gray-600 font-medium">
                   Lütfen aşağıdaki belgeleri yükleyiniz. Belgeler JPG, PNG veya PDF formatında olmalıdır (Max: 10MB).
                 </p>
 
                 {/* Vergi Levhası */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className="text-gray-700 font-bold">
                     Vergi Levhası *
                   </Label>
                   <DocumentUpload
@@ -332,7 +331,7 @@ export default function RestaurantRegisterPage() {
 
                 {/* İşletme Ruhsatı */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className="text-gray-700 font-bold">
                     İşletme Ruhsatı *
                   </Label>
                   <DocumentUpload
@@ -347,7 +346,7 @@ export default function RestaurantRegisterPage() {
 
                 {/* Ticaret Sicil Belgesi */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className="text-gray-700 font-bold">
                     Ticaret Sicil Belgesi
                   </Label>
                   <DocumentUpload
@@ -363,7 +362,7 @@ export default function RestaurantRegisterPage() {
 
                 {/* Kimlik Belgesi */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className="text-gray-700 font-bold">
                     Yetkili Kişi Kimlik Belgesi *
                   </Label>
                   <DocumentUpload
@@ -447,7 +446,7 @@ export default function RestaurantRegisterPage() {
 
               {/* Login Link */}
               <div className="text-center pt-4 border-t border-slate-200">
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-gray-600 font-medium">
                   Zaten hesabınız var mı?{" "}
                   <Link
                     href="/admin/login"
@@ -458,14 +457,14 @@ export default function RestaurantRegisterPage() {
                 </p>
               </div>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Back to Home */}
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <Link
             href="/"
-            className="inline-flex items-center text-sm text-slate-600 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-semibold transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Ana Sayfaya Dön
