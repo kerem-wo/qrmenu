@@ -233,7 +233,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, restaurantName: e.target.value })
                     }
-                    className="premium-input pl-10"
+                    className="premium-input premium-input-with-icon"
                     required
                   />
                 </div>
@@ -254,7 +254,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="premium-input pl-10"
+                    className="premium-input premium-input-with-icon"
                     required
                   />
                 </div>
@@ -278,7 +278,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
-                    className="premium-input pl-10"
+                    className="premium-input premium-input-with-icon"
                     required
                     minLength={6}
                   />
@@ -300,7 +300,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, confirmPassword: e.target.value })
                     }
-                    className="premium-input pl-10"
+                    className="premium-input premium-input-with-icon"
                     required
                     minLength={6}
                   />

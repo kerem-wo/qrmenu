@@ -72,7 +72,7 @@ export default function PlatformAdminLogin() {
                   placeholder="admin@platform.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="premium-input pl-12"
+                  className="premium-input premium-input-with-icon"
                   required
                 />
               </div>
@@ -90,7 +90,7 @@ export default function PlatformAdminLogin() {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="premium-input pl-12"
+                  className="premium-input premium-input-with-icon"
                   required
                 />
               </div>
