@@ -57,7 +57,7 @@ export default function PlatformAdminDashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, fetchRestaurants]);
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = useCallback((status: string) => {
     switch (status) {
       case 'pending':
         return <Badge className="bg-yellow-500 hover:bg-yellow-600"><Clock className="w-3 h-3 mr-1" /> Beklemede</Badge>;
@@ -68,7 +68,7 @@ export default function PlatformAdminDashboard() {
       default:
         return <Badge>{status}</Badge>;
     }
-  };
+  }, []);
 
   const filteredRestaurants = filter === 'all' 
     ? restaurants 

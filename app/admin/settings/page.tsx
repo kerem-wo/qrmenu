@@ -57,8 +57,7 @@ export default function SettingsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchRestaurant]);
 
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
@@ -120,7 +119,7 @@ export default function SettingsPage() {
       toast.error("Bir hata oluştu! Lütfen tekrar deneyin.");
       setDeleting(false);
     }
-  };
+  }, [router]);
 
   if (loading) {
     return (
