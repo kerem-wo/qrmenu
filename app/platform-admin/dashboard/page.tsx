@@ -55,7 +55,8 @@ export default function PlatformAdminDashboard() {
     } else {
       fetchRestaurants();
     }
-  }, [filter, fetchRestaurants, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, fetchRestaurants]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {

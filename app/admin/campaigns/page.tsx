@@ -48,7 +48,8 @@ export default function CampaignsPage() {
         fetchCampaigns();
       }
     });
-  }, [fetchCampaigns, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchCampaigns]);
 
   const deleteCampaign = async (id: string) => {
     if (!confirm("Bu kampanyayı silmek istediğinize emin misiniz?")) return;

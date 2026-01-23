@@ -55,7 +55,8 @@ export default function SettingsPage() {
         fetchRestaurant();
       }
     });
-  }, [fetchRestaurant, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchRestaurant]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {

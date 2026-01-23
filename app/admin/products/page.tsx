@@ -50,7 +50,8 @@ export default function ProductsPage() {
         fetchProducts();
       }
     });
-  }, [fetchProducts, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchProducts]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;

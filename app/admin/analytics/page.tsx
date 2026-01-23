@@ -34,7 +34,8 @@ export default function AnalyticsPage() {
         fetchAnalytics();
       }
     });
-  }, [fetchAnalytics, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAnalytics]);
 
   if (loading) {
     return (
@@ -107,12 +108,11 @@ export default function AnalyticsPage() {
                     <p className="text-4xl font-black text-gray-900">
                       {analytics.avgOrderValue.toFixed(2)} ₺
                     </p>
-                    </div>
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-purple-400 rounded-2xl blur-lg opacity-30"></div>
-                      <div className="relative w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                        <TrendingUp className="w-7 h-7 text-white" />
-                      </div>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-purple-400 rounded-2xl blur-lg opacity-30"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                      <TrendingUp className="w-7 h-7 text-white" />
                     </div>
                   </div>
                 </div>
