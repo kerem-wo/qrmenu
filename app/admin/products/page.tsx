@@ -28,17 +28,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth().then((session) => {
-      if (!session) {
-        router.push("/admin/login");
-      } else {
-        fetchProducts();
-      }
-    });
-  }, [router]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/products");
       if (res.ok) {
@@ -50,7 +40,17 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkAuth().then((session) => {
+      if (!session) {
+        router.push("/admin/login");
+      } else {
+        fetchProducts();
+      }
+    });
+  }, [fetchProducts, router]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;

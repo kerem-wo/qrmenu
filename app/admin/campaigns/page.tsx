@@ -26,17 +26,7 @@ export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkAuth().then((session) => {
-      if (!session) {
-        router.push("/admin/login");
-      } else {
-        fetchCampaigns();
-      }
-    });
-  }, [router]);
-
-  const fetchCampaigns = async () => {
+  const fetchCampaigns = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/campaigns");
       if (res.ok) {
@@ -48,7 +38,17 @@ export default function CampaignsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkAuth().then((session) => {
+      if (!session) {
+        router.push("/admin/login");
+      } else {
+        fetchCampaigns();
+      }
+    });
+  }, [fetchCampaigns, router]);
 
   const deleteCampaign = async (id: string) => {
     if (!confirm("Bu kampanyayı silmek istediğinize emin misiniz?")) return;

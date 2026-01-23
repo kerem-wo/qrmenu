@@ -27,17 +27,7 @@ export default function SettingsPage() {
     slug: "",
   });
 
-  useEffect(() => {
-    checkAuth().then((session) => {
-      if (!session) {
-        router.push("/admin/login");
-      } else {
-        fetchRestaurant();
-      }
-    });
-  }, [fetchRestaurant, router]);
-
-  const fetchRestaurant = async () => {
+  const fetchRestaurant = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/restaurant");
       if (res.ok) {
@@ -55,7 +45,17 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkAuth().then((session) => {
+      if (!session) {
+        router.push("/admin/login");
+      } else {
+        fetchRestaurant();
+      }
+    });
+  }, [fetchRestaurant, router]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {

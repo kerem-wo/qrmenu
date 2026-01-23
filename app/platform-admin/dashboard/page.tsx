@@ -27,16 +27,7 @@ export default function PlatformAdminDashboard() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
-  useEffect(() => {
-    const session = localStorage.getItem("platform_admin_session");
-    if (!session) {
-      router.push("/platform-admin/login");
-    } else {
-      fetchRestaurants();
-    }
-  }, [filter, fetchRestaurants, router]);
-
-  const fetchRestaurants = async () => {
+  const fetchRestaurants = useCallback(async () => {
     try {
       const res = await fetch("/api/platform-admin/restaurants");
       if (res.ok) {
@@ -55,7 +46,16 @@ export default function PlatformAdminDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    const session = localStorage.getItem("platform_admin_session");
+    if (!session) {
+      router.push("/platform-admin/login");
+    } else {
+      fetchRestaurants();
+    }
+  }, [filter, fetchRestaurants, router]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
