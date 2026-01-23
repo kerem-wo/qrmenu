@@ -110,8 +110,8 @@ export default function CampaignsPage() {
                   İlk Kampanyayı Oluştur
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ) : (
           <div className="premium-grid premium-grid-3">
             {campaigns.map((campaign, index) => {

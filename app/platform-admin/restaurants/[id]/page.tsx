@@ -211,77 +211,80 @@ export default function RestaurantDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
-              <Link href="/platform-admin/dashboard">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Geri
-              </Link>
-            </Button>
-            <h1 className="text-2xl font-bold text-slate-900">Restoran Detayları</h1>
+    <div className="min-h-screen premium-bg-gradient">
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex items-center justify-between py-5">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
+                <Link href="/platform-admin/dashboard">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Geri
+                </Link>
+              </Button>
+              <h1 className="premium-heading-3">Restoran Detayları</h1>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-6xl">
-        {/* Durum ve Aksiyonlar */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Building2 className="w-8 h-8 text-slate-600" />
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">{restaurant.name}</h2>
-                  <p className="text-sm text-slate-600">Slug: /menu/{restaurant.slug}</p>
+      <main className="premium-container py-10 max-w-6xl mx-auto">
+        {/* Premium Durum ve Aksiyonlar */}
+        <div className="premium-card p-8 mb-10 animate-premium-fade-in">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gray-200 rounded-2xl blur-lg opacity-30"></div>
+                <div className="relative w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center">
+                  <Building2 className="w-7 h-7 text-gray-600" />
                 </div>
-                {getStatusBadge(restaurant.status)}
               </div>
-              {restaurant.status === 'pending' && (
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handleApprove}
-                    disabled={processing}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Onayla
-                  </Button>
-                  <Button
-                    onClick={() => setShowRejectDialog(true)}
-                    disabled={processing}
-                    variant="destructive"
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    <XCircle className="w-4 h-4 mr-2" />
-                    Reddet
-                  </Button>
-                </div>
-              )}
+              <div>
+                <h2 className="premium-heading-3 mb-1">{restaurant.name}</h2>
+                <p className="text-sm text-gray-600 font-medium">Slug: /menu/{restaurant.slug}</p>
+              </div>
+              {getStatusBadge(restaurant.status)}
             </div>
-          </CardContent>
-        </Card>
+            {restaurant.status === 'pending' && (
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleApprove}
+                  disabled={processing}
+                  className="premium-btn-primary bg-green-600 hover:bg-green-700"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Onayla
+                </Button>
+                <Button
+                  onClick={() => setShowRejectDialog(true)}
+                  disabled={processing}
+                  variant="destructive"
+                  className="premium-btn-secondary bg-red-600 hover:bg-red-700 border-red-600"
+                >
+                  <XCircle className="w-5 h-5 mr-2" />
+                  Reddet
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Genel Bilgiler */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Genel Bilgiler</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        <div className="premium-grid premium-grid-2 gap-6 mb-10">
+          {/* Premium Genel Bilgiler */}
+          <div className="premium-card p-8 animate-premium-fade-in">
+            <h2 className="premium-heading-3 mb-6">Genel Bilgiler</h2>
+            <div className="space-y-6">
               <div>
-                <Label className="text-sm text-slate-600">E-posta</Label>
-                <p className="font-medium">{restaurant.admin?.email || 'N/A'}</p>
+                <Label className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2 block">E-posta</Label>
+                <p className="font-bold text-gray-900">{restaurant.admin?.email || 'N/A'}</p>
               </div>
               <div>
-                <Label className="text-sm text-slate-600">Açıklama</Label>
-                <p className="font-medium">{restaurant.description || 'Açıklama yok'}</p>
+                <Label className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2 block">Açıklama</Label>
+                <p className="font-medium text-gray-900">{restaurant.description || 'Açıklama yok'}</p>
               </div>
               <div>
-                <Label className="text-sm text-slate-600">Kayıt Tarihi</Label>
-                <p className="font-medium">{new Date(restaurant.createdAt).toLocaleDateString('tr-TR', { 
+                <Label className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2 block">Kayıt Tarihi</Label>
+                <p className="font-medium text-gray-900">{new Date(restaurant.createdAt).toLocaleDateString('tr-TR', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric',
@@ -291,8 +294,8 @@ export default function RestaurantDetailPage() {
               </div>
               {restaurant.reviewedAt && (
                 <div>
-                  <Label className="text-sm text-slate-600">İnceleme Tarihi</Label>
-                  <p className="font-medium">{new Date(restaurant.reviewedAt).toLocaleDateString('tr-TR', { 
+                  <Label className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2 block">İnceleme Tarihi</Label>
+                  <p className="font-medium text-gray-900">{new Date(restaurant.reviewedAt).toLocaleDateString('tr-TR', { 
                     year: 'numeric', 
                     month: 'long', 
                     day: 'numeric',
@@ -303,65 +306,68 @@ export default function RestaurantDetailPage() {
               )}
               {restaurant.rejectionReason && (
                 <div>
-                  <Label className="text-sm text-slate-600">Red Nedeni</Label>
+                  <Label className="text-sm font-bold text-red-600 uppercase tracking-wider mb-2 block">Red Nedeni</Label>
                   <p className="font-medium text-red-600">{restaurant.rejectionReason}</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Yasal Onaylar */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Yasal Onaylar</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm">KVKK Aydınlatma Metni</span>
+          {/* Premium Yasal Onaylar */}
+          <div className="premium-card p-8 animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
+            <h2 className="premium-heading-3 mb-6">Yasal Onaylar</h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <span className="text-sm font-bold text-gray-700">KVKK Aydınlatma Metni</span>
                 {restaurant.kvkkConsent ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-6 h-6 text-red-600" />
                 )}
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm">Gizlilik Politikası</span>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <span className="text-sm font-bold text-gray-700">Gizlilik Politikası</span>
                 {restaurant.privacyConsent ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-6 h-6 text-red-600" />
                 )}
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm">SMS Pazarlama Bildirimi</span>
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <span className="text-sm font-bold text-gray-700">SMS Pazarlama Bildirimi</span>
                 {restaurant.marketingSmsConsent ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-6 h-6 text-red-600" />
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
-        {/* Belgeler */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Yüklenen Belgeler</CardTitle>
-            <CardDescription>Restoran tarafından yüklenen resmi belgeler</CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Vergi Levhası */}
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-slate-600" />
-                  <span className="font-medium">Vergi Levhası</span>
+        {/* Premium Belgeler */}
+        <div className="premium-card p-8 animate-premium-fade-in">
+          <div className="mb-6">
+            <h2 className="premium-heading-3 mb-2">Yüklenen Belgeler</h2>
+            <p className="text-gray-600 font-medium">Restoran tarafından yüklenen resmi belgeler</p>
+          </div>
+          <div className="premium-grid premium-grid-2 gap-4">
+            {/* Premium Vergi Levhası */}
+            <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 premium-hover-lift">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-blue-200 rounded-xl blur-lg opacity-30"></div>
+                    <div className="relative w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                    </div>
+                  </div>
+                  <span className="font-bold text-gray-900">Vergi Levhası</span>
                 </div>
                 {restaurant.taxDocument ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-6 h-6 text-red-600" />
                 )}
               </div>
               {restaurant.taxDocument ? (
@@ -370,6 +376,7 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handlePreviewDocument(restaurant.taxDocument!)}
+                    className="premium-btn-secondary"
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     Önizle
@@ -378,27 +385,33 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownloadDocument(restaurant.taxDocument!, 'vergi-levhasi')}
+                    className="premium-btn-secondary"
                   >
                     <Download className="w-4 h-4 mr-1" />
                     İndir
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Belge yüklenmemiş</p>
+                <p className="text-sm text-gray-500 font-medium">Belge yüklenmemiş</p>
               )}
             </div>
 
-            {/* İşletme Ruhsatı */}
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-slate-600" />
-                  <span className="font-medium">İşletme Ruhsatı</span>
+            {/* Premium İşletme Ruhsatı */}
+            <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 premium-hover-lift">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-green-200 rounded-xl blur-lg opacity-30"></div>
+                    <div className="relative w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-green-600" />
+                    </div>
+                  </div>
+                  <span className="font-bold text-gray-900">İşletme Ruhsatı</span>
                 </div>
                 {restaurant.businessLicense ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-6 h-6 text-red-600" />
                 )}
               </div>
               {restaurant.businessLicense ? (
@@ -407,6 +420,7 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handlePreviewDocument(restaurant.businessLicense!)}
+                    className="premium-btn-secondary"
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     Önizle
@@ -415,27 +429,33 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownloadDocument(restaurant.businessLicense!, 'isletme-ruhsati')}
+                    className="premium-btn-secondary"
                   >
                     <Download className="w-4 h-4 mr-1" />
                     İndir
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Belge yüklenmemiş</p>
+                <p className="text-sm text-gray-500 font-medium">Belge yüklenmemiş</p>
               )}
             </div>
 
-            {/* Ticaret Sicil Belgesi */}
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-slate-600" />
-                  <span className="font-medium">Ticaret Sicil Belgesi</span>
+            {/* Premium Ticaret Sicil Belgesi */}
+            <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 premium-hover-lift">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-purple-200 rounded-xl blur-lg opacity-30"></div>
+                    <div className="relative w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-purple-600" />
+                    </div>
+                  </div>
+                  <span className="font-bold text-gray-900">Ticaret Sicil Belgesi</span>
                 </div>
                 {restaurant.tradeRegistry ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <span className="text-xs text-slate-400">Opsiyonel</span>
+                  <span className="text-xs text-gray-400 font-medium">Opsiyonel</span>
                 )}
               </div>
               {restaurant.tradeRegistry ? (
@@ -444,6 +464,7 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handlePreviewDocument(restaurant.tradeRegistry!)}
+                    className="premium-btn-secondary"
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     Önizle
@@ -452,27 +473,33 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownloadDocument(restaurant.tradeRegistry!, 'ticaret-sicil-belgesi')}
+                    className="premium-btn-secondary"
                   >
                     <Download className="w-4 h-4 mr-1" />
                     İndir
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Belge yüklenmemiş</p>
+                <p className="text-sm text-gray-500 font-medium">Belge yüklenmemiş</p>
               )}
             </div>
 
-            {/* Kimlik Belgesi */}
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-slate-600" />
-                  <span className="font-medium">Kimlik Belgesi</span>
+            {/* Premium Kimlik Belgesi */}
+            <div className="p-6 bg-gray-50 rounded-xl border border-gray-200 premium-hover-lift">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-200 rounded-xl blur-lg opacity-30"></div>
+                    <div className="relative w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-orange-600" />
+                    </div>
+                  </div>
+                  <span className="font-bold text-gray-900">Kimlik Belgesi</span>
                 </div>
                 {restaurant.identityDocument ? (
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-6 h-6 text-green-600" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-red-600" />
+                  <XCircle className="w-6 h-6 text-red-600" />
                 )}
               </div>
               {restaurant.identityDocument ? (
@@ -481,6 +508,7 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handlePreviewDocument(restaurant.identityDocument!)}
+                    className="premium-btn-secondary"
                   >
                     <Eye className="w-4 h-4 mr-1" />
                     Önizle
@@ -489,17 +517,18 @@ export default function RestaurantDetailPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownloadDocument(restaurant.identityDocument!, 'kimlik-belgesi')}
+                    className="premium-btn-secondary"
                   >
                     <Download className="w-4 h-4 mr-1" />
                     İndir
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-slate-500">Belge yüklenmemiş</p>
+                <p className="text-sm text-gray-500 font-medium">Belge yüklenmemiş</p>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
 
       {/* Red Dialog */}
