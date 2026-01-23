@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Building2, Eye, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Building2, Eye, CheckCircle, XCircle, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Restaurant {
@@ -13,7 +13,7 @@ interface Restaurant {
   name: string;
   slug: string;
   email?: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
   admin?: {
     email: string;
@@ -24,7 +24,7 @@ export default function PlatformAdminDashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
 
   const fetchRestaurants = useCallback(async () => {
     try {
@@ -59,26 +59,37 @@ export default function PlatformAdminDashboard() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'pending':
-        return <Badge className="bg-yellow-500 hover:bg-yellow-600"><Clock className="w-3 h-3 mr-1" /> Beklemede</Badge>;
-      case 'approved':
-        return <Badge className="bg-green-500 hover:bg-green-600"><CheckCircle className="w-3 h-3 mr-1" /> Onaylandı</Badge>;
-      case 'rejected':
-        return <Badge className="bg-red-500 hover:bg-red-600"><XCircle className="w-3 h-3 mr-1" /> Reddedildi</Badge>;
+      case "pending":
+        return (
+          <Badge className="bg-yellow-500 hover:bg-yellow-600">
+            <Clock className="w-3 h-3 mr-1" /> Beklemede
+          </Badge>
+        );
+      case "approved":
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">
+            <CheckCircle className="w-3 h-3 mr-1" /> Onaylandı
+          </Badge>
+        );
+      case "rejected":
+        return (
+          <Badge className="bg-red-500 hover:bg-red-600">
+            <XCircle className="w-3 h-3 mr-1" /> Reddedildi
+          </Badge>
+        );
       default:
         return <Badge>{status}</Badge>;
     }
   };
 
-  const filteredRestaurants = filter === 'all' 
-    ? restaurants 
-    : restaurants.filter(r => r.status === filter);
+  const filteredRestaurants =
+    filter === "all" ? restaurants : restaurants.filter((r) => r.status === filter);
 
   const stats = {
     total: restaurants.length,
-    pending: restaurants.filter(r => r.status === 'pending').length,
-    approved: restaurants.filter(r => r.status === 'approved').length,
-    rejected: restaurants.filter(r => r.status === 'rejected').length,
+    pending: restaurants.filter((r) => r.status === "pending").length,
+    approved: restaurants.filter((r) => r.status === "approved").length,
+    rejected: restaurants.filter((r) => r.status === "rejected").length,
   };
 
   if (loading) {
@@ -99,14 +110,15 @@ export default function PlatformAdminDashboard() {
             </div>
             <Button
               variant="ghost"
-            onClick={() => {
-              localStorage.removeItem("platform_admin_session");
-              router.push("/platform-admin/login");
-            }}
-            className="text-slate-600 hover:text-slate-900"
-          >
-            Çıkış Yap
-          </Button>
+              onClick={() => {
+                localStorage.removeItem("platform_admin_session");
+                router.push("/platform-admin/login");
+              }}
+              className="text-slate-600 hover:text-slate-900"
+            >
+              Çıkış Yap
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -117,15 +129,24 @@ export default function PlatformAdminDashboard() {
             <div className="text-4xl font-black text-gray-900 mb-2">{stats.total}</div>
             <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Toplam Restoran</p>
           </div>
-          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
+          <div
+            className="premium-card p-8 premium-hover-lift animate-premium-fade-in"
+            style={{ animationDelay: "0.1s" }}
+          >
             <div className="text-4xl font-black text-yellow-600 mb-2">{stats.pending}</div>
             <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Bekleyen</p>
           </div>
-          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div
+            className="premium-card p-8 premium-hover-lift animate-premium-fade-in"
+            style={{ animationDelay: "0.2s" }}
+          >
             <div className="text-4xl font-black text-green-600 mb-2">{stats.approved}</div>
             <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Onaylanan</p>
           </div>
-          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.3s' }}>
+          <div
+            className="premium-card p-8 premium-hover-lift animate-premium-fade-in"
+            style={{ animationDelay: "0.3s" }}
+          >
             <div className="text-4xl font-black text-red-600 mb-2">{stats.rejected}</div>
             <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Reddedilen</p>
           </div>
@@ -135,34 +156,50 @@ export default function PlatformAdminDashboard() {
         <div className="premium-card p-6 mb-10 animate-premium-fade-in">
           <div className="flex gap-2 flex-wrap">
             <Button
-              variant={filter === 'all' ? 'default' : 'outline'}
-              onClick={() => setFilter('all')}
+              variant={filter === "all" ? "default" : "outline"}
+              onClick={() => setFilter("all")}
               size="sm"
-              className={filter === 'all' ? 'premium-btn-primary px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+              className={
+                filter === "all"
+                  ? "premium-btn-primary px-4 py-2"
+                  : "premium-btn-secondary px-4 py-2"
+              }
             >
               Tümü ({stats.total})
             </Button>
             <Button
-              variant={filter === 'pending' ? 'default' : 'outline'}
-              onClick={() => setFilter('pending')}
+              variant={filter === "pending" ? "default" : "outline"}
+              onClick={() => setFilter("pending")}
               size="sm"
-              className={filter === 'pending' ? 'bg-yellow-500 hover:bg-yellow-600 px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+              className={
+                filter === "pending"
+                  ? "bg-yellow-500 hover:bg-yellow-600 px-4 py-2"
+                  : "premium-btn-secondary px-4 py-2"
+              }
             >
               Bekleyen ({stats.pending})
             </Button>
             <Button
-              variant={filter === 'approved' ? 'default' : 'outline'}
-              onClick={() => setFilter('approved')}
+              variant={filter === "approved" ? "default" : "outline"}
+              onClick={() => setFilter("approved")}
               size="sm"
-              className={filter === 'approved' ? 'bg-green-500 hover:bg-green-600 px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+              className={
+                filter === "approved"
+                  ? "bg-green-500 hover:bg-green-600 px-4 py-2"
+                  : "premium-btn-secondary px-4 py-2"
+              }
             >
               Onaylanan ({stats.approved})
             </Button>
             <Button
-              variant={filter === 'rejected' ? 'default' : 'outline'}
-              onClick={() => setFilter('rejected')}
+              variant={filter === "rejected" ? "default" : "outline"}
+              onClick={() => setFilter("rejected")}
               size="sm"
-              className={filter === 'rejected' ? 'bg-red-500 hover:bg-red-600 px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+              className={
+                filter === "rejected"
+                  ? "bg-red-500 hover:bg-red-600 px-4 py-2"
+                  : "premium-btn-secondary px-4 py-2"
+              }
             >
               Reddedilen ({stats.rejected})
             </Button>
@@ -206,16 +243,22 @@ export default function PlatformAdminDashboard() {
                       {getStatusBadge(restaurant.status)}
                     </div>
                     <div className="text-sm text-gray-600 space-y-1 font-medium">
-                      <p>E-posta: <span className="text-gray-900 font-semibold">{restaurant.admin?.email || 'N/A'}</span></p>
-                      <p>Slug: <span className="text-gray-900 font-semibold">/menu/{restaurant.slug}</span></p>
-                      <p>Kayıt Tarihi: <span className="text-gray-900 font-semibold">{new Date(restaurant.createdAt).toLocaleDateString('tr-TR')}</span></p>
+                      <p>
+                        E-posta:{" "}
+                        <span className="text-gray-900 font-semibold">{restaurant.admin?.email || "N/A"}</span>
+                      </p>
+                      <p>
+                        Slug: <span className="text-gray-900 font-semibold">/menu/{restaurant.slug}</span>
+                      </p>
+                      <p>
+                        Kayıt Tarihi:{" "}
+                        <span className="text-gray-900 font-semibold">
+                          {new Date(restaurant.createdAt).toLocaleDateString("tr-TR")}
+                        </span>
+                      </p>
                     </div>
                   </div>
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="premium-btn-secondary ml-4"
-                  >
+                  <Button asChild variant="outline" className="premium-btn-secondary ml-4">
                     <Link href={`/platform-admin/restaurants/${restaurant.id}`}>
                       <Eye className="w-5 h-5 mr-2" />
                       Detayları Gör
@@ -230,3 +273,4 @@ export default function PlatformAdminDashboard() {
     </div>
   );
 }
+

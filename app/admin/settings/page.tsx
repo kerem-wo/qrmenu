@@ -228,7 +228,6 @@ export default function SettingsPage() {
               </div>
             </form>
           </div>
-        </div>
 
         {/* Premium Hesap Durumu */}
         <div className="premium-card p-8 mt-8 animate-premium-fade-in">
