@@ -264,74 +264,51 @@ export default function MenuPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-soft-gradient">
-        <div className="text-center glass-soft rounded-2xl p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-3 border-slate-300 border-t-slate-600 mx-auto"></div>
-          <p className="mt-4 text-slate-700 font-medium text-lg">Menü yükleniyor...</p>
+      <div className="min-h-screen flex items-center justify-center bolt-bg">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-gray-900 mx-auto"></div>
+          <p className="mt-4 text-gray-600 font-medium">Menü yükleniyor...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-soft-gradient relative overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        {/* Large Floating Circles - More Visible */}
-        <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-slate-300/40 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float-slow"></div>
-        <div className="absolute top-0 right-0 w-[550px] h-[550px] bg-slate-400/35 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float-fast" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-0 left-1/2 w-[500px] h-[500px] bg-slate-200/40 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-drift" style={{ animationDelay: '4s' }}></div>
-        <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-slate-300/30 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-subtle-float" style={{ animationDelay: '6s' }}></div>
-        
-        {/* Medium Floating Shapes */}
-        <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-slate-400/30 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-float-slow" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 right-1/3 w-[350px] h-[350px] bg-slate-200/35 rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-float-fast" style={{ animationDelay: '3s' }}></div>
-        
-        {/* Small Floating Particles */}
-        <div className="absolute top-1/3 left-1/4 w-[200px] h-[200px] bg-slate-300/40 rounded-full mix-blend-multiply filter blur-xl opacity-45 animate-pulse-soft" style={{ animationDelay: '0.5s' }}></div>
-        <div className="absolute top-2/3 right-1/4 w-[180px] h-[180px] bg-slate-400/35 rounded-full mix-blend-multiply filter blur-xl opacity-45 animate-pulse-soft" style={{ animationDelay: '2.5s' }}></div>
-        <div className="absolute bottom-1/3 left-2/3 w-[220px] h-[220px] bg-slate-200/40 rounded-full mix-blend-multiply filter blur-xl opacity-45 animate-pulse-soft" style={{ animationDelay: '4.5s' }}></div>
-        
-        {/* Subtle Geometric Shapes */}
-        <div className="absolute top-1/5 right-1/5 w-[150px] h-[150px] bg-slate-300/30 rounded-3xl mix-blend-multiply filter blur-lg opacity-40 rotate-45 animate-subtle-float" style={{ animationDelay: '1.5s' }}></div>
-        <div className="absolute bottom-1/5 left-1/5 w-[120px] h-[120px] bg-slate-400/30 rounded-3xl mix-blend-multiply filter blur-lg opacity-40 -rotate-45 animate-float-fast" style={{ animationDelay: '3.5s' }}></div>
-        <div className="absolute top-3/4 left-1/2 w-[100px] h-[100px] bg-slate-200/35 rounded-2xl mix-blend-multiply filter blur-lg opacity-40 rotate-12 animate-drift" style={{ animationDelay: '5s' }}></div>
-      </div>
+    <div className="min-h-screen bolt-bg pb-24 lg:pb-0">
       {/* Hamburger Menu Button - Fixed Top Left - Mobile Only */}
       {!isMobileMenuOpen && (
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="fixed top-4 left-4 z-[60] md:hidden p-3 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-105"
+          className="fixed top-4 left-4 z-[60] md:hidden p-3 bg-white rounded-lg shadow-md border border-gray-200 hover:bg-gray-50 transition-colors"
           aria-label="Menüyü aç"
         >
-          <Menu className="w-6 h-6 text-slate-700" />
+          <Menu className="w-5 h-5 text-gray-900" />
         </button>
       )}
 
-      {/* Premium Header */}
-      <header className="menu-header-gradient border-b border-slate-200/60 sticky top-0 z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-8">
+      {/* Bolt Food Style Header */}
+      <header className="bolt-header sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
           {restaurant && (
-            <div className="text-center animate-fade-in-up">
+            <div className="flex items-center gap-4">
               {restaurant.logo && (
-                <div className="relative w-24 h-24 mx-auto mb-6 animate-scale-in">
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl blur-sm opacity-50"></div>
-                  <div className="relative w-full h-full bg-white rounded-2xl p-2 shadow-lg">
-                    <Image
-                      src={restaurant.logo}
-                      alt={restaurant.name}
-                      fill
-                      className="object-contain rounded-xl"
-                    />
-                  </div>
+                <div className="relative w-12 h-12 flex-shrink-0">
+                  <Image
+                    src={restaurant.logo}
+                    alt={restaurant.name}
+                    fill
+                    className="object-contain rounded-lg"
+                  />
                 </div>
               )}
-              <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-3 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent">
-                {restaurant.name}
-              </h1>
-              {restaurant.description && (
-                <p className="text-slate-600 text-lg font-medium max-w-2xl mx-auto">{restaurant.description}</p>
-              )}
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl font-bold text-gray-900 truncate">
+                  {restaurant.name}
+                </h1>
+                {restaurant.description && (
+                  <p className="text-sm text-gray-600 truncate">{restaurant.description}</p>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -468,7 +445,7 @@ export default function MenuPage() {
       {/* Overlay - Mobile Only */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/30 z-40 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
@@ -506,121 +483,88 @@ export default function MenuPage() {
                 )}
               </div>
 
-              {/* Premium Filters - Desktop Only */}
-              <div className="hidden md:flex flex-wrap gap-4 items-center">
-                <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl">
-                  <Filter className="w-5 h-5 text-slate-600" />
-                  <span className="text-sm font-semibold text-slate-700">Filtreler:</span>
-                </div>
-                {/* Kategori Filtresi */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-slate-600">Kategori</span>
-                  <select
-                    value={selectedCategory || ""}
-                    onChange={(e) => setSelectedCategory(e.target.value || null)}
-                    className="text-sm input-soft px-4 py-2.5 font-semibold rounded-xl border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 min-w-[160px]"
+              {/* Bolt Food Style Category Filters - Desktop Only */}
+              <div className="hidden md:flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={`bolt-category-button ${selectedCategory === null ? 'active' : ''}`}
+                >
+                  Tümü
+                </button>
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`bolt-category-button ${selectedCategory === cat.id ? 'active' : ''}`}
                   >
-                    <option value="">Tüm Kategoriler</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Fiyat Filtresi */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-slate-600">Fiyat</span>
-                  <select
-                    value={priceFilter}
-                    onChange={(e) => setPriceFilter(e.target.value as any)}
-                    className="text-sm input-soft px-4 py-2.5 font-semibold rounded-xl border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 min-w-[140px]"
-                  >
-                    <option value="all">Tüm Fiyatlar</option>
-                    <option value="low">0 - 50 ₺</option>
-                    <option value="medium">50 - 150 ₺</option>
-                    <option value="high">150+ ₺</option>
-                  </select>
-                </div>
+                    {cat.name}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Menü İçeriği */}
+            {/* Bolt Food Style Menu Content */}
             {filteredCategories.length === 0 ? (
-              <Card className="glass-soft">
-                <CardContent className="py-12 text-center">
-                  <p className="text-slate-700 font-medium text-lg">Aradığınız kriterlere uygun ürün bulunamadı.</p>
-                </CardContent>
-              </Card>
+              <div className="py-12 text-center">
+                <p className="text-gray-600 font-medium">Aradığınız kriterlere uygun ürün bulunamadı.</p>
+              </div>
             ) : (
-              filteredCategories.map((category, catIndex) => (
-                <div key={category.id} className="space-y-8 animate-fade-in-up" style={{ animationDelay: `${catIndex * 0.1}s` }}>
-                  <div className="space-y-2">
-                    <h2 className="category-title-premium">
-                      {category.name}
-                    </h2>
-                    {category.description && (
-                      <p className="text-slate-600 font-medium text-lg ml-2">{category.description}</p>
-                    )}
-                  </div>
+              filteredCategories.map((category) => (
+                <div key={category.id} className="space-y-4">
+                  <h2 className="bolt-category-title">
+                    {category.name}
+                  </h2>
+                  {category.description && (
+                    <p className="text-gray-600 text-sm mb-4">{category.description}</p>
+                  )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                    {category.products.map((product, prodIndex) => (
-                      <div key={product.id} className="product-card-premium animate-fade-in-up" style={{ animationDelay: `${(catIndex * 0.1) + (prodIndex * 0.05)}s` }}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {category.products.map((product) => (
+                      <div key={product.id} className="bolt-product-card">
                         {product.image && (
-                          <div className="product-image-wrapper relative w-full h-64 overflow-hidden">
+                          <div className="bolt-product-image">
                             <Image
                               src={product.image}
                               alt={product.name}
                               fill
-                              className="object-cover transition-transform duration-700 group-hover:scale-110"
+                              className="object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
-                            {product.stock !== null && product.stock <= 10 && product.stock > 0 && (
-                              <div className="absolute top-4 right-4 px-3 py-1 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-bold rounded-full shadow-lg">
-                                Son {product.stock} adet
-                              </div>
-                            )}
                             {product.stock !== null && product.stock <= 0 && (
-                              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">Stokta Yok</span>
+                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                <span className="text-white font-bold text-lg">Stokta Yok</span>
                               </div>
                             )}
                           </div>
                         )}
-                        <CardContent className="p-6">
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="flex-1 pr-4">
-                              <h3 className="text-2xl font-extrabold text-slate-900 mb-2 leading-tight">
-                                {product.name}
-                              </h3>
-                              {product.stock !== null && product.stock > 10 && (
-                                <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
-                                  <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
-                                  Stokta var
-                                </p>
-                              )}
-                            </div>
-                            <div className="flex-shrink-0">
-                              <span className="price-badge-premium">
-                                {product.price.toFixed(2)} ₺
-                              </span>
-                            </div>
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="text-lg font-bold text-gray-900 flex-1 pr-2">
+                              {product.name}
+                            </h3>
+                            <span className="bolt-price flex-shrink-0">
+                              {product.price.toFixed(2)} ₺
+                            </span>
                           </div>
                           {product.description && (
-                            <p className="text-sm text-slate-600 mb-5 line-clamp-2 leading-relaxed">
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                               {product.description}
+                            </p>
+                          )}
+                          {product.stock !== null && product.stock > 0 && product.stock <= 10 && (
+                            <p className="text-xs font-semibold text-amber-600 mb-3">
+                              Son {product.stock} adet
                             </p>
                           )}
                           <button
                             onClick={() => addToCart(product)}
-                            className="add-to-cart-btn-premium"
+                            className="bolt-button-primary"
                             disabled={product.stock !== null && product.stock <= 0}
                           >
                             {product.stock !== null && product.stock <= 0 
                               ? "Stokta Yok" 
                               : "Sepete Ekle"}
                           </button>
-                        </CardContent>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -766,41 +710,63 @@ export default function MenuPage() {
         </div>
       </div>
 
-      {/* Sipariş Formu Dialog */}
+      {/* Bolt Food Style Fixed Cart Bar - Mobile */}
+      {cart.length > 0 && (
+        <div className="lg:hidden bolt-cart-bar">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-900">
+                {cart.length} {cart.length === 1 ? 'ürün' : 'ürün'} • {total.toFixed(2)} ₺
+              </p>
+              {discount > 0 && (
+                <p className="text-xs text-green-600 font-medium">İndirim: {discount.toFixed(2)} ₺</p>
+              )}
+            </div>
+            <button
+              onClick={openOrderDialog}
+              className="bolt-cart-button px-6 py-3"
+            >
+              Sepete Git
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Bolt Food Style Order Dialog */}
       <Dialog open={showOrderDialog} onOpenChange={(open) => {
         if (!open) {
           closeOrderDialog();
         }
       }}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] bg-white">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-slate-900">
+            <DialogTitle className="text-xl font-bold text-gray-900">
               Sipariş Bilgileri
             </DialogTitle>
-            <DialogDescription className="text-slate-600">
+            <DialogDescription className="text-gray-600 text-sm">
               Lütfen siparişinizi tamamlamak için bilgilerinizi girin.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* Sipariş Özeti */}
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-              <h3 className="font-semibold text-slate-900 mb-2">Sipariş Özeti</h3>
-              <div className="space-y-1 text-sm">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-3">Sipariş Özeti</h3>
+              <div className="space-y-2 text-sm">
                 {cart.map((item) => (
                   <div key={item.product.id} className="flex justify-between">
-                    <span className="text-slate-600">
+                    <span className="text-gray-600">
                       {item.product.name} x {item.quantity}
                     </span>
-                    <span className="font-medium text-slate-900">
+                    <span className="font-medium text-gray-900">
                       {(item.product.price * item.quantity).toFixed(2)} ₺
                     </span>
                   </div>
                 ))}
               </div>
-              <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center">
-                <span className="font-semibold text-slate-900">Toplam:</span>
-                <span className="text-lg font-bold text-slate-900">
+              <div className="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+                <span className="font-semibold text-gray-900">Toplam:</span>
+                <span className="text-lg font-bold text-gray-900">
                   {total.toFixed(2)} ₺
                 </span>
               </div>
@@ -809,7 +775,7 @@ export default function MenuPage() {
             {/* Form Alanları */}
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="customerName" className="text-sm font-medium text-slate-700">
+                <Label htmlFor="customerName" className="text-sm font-medium text-gray-700">
                   İsim <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -820,13 +786,13 @@ export default function MenuPage() {
                   onChange={(e) =>
                     setOrderForm({ ...orderForm, customerName: e.target.value })
                   }
-                  className="h-11"
+                  className="h-11 rounded-lg border-gray-300 focus:border-green-500"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="customerPhone" className="text-sm font-medium text-slate-700">
+                <Label htmlFor="customerPhone" className="text-sm font-medium text-gray-700">
                   Telefon <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -837,14 +803,14 @@ export default function MenuPage() {
                   onChange={(e) =>
                     setOrderForm({ ...orderForm, customerPhone: e.target.value })
                   }
-                  className="h-11"
+                  className="h-11 rounded-lg border-gray-300 focus:border-green-500"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="tableNumber" className="text-sm font-medium text-slate-700">
-                  Masa Numarası <span className="text-slate-400 text-xs">(Opsiyonel)</span>
+                <Label htmlFor="tableNumber" className="text-sm font-medium text-gray-700">
+                  Masa Numarası <span className="text-gray-400 text-xs">(Opsiyonel)</span>
                 </Label>
                 <Input
                   id="tableNumber"
@@ -854,7 +820,7 @@ export default function MenuPage() {
                   onChange={(e) =>
                     setOrderForm({ ...orderForm, tableNumber: e.target.value })
                   }
-                  className="h-11"
+                  className="h-11 rounded-lg border-gray-300 focus:border-green-500"
                 />
               </div>
             </div>
@@ -866,7 +832,7 @@ export default function MenuPage() {
               variant="outline"
               onClick={closeOrderDialog}
               disabled={isSubmittingOrder}
-              className="flex-1"
+              className="flex-1 border-gray-300 hover:bg-gray-50"
             >
               İptal
             </Button>
@@ -874,7 +840,7 @@ export default function MenuPage() {
               type="button"
               onClick={handleOrder}
               disabled={isSubmittingOrder}
-              className="flex-1 bg-slate-900 hover:bg-slate-800"
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white"
             >
               {isSubmittingOrder ? "Gönderiliyor..." : "Siparişi Onayla"}
             </Button>

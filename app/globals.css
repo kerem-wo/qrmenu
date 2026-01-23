@@ -599,4 +599,176 @@
   .animate-float-gentle {
     animation: float-gentle 3s ease-in-out infinite;
   }
+
+  /* Bolt Food Style Design */
+  .bolt-bg {
+    background: #ffffff;
+  }
+
+  .bolt-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .bolt-product-card {
+    @apply bg-white rounded-2xl overflow-hidden;
+    border: 1px solid #f3f4f6;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .bolt-product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .bolt-product-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: #f9fafb;
+    overflow: hidden;
+  }
+
+  .bolt-product-image img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bolt-category-title {
+    @apply text-2xl font-bold text-gray-900 mb-4;
+  }
+
+  .bolt-price {
+    @apply text-xl font-bold text-gray-900;
+  }
+
+  .bolt-button-primary {
+    @apply w-full py-3 rounded-xl font-semibold text-base;
+    background: #000000;
+    color: white;
+    transition: all 0.2s ease;
+  }
+
+  .bolt-button-primary:hover {
+    background: #1f2937;
+    transform: scale(1.02);
+  }
+
+  .bolt-button-primary:active {
+    transform: scale(0.98);
+  }
+
+  .bolt-cart-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border-top: 2px solid #e5e7eb;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    padding: 16px;
+  }
+
+  .bolt-cart-button {
+    @apply w-full py-4 rounded-xl font-bold text-lg;
+    background: #10b981;
+    color: white;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  .bolt-cart-button:hover {
+    background: #059669;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  }
+
+  .bolt-cart-button:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .bolt-search-input {
+    @apply w-full py-3 px-4 rounded-xl;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    transition: all 0.2s ease;
+  }
+
+  .bolt-search-input:focus {
+    outline: none;
+    border-color: #10b981;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  }
+
+  .bolt-category-button {
+    @apply px-4 py-2 rounded-lg font-medium text-sm;
+    background: #f9fafb;
+    color: #374151;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+  }
+
+  .bolt-category-button:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+  }
+
+  .bolt-category-button.active {
+    background: #000000;
+    color: white;
+    border-color: #000000;
+  }
+
+  .bolt-cart-item {
+    @apply flex items-center justify-between p-3 rounded-xl;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+  }
+
+  .bolt-quantity-button {
+    @apply w-8 h-8 rounded-lg font-bold;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    transition: all 0.2s ease;
+  }
+
+  .bolt-quantity-button:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+  }
+
+  .bolt-quantity-display {
+    @apply w-10 text-center font-bold;
+    color: #111827;
+  }
+
+  .bolt-empty-cart {
+    @apply text-center py-12;
+  }
+
+  .bolt-empty-cart-icon {
+    @apply w-16 h-16 mx-auto mb-4;
+    color: #d1d5db;
+  }
+
+  .bolt-total-price {
+    @apply text-2xl font-bold;
+    color: #111827;
+  }
+
+  .bolt-subtotal {
+    @apply text-sm text-gray-600;
+  }
+
+  .bolt-discount {
+    @apply text-sm font-semibold;
+    color: #10b981;
+  }
 }
