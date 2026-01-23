@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash2, ArrowLeft, Package } from "lucide-react";
 import Image from "next/image";
@@ -53,7 +52,7 @@ export default function ProductsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchProducts]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) return;
 
     try {
@@ -63,7 +62,7 @@ export default function ProductsPage() {
 
       if (res.ok) {
         toast.success("Ürün silindi");
-        setProducts(products.filter((p) => p.id !== id));
+        setProducts((prevProducts) => prevProducts.filter((p) => p.id !== id));
       } else {
         const data = await res.json();
         toast.error(data.error || "Ürün silinirken bir hata oluştu");
@@ -71,7 +70,7 @@ export default function ProductsPage() {
     } catch (error) {
       console.error("Error deleting product:", error);
     }
-  };
+  }, []);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>;
@@ -103,22 +102,26 @@ export default function ProductsPage() {
 
       <main className="premium-container py-10">
         {products.length === 0 ? (
-          <Card className="card-modern">
-            <CardContent className="py-16 text-center">
-              <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600 mb-6">Henüz ürün eklenmemiş.</p>
-              <Button asChild className="bg-slate-900 hover:bg-slate-800">
-                <Link href="/admin/products/new">
-                  <Plus className="w-4 h-4 mr-2" />
-                  İlk Ürünü Ekle
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="premium-card p-16 text-center animate-premium-fade-in">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gray-200 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center">
+                <Package className="w-10 h-10 text-gray-400" />
+              </div>
+            </div>
+            <h3 className="premium-heading-3 mb-4">Henüz ürün eklenmemiş</h3>
+            <p className="text-gray-600 mb-8 font-medium">İlk ürününüzü ekleyerek başlayın</p>
+            <Button asChild className="premium-btn-primary">
+              <Link href="/admin/products/new">
+                <Plus className="w-5 h-5 mr-2" />
+                İlk Ürünü Ekle
+              </Link>
+            </Button>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="premium-grid premium-grid-3">
             {products.map((product) => (
-              <Card key={product.id} className="card-modern overflow-hidden">
+              <div key={product.id} className="premium-card overflow-hidden premium-hover-lift animate-premium-fade-in">
                 {product.image && (
                   <div className="relative w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                     <Image

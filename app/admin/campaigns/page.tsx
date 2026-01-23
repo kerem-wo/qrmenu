@@ -51,7 +51,7 @@ export default function CampaignsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchCampaigns]);
 
-  const deleteCampaign = async (id: string) => {
+  const deleteCampaign = useCallback(async (id: string) => {
     if (!confirm("Bu kampanyayı silmek istediğinize emin misiniz?")) return;
 
     try {
@@ -69,7 +69,7 @@ export default function CampaignsPage() {
       console.error("Error deleting campaign:", error);
       toast.error("Bir hata oluştu!");
     }
-  };
+  }, [fetchCampaigns]);
 
   if (loading) {
     return (
@@ -108,10 +108,9 @@ export default function CampaignsPage() {
             <p className="text-gray-600 mb-8 font-medium">İlk kampanyanızı ekleyerek başlayın</p>
             <Link href="/admin/campaigns/new">
               <Button className="premium-btn-primary">
-                  İlk Kampanyayı Oluştur
-                </Button>
-              </Link>
-            </div>
+                İlk Kampanyayı Oluştur
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="premium-grid premium-grid-3">
@@ -174,7 +173,7 @@ export default function CampaignsPage() {
             })}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }
