@@ -308,26 +308,29 @@ export default function MenuPage() {
         </button>
       )}
 
-      {/* Header */}
-      <header className="glass-soft border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-4 py-6">
+      {/* Premium Header */}
+      <header className="menu-header-gradient border-b border-slate-200/60 sticky top-0 z-50 shadow-lg">
+        <div className="container mx-auto px-4 py-8">
           {restaurant && (
-            <div className="text-center">
+            <div className="text-center animate-fade-in-up">
               {restaurant.logo && (
-                <div className="relative w-20 h-20 mx-auto mb-4">
-                  <Image
-                    src={restaurant.logo}
-                    alt={restaurant.name}
-                    fill
-                    className="object-contain rounded-lg"
-                  />
+                <div className="relative w-24 h-24 mx-auto mb-6 animate-scale-in">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl blur-sm opacity-50"></div>
+                  <div className="relative w-full h-full bg-white rounded-2xl p-2 shadow-lg">
+                    <Image
+                      src={restaurant.logo}
+                      alt={restaurant.name}
+                      fill
+                      className="object-contain rounded-xl"
+                    />
+                  </div>
                 </div>
               )}
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-3 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 bg-clip-text text-transparent">
                 {restaurant.name}
               </h1>
               {restaurant.description && (
-                <p className="text-slate-600">{restaurant.description}</p>
+                <p className="text-slate-600 text-lg font-medium max-w-2xl mx-auto">{restaurant.description}</p>
               )}
             </div>
           )}
@@ -474,28 +477,28 @@ export default function MenuPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Menu Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Arama ve Filtreler */}
-            <div className="glass-soft p-6 rounded-2xl space-y-4 shadow-lg animate-fade-in-up">
-              {/* Arama */}
+            {/* Premium Search and Filters */}
+            <div className="glass-soft p-6 md:p-8 rounded-3xl space-y-6 shadow-xl animate-fade-in-up border border-slate-200/60">
+              {/* Premium Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-500 z-10 pointer-events-none" />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none">
+                  <Search className="w-6 h-6 text-slate-400" />
+                </div>
                 <input
                   type="text"
                   placeholder="Ürün ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-slate-300/60 bg-white/90 text-base focus:outline-none focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200 transition-all"
+                  className="search-bar-premium h-14 w-full rounded-2xl text-base font-medium text-slate-900 placeholder:text-slate-400"
                   style={{ 
-                    paddingLeft: '3rem', 
-                    paddingRight: searchQuery ? '3rem' : '1rem',
-                    paddingTop: '0.75rem',
-                    paddingBottom: '0.75rem'
+                    paddingLeft: '3.5rem', 
+                    paddingRight: searchQuery ? '3.5rem' : '1.5rem',
                   }}
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 z-10 hover:scale-110 transition-transform p-1"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 hover:scale-110 transition-all p-2 rounded-lg hover:bg-slate-100"
                     aria-label="Aramayı temizle"
                   >
                     <X className="w-5 h-5 text-slate-500" />
@@ -503,18 +506,21 @@ export default function MenuPage() {
                 )}
               </div>
 
-              {/* Filtreler - Desktop Only */}
-              <div className="hidden md:flex flex-wrap gap-4">
+              {/* Premium Filters - Desktop Only */}
+              <div className="hidden md:flex flex-wrap gap-4 items-center">
+                <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl">
+                  <Filter className="w-5 h-5 text-slate-600" />
+                  <span className="text-sm font-semibold text-slate-700">Filtreler:</span>
+                </div>
                 {/* Kategori Filtresi */}
-                <div className="flex items-center gap-3">
-                  <Filter className="w-5 h-5 text-slate-500" />
-                  <span className="text-sm font-medium text-slate-700">Kategori:</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-slate-600">Kategori</span>
                   <select
                     value={selectedCategory || ""}
                     onChange={(e) => setSelectedCategory(e.target.value || null)}
-                    className="text-sm input-soft px-4 py-2 font-medium"
+                    className="text-sm input-soft px-4 py-2.5 font-semibold rounded-xl border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 min-w-[160px]"
                   >
-                    <option value="">Tümü</option>
+                    <option value="">Tüm Kategoriler</option>
                     {categories.map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.name}</option>
                     ))}
@@ -522,16 +528,16 @@ export default function MenuPage() {
                 </div>
 
                 {/* Fiyat Filtresi */}
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-slate-700">Fiyat:</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-slate-600">Fiyat</span>
                   <select
                     value={priceFilter}
                     onChange={(e) => setPriceFilter(e.target.value as any)}
-                    className="text-sm input-soft px-4 py-2 font-medium"
+                    className="text-sm input-soft px-4 py-2.5 font-semibold rounded-xl border-slate-300 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 min-w-[140px]"
                   >
-                    <option value="all">Tümü</option>
-                    <option value="low">0-50 ₺</option>
-                    <option value="medium">50-150 ₺</option>
+                    <option value="all">Tüm Fiyatlar</option>
+                    <option value="low">0 - 50 ₺</option>
+                    <option value="medium">50 - 150 ₺</option>
                     <option value="high">150+ ₺</option>
                   </select>
                 </div>
@@ -547,65 +553,75 @@ export default function MenuPage() {
               </Card>
             ) : (
               filteredCategories.map((category, catIndex) => (
-                <div key={category.id} className="space-y-6 animate-fade-in-up" style={{ animationDelay: `${catIndex * 0.1}s` }}>
-                  <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 bg-clip-text text-transparent mb-2">
+                <div key={category.id} className="space-y-8 animate-fade-in-up" style={{ animationDelay: `${catIndex * 0.1}s` }}>
+                  <div className="space-y-2">
+                    <h2 className="category-title-premium">
                       {category.name}
                     </h2>
                     {category.description && (
-                      <p className="text-slate-600 font-medium">{category.description}</p>
+                      <p className="text-slate-600 font-medium text-lg ml-2">{category.description}</p>
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
                     {category.products.map((product, prodIndex) => (
-                      <Card key={product.id} className="card-soft overflow-hidden animate-fade-in-up" style={{ animationDelay: `${(catIndex * 0.1) + (prodIndex * 0.05)}s` }}>
+                      <div key={product.id} className="product-card-premium animate-fade-in-up" style={{ animationDelay: `${(catIndex * 0.1) + (prodIndex * 0.05)}s` }}>
                         {product.image && (
-                          <div className="relative w-full h-56 bg-gradient-to-br from-slate-100 to-slate-200 overflow-hidden group">
+                          <div className="product-image-wrapper relative w-full h-64 overflow-hidden">
                             <Image
                               src={product.image}
                               alt={product.name}
                               fill
-                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              className="object-cover transition-transform duration-700 group-hover:scale-110"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent"></div>
+                            {product.stock !== null && product.stock <= 10 && product.stock > 0 && (
+                              <div className="absolute top-4 right-4 px-3 py-1 bg-amber-500/90 backdrop-blur-sm text-white text-xs font-bold rounded-full shadow-lg">
+                                Son {product.stock} adet
+                              </div>
+                            )}
+                            {product.stock !== null && product.stock <= 0 && (
+                              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                                <span className="text-white font-bold text-xl">Stokta Yok</span>
+                              </div>
+                            )}
                           </div>
                         )}
                         <CardContent className="p-6">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex-1">
-                              <h3 className="text-xl font-bold text-slate-900 mb-1">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex-1 pr-4">
+                              <h3 className="text-2xl font-extrabold text-slate-900 mb-2 leading-tight">
                                 {product.name}
                               </h3>
-                              {product.stock !== null && (
-                                <p className={`text-xs font-medium mt-1 ${
-                                  product.stock > 10 ? 'text-emerald-600' : product.stock > 0 ? 'text-amber-600' : 'text-red-500'
-                                }`}>
-                                  Stok: {product.stock} adet
+                              {product.stock !== null && product.stock > 10 && (
+                                <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                                  <span className="w-2 h-2 bg-emerald-500 rounded-full"></span>
+                                  Stokta var
                                 </p>
                               )}
                             </div>
-                            <span className="text-2xl font-bold text-slate-800">
-                              {product.price.toFixed(2)} ₺
-                            </span>
+                            <div className="flex-shrink-0">
+                              <span className="price-badge-premium">
+                                {product.price.toFixed(2)} ₺
+                              </span>
+                            </div>
                           </div>
                           {product.description && (
-                            <p className="text-sm text-slate-600 mb-4 line-clamp-2">
+                            <p className="text-sm text-slate-600 mb-5 line-clamp-2 leading-relaxed">
                               {product.description}
                             </p>
                           )}
-                          <Button
+                          <button
                             onClick={() => addToCart(product)}
-                            className="w-full btn-soft-primary"
-                            size="sm"
+                            className="add-to-cart-btn-premium"
                             disabled={product.stock !== null && product.stock <= 0}
                           >
                             {product.stock !== null && product.stock <= 0 
                               ? "Stokta Yok" 
                               : "Sepete Ekle"}
-                          </Button>
+                          </button>
                         </CardContent>
-                      </Card>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -613,135 +629,139 @@ export default function MenuPage() {
             )}
           </div>
 
-          {/* Cart Sidebar */}
+          {/* Premium Cart Sidebar */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-24 glass-soft shadow-xl animate-fade-in-up animate-delay-4">
-              <CardContent className="p-6">
-                <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-slate-800">
-                  <div className="p-2 bg-gradient-to-br from-slate-400 to-slate-500 rounded-xl">
-                    <ShoppingCart className="w-6 h-6 text-white" />
+            <div className="sticky top-24 cart-sidebar-premium rounded-3xl shadow-2xl animate-fade-in-up animate-delay-4">
+              <div className="p-6 md:p-8">
+                <h3 className="text-3xl font-extrabold mb-8 flex items-center gap-4 text-slate-900">
+                  <div className="p-3 bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-lg">
+                    <ShoppingCart className="w-7 h-7 text-white" />
                   </div>
-                  Sepetim
+                  <span className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+                    Sepetim
+                  </span>
                 </h3>
 
                 {cart.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
-                      <ShoppingCart className="w-10 h-10 text-slate-400" />
+                  <div className="text-center py-16">
+                    <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl flex items-center justify-center shadow-inner animate-float-gentle">
+                      <ShoppingCart className="w-12 h-12 text-slate-400" />
                     </div>
-                    <p className="text-slate-600 font-medium">Sepetiniz boş</p>
+                    <p className="text-slate-600 font-semibold text-lg">Sepetiniz boş</p>
+                    <p className="text-slate-500 text-sm mt-2">Ürünleri sepete ekleyerek başlayın</p>
                   </div>
                 ) : (
                   <>
-                    <div className="space-y-3 mb-6 max-h-96 overflow-y-auto pr-2">
+                    <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                       {cart.map((item, index) => (
                         <div
                           key={item.product.id}
-                          className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm hover:shadow-md transition-all animate-fade-in-up border border-slate-200/60"
+                          className="cart-item-premium animate-fade-in-up"
                           style={{ animationDelay: `${index * 0.05}s` }}
                         >
-                          <div className="flex-1">
-                            <p className="font-bold text-sm text-slate-900">
-                              {item.product.name}
-                            </p>
-                            <p className="text-xs font-semibold text-slate-600 mt-1">
-                              {item.product.price.toFixed(2)} ₺
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 border border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-all"
-                              onClick={() =>
-                                updateQuantity(
-                                  item.product.id,
-                                  item.quantity - 1
-                                )
-                              }
-                            >
-                              <span className="text-slate-700 font-bold">-</span>
-                            </Button>
-                            <span className="w-10 text-center text-sm font-bold text-slate-900 bg-slate-50 px-2 py-1 rounded border border-slate-200">
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              className="h-8 w-8 border border-slate-300 hover:bg-slate-100 hover:border-slate-400 transition-all"
-                              onClick={() =>
-                                updateQuantity(
-                                  item.product.id,
-                                  item.quantity + 1
-                                )
-                              }
-                              disabled={item.product.stock !== null && item.quantity >= item.product.stock}
-                            >
-                              <span className="text-slate-700 font-bold">+</span>
-                            </Button>
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-extrabold text-base text-slate-900 truncate">
+                                {item.product.name}
+                              </p>
+                              <p className="text-sm font-semibold text-slate-600 mt-1">
+                                {item.product.price.toFixed(2)} ₺
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.product.id,
+                                    item.quantity - 1
+                                  )
+                                }
+                                className="h-9 w-9 rounded-xl border-2 border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-center font-bold text-slate-700 hover:scale-110 active:scale-95"
+                              >
+                                -
+                              </button>
+                              <span className="w-12 text-center text-base font-extrabold text-slate-900 bg-gradient-to-br from-slate-50 to-slate-100 px-3 py-1.5 rounded-xl border-2 border-slate-200 shadow-sm">
+                                {item.quantity}
+                              </span>
+                              <button
+                                onClick={() =>
+                                  updateQuantity(
+                                    item.product.id,
+                                    item.quantity + 1
+                                  )
+                                }
+                                disabled={item.product.stock !== null && item.quantity >= item.product.stock}
+                                className="h-9 w-9 rounded-xl border-2 border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-all flex items-center justify-center font-bold text-slate-700 hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                              >
+                                +
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
 
-                    <div className="border-t border-slate-200 pt-4 space-y-4">
-                      {/* Kupon Kodu */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-700">Kupon Kodu</label>
+                    <div className="border-t-2 border-slate-200 pt-6 space-y-6">
+                      {/* Premium Kupon Kodu */}
+                      <div className="space-y-3">
+                        <label className="text-sm font-bold text-slate-700 uppercase tracking-wide">Kupon Kodu</label>
                         <div className="flex gap-2">
                           <Input
                             type="text"
                             placeholder="Kupon kodu girin"
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                            className="h-10 text-sm input-soft"
+                            className="h-12 text-sm font-semibold input-soft rounded-xl border-2 border-slate-300 focus:border-slate-500"
                           />
-                          <Button
+                          <button
                             type="button"
                             onClick={applyCoupon}
-                            size="sm"
-                            className="h-10 btn-soft-primary px-4"
+                            className="h-12 px-6 bg-gradient-to-r from-slate-700 to-slate-800 text-white font-bold rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
                           >
                             Uygula
-                          </Button>
+                          </button>
                         </div>
                         {discount > 0 && (
-                          <p className="text-sm font-medium text-emerald-600">İndirim: {discount.toFixed(2)} ₺</p>
+                          <div className="p-3 bg-emerald-50 border-2 border-emerald-200 rounded-xl">
+                            <p className="text-sm font-bold text-emerald-700 flex items-center gap-2">
+                              <span className="text-lg">✓</span>
+                              İndirim: {discount.toFixed(2)} ₺
+                            </p>
+                          </div>
                         )}
                       </div>
 
-                      {/* Fiyat Özeti */}
-                      <div className="space-y-3 text-sm bg-slate-50 rounded-xl p-4 border border-slate-200/60">
-                        <div className="flex justify-between">
-                          <span className="text-slate-600 font-medium">Ara Toplam:</span>
-                          <span className="text-slate-900 font-bold">{subtotal.toFixed(2)} ₺</span>
+                      {/* Premium Fiyat Özeti */}
+                      <div className="space-y-4 text-base bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-6 border-2 border-slate-200 shadow-inner">
+                        <div className="flex justify-between items-center">
+                          <span className="text-slate-600 font-semibold">Ara Toplam:</span>
+                          <span className="text-slate-900 font-extrabold text-lg">{subtotal.toFixed(2)} ₺</span>
                         </div>
                         {discount > 0 && (
-                          <div className="flex justify-between text-emerald-600">
-                            <span className="font-medium">İndirim:</span>
-                            <span className="font-bold">-{discount.toFixed(2)} ₺</span>
+                          <div className="flex justify-between items-center text-emerald-600">
+                            <span className="font-semibold">İndirim:</span>
+                            <span className="font-extrabold text-lg">-{discount.toFixed(2)} ₺</span>
                           </div>
                         )}
-                        <div className="flex justify-between items-center pt-3 border-t border-slate-200">
-                          <span className="text-xl font-bold text-slate-900">Toplam:</span>
-                          <span className="text-2xl font-extrabold text-slate-900">
+                        <div className="flex justify-between items-center pt-4 border-t-2 border-slate-300">
+                          <span className="text-xl font-extrabold text-slate-900">Toplam:</span>
+                          <span className="text-3xl font-black text-slate-900">
                             {total.toFixed(2)} ₺
                           </span>
                         </div>
                       </div>
-                      <Button 
-                        className="w-full btn-soft-success text-lg py-6 font-bold shadow-lg" 
-                        size="lg"
+                      <button 
+                        className="order-button-premium"
                         onClick={openOrderDialog}
                         disabled={cart.length === 0}
                       >
                         Sipariş Ver
-                      </Button>
+                      </button>
                     </div>
                   </>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </div>
