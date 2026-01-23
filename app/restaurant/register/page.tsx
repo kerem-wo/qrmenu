@@ -202,23 +202,22 @@ export default function RestaurantRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4 py-8">
-      <div className="w-full max-w-2xl">
-        <Card className="card-modern shadow-xl">
-          <CardHeader className="text-center space-y-2">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center">
-                <Building2 className="w-8 h-8 text-white" />
+    <div className="min-h-screen premium-bg-gradient flex items-center justify-center p-4 py-8">
+      <div className="w-full max-w-2xl animate-premium-scale-in">
+        <div className="premium-card p-10">
+          <div className="text-center mb-8">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-blue-600 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <Building2 className="w-10 h-10 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-slate-900">
-              Restoran Kaydı
-            </CardTitle>
-            <CardDescription className="text-slate-600">
+            <h1 className="premium-heading-2 mb-3">Restoran Kaydı</h1>
+            <p className="text-gray-600 font-medium text-lg">
               Restoranınızı kaydedin ve dijital menünüzü oluşturun
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </p>
+          </div>
+          <div>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Restoran Adı */}
               <div className="space-y-2">
@@ -235,7 +234,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, restaurantName: e.target.value })
                     }
-                    className="pl-10 border-slate-300 focus:border-slate-900"
+                    className="premium-input pl-10"
                     required
                   />
                 </div>
@@ -256,7 +255,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="pl-10 border-slate-300 focus:border-slate-900"
+                    className="premium-input pl-10"
                     required
                   />
                 </div>
@@ -280,7 +279,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
-                    className="pl-10 border-slate-300 focus:border-slate-900"
+                    className="premium-input pl-10"
                     required
                     minLength={6}
                   />
@@ -302,7 +301,7 @@ export default function RestaurantRegisterPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, confirmPassword: e.target.value })
                     }
-                    className="pl-10 border-slate-300 focus:border-slate-900"
+                    className="premium-input pl-10"
                     required
                     minLength={6}
                   />

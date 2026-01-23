@@ -179,31 +179,33 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
+    <div className="min-h-screen premium-bg-gradient">
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex items-center justify-between gap-4 py-5">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
+              <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
                 <Link href="/admin/dashboard">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Geri
                 </Link>
               </Button>
-              <h1 className="text-2xl font-bold text-slate-900">Siparişler</h1>
-              {orders.length > 0 && (
-                <span className="text-sm text-slate-600">({orders.length} sipariş)</span>
-              )}
+              <div>
+                <h1 className="premium-heading-3">Siparişler</h1>
+                {orders.length > 0 && (
+                  <span className="text-sm text-gray-600 font-medium">({orders.length} sipariş)</span>
+                )}
+              </div>
             </div>
             {orders.length > 0 && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 {selectedOrders.size > 0 && (
                   <>
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={deleteSelectedOrders}
-                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      className="premium-btn-secondary text-red-600 border-red-300 hover:bg-red-50 px-4 py-2"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Seçili Olanları Sil ({selectedOrders.size})
@@ -212,6 +214,7 @@ export default function OrdersPage() {
                       size="sm"
                       variant="ghost"
                       onClick={clearSelection}
+                      className="premium-btn-secondary px-4 py-2"
                     >
                       Seçimi Temizle
                     </Button>
@@ -221,7 +224,7 @@ export default function OrdersPage() {
                   size="sm"
                   variant="outline"
                   onClick={selectAllOrders}
-                  className="border-slate-300"
+                  className="premium-btn-secondary px-4 py-2"
                 >
                   Tümünü Seç
                 </Button>
@@ -229,7 +232,7 @@ export default function OrdersPage() {
                   size="sm"
                   variant="outline"
                   onClick={deleteAllOrders}
-                  className="text-red-600 border-red-300 hover:bg-red-50"
+                  className="premium-btn-secondary text-red-600 border-red-300 hover:bg-red-50 px-4 py-2"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   Hepsini Temizle
@@ -240,21 +243,25 @@ export default function OrdersPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
+      <main className="premium-container py-10">
         {orders.length === 0 ? (
-          <Card className="card-modern">
-            <CardContent className="py-16 text-center">
-              <ShoppingCart className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-              <p className="text-slate-600">Henüz sipariş yok.</p>
-            </CardContent>
-          </Card>
+          <div className="premium-card p-16 text-center animate-premium-fade-in">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gray-200 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center">
+                <ShoppingCart className="w-10 h-10 text-gray-400" />
+              </div>
+            </div>
+            <h3 className="premium-heading-3 mb-4">Henüz sipariş yok</h3>
+            <p className="text-gray-600 font-medium">Müşteriler sipariş verdiğinde burada görünecek</p>
+          </div>
         ) : (
           <div className="space-y-4">
-            {orders.map((order) => {
+            {orders.map((order, index) => {
               const StatusIcon = statusConfig[order.status]?.icon || Clock;
               const isSelected = selectedOrders.has(order.id);
               return (
-                <Card key={order.id} className={`card-modern ${isSelected ? 'ring-2 ring-slate-900' : ''}`}>
+                <div key={order.id} className={`premium-card ${isSelected ? 'ring-2 ring-green-500' : ''} animate-premium-fade-in`} style={{ animationDelay: `${index * 0.05}s` }}>
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex items-start gap-3">

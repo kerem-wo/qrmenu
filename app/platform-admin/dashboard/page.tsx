@@ -90,14 +90,15 @@ export default function PlatformAdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-slate-900">Platform Yönetimi</h1>
-          </div>
-          <Button
-            variant="ghost"
+    <div className="min-h-screen premium-bg-gradient">
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex items-center justify-between py-5">
+            <div className="flex items-center gap-4">
+              <h1 className="premium-heading-3">Platform Yönetimi</h1>
+            </div>
+            <Button
+              variant="ghost"
             onClick={() => {
               localStorage.removeItem("platform_admin_session");
               router.push("/platform-admin/login");
