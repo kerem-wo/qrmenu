@@ -59,8 +59,11 @@ export default function AnalyticsPage() {
             <option value="30">Son 30 Gün</option>
             <option value="90">Son 90 Gün</option>
           </select>
+          </div>
         </div>
+      </header>
 
+      <main className="premium-container py-10">
         {analytics && (
           <>
             {/* Premium İstatistik Kartları */}
@@ -163,7 +166,7 @@ export default function AnalyticsPage() {
             </div>
           </>
         )}
-      </div>
+      </main>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -151,14 +150,14 @@ function CustomerRegisterContent() {
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-slate-600">Zaten hesabınız var mı? </span>
-              <Link href={`/customer/login?restaurantId=${restaurantId || ""}`} className="text-slate-900 font-medium hover:underline">
+              <span className="text-gray-600 font-medium">Zaten hesabınız var mı? </span>
+              <Link href={`/customer/login?restaurantId=${restaurantId || ""}`} className="text-gray-900 font-bold hover:text-green-600 transition-colors">
                 Giriş Yap
               </Link>
             </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
