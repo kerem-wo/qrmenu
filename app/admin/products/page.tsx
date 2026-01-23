@@ -120,8 +120,8 @@ export default function ProductsPage() {
           </div>
         ) : (
           <div className="premium-grid premium-grid-3">
-            {products.map((product) => (
-              <div key={product.id} className="premium-card overflow-hidden premium-hover-lift animate-premium-fade-in">
+            {products.map((product, index) => (
+              <div key={product.id} className="premium-card overflow-hidden premium-hover-lift animate-premium-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                 {product.image && (
                   <div className="relative w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                     <Image
