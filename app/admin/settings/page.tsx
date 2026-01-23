@@ -132,75 +132,76 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen premium-bg-gradient">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
-            <Link href="/admin/dashboard">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Geri
-            </Link>
-          </Button>
-          <h1 className="text-2xl font-bold text-slate-900">Restoran Ayarları</h1>
+      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
+        <div className="premium-container">
+          <div className="flex items-center gap-4 py-5">
+            <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
+              <Link href="/admin/dashboard">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Geri
+              </Link>
+            </Button>
+            <h1 className="premium-heading-3">Restoran Ayarları</h1>
+          </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8 max-w-2xl">
-        <Card className="card-modern">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-slate-900">Genel Bilgiler</CardTitle>
-            <CardDescription className="text-slate-600">Restoran bilgilerinizi güncelleyin</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-slate-700">Restoran Adı *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  placeholder="Restoran Adı"
-                  className="h-11 border-slate-300 focus:border-slate-900"
-                />
-              </div>
+      <main className="premium-container py-10 max-w-2xl mx-auto">
+        <div className="premium-card p-10 animate-premium-fade-in">
+          <div className="mb-8">
+            <h2 className="premium-heading-3 mb-2">Genel Bilgiler</h2>
+            <p className="text-gray-600 font-medium">Restoran bilgilerinizi güncelleyin</p>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-bold text-gray-700">Restoran Adı *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                placeholder="Restoran Adı"
+                className="premium-input"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="slug" className="text-sm font-medium text-slate-700">Menü Linki (Slug)</Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
-                  disabled
-                  className="bg-slate-50 h-11"
-                />
-                <p className="text-xs text-slate-600 mt-1">
-                  Menü linkiniz: <span className="font-mono text-slate-900">/menu/{formData.slug}</span>
-                </p>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="slug" className="text-sm font-bold text-gray-700">Menü Linki (Slug)</Label>
+              <Input
+                id="slug"
+                value={formData.slug}
+                disabled
+                className="premium-input bg-gray-50"
+              />
+              <p className="text-xs text-gray-600 mt-1 font-medium">
+                Menü linkiniz: <span className="font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded-lg">/menu/{formData.slug}</span>
+              </p>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description" className="text-sm font-medium text-slate-700">Açıklama</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Restoran hakkında bilgi..."
-                  rows={4}
-                  className="border-slate-300 focus:border-slate-900"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-sm font-bold text-gray-700">Açıklama</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Restoran hakkında bilgi..."
+                rows={4}
+                className="premium-input"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="logo" className="text-sm font-medium text-slate-700">Logo URL</Label>
-                <Input
-                  id="logo"
-                  type="url"
-                  value={formData.logo}
-                  onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-                  placeholder="https://example.com/logo.png"
-                  className="h-11 border-slate-300 focus:border-slate-900"
-                />
-                {formData.logo && (
-                  <div className="mt-3 p-4 bg-slate-50 rounded-lg inline-block">
+            <div className="space-y-2">
+              <Label htmlFor="logo" className="text-sm font-bold text-gray-700">Logo URL</Label>
+              <Input
+                id="logo"
+                type="url"
+                value={formData.logo}
+                onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                placeholder="https://example.com/logo.png"
+                className="premium-input"
+              />
+              {formData.logo && (
+                <div className="mt-3 p-4 bg-gray-50 rounded-xl inline-block">
                     <img
                       src={formData.logo}
                       alt="Logo"
@@ -213,75 +214,76 @@ export default function SettingsPage() {
                 )}
               </div>
 
-              <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={saving} className="flex-1 bg-slate-900 hover:bg-slate-800 h-11">
+              <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <Button type="submit" disabled={saving} className="premium-btn-primary flex-1">
                   {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => router.back()}
-                  className="flex-1 border-slate-300 h-11"
+                  className="premium-btn-secondary flex-1"
                 >
                   İptal
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Hesap Durumu */}
-        <Card className="card-modern mt-8">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-slate-900">Hesap Durumu</CardTitle>
-            <CardDescription className="text-slate-600">
+        {/* Premium Hesap Durumu */}
+        <div className="premium-card p-8 mt-8 animate-premium-fade-in">
+          <div className="mb-6">
+            <h2 className="premium-heading-3 mb-2">Hesap Durumu</h2>
+            <p className="text-gray-600 font-medium">
               Hesabınızın onay durumu
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-sm text-slate-600 mb-2">
-                Hesabınız platform yöneticileri tarafından incelenmektedir. 
-                Belgeleriniz ve bilgileriniz kontrol edildikten sonra hesabınız aktif hale gelecektir.
-              </p>
-              <p className="text-xs text-slate-500">
-                Belgelerinizi görmek için platform yöneticileri ile iletişime geçiniz.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            </p>
+          </div>
+          <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
+            <p className="text-sm text-gray-600 mb-2 font-medium">
+              Hesabınız platform yöneticileri tarafından incelenmektedir. 
+              Belgeleriniz ve bilgileriniz kontrol edildikten sonra hesabınız aktif hale gelecektir.
+            </p>
+            <p className="text-xs text-gray-500 font-medium">
+              Belgelerinizi görmek için platform yöneticileri ile iletişime geçiniz.
+            </p>
+          </div>
+        </div>
 
-        {/* Danger Zone - Account Deletion */}
-        <Card className="card-modern mt-8 border-red-200">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-red-600">Tehlikeli Bölge</CardTitle>
-            <CardDescription className="text-slate-600">
+        {/* Premium Danger Zone - Account Deletion */}
+        <div className="premium-card p-8 mt-8 border-2 border-red-200 animate-premium-fade-in">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-red-600 mb-2">Tehlikeli Bölge</h2>
+            <p className="text-gray-600 font-medium">
               Hesabınızı kalıcı olarak silin. Bu işlem geri alınamaz.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200">
-              <div className="flex items-center gap-3">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
-                <div>
-                  <p className="font-semibold text-red-900">Hesabı Sil</p>
-                  <p className="text-sm text-red-700">
-                    Tüm restoran bilgileri, ürünler, kategoriler ve siparişler kalıcı olarak silinecektir.
-                  </p>
+            </p>
+          </div>
+          <div className="flex items-center justify-between p-6 bg-red-50 rounded-xl border border-red-200">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-red-200 rounded-xl blur-lg opacity-30"></div>
+                <div className="relative w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-red-600" />
                 </div>
               </div>
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={() => setShowDeleteDialog(true)}
-                className="bg-red-600 hover:bg-red-700 text-white"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Hesabı Sil
-              </Button>
+              <div>
+                <p className="font-bold text-red-900 mb-1">Hesabı Sil</p>
+                <p className="text-sm text-red-700 font-medium">
+                  Tüm restoran bilgileri, ürünler, kategoriler ve siparişler kalıcı olarak silinecektir.
+                </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setShowDeleteDialog(true)}
+              className="premium-btn-secondary bg-red-600 hover:bg-red-700 text-white border-red-600"
+            >
+              <Trash2 className="w-5 h-5 mr-2" />
+              Hesabı Sil
+            </Button>
+          </div>
+        </div>
       </main>
 
       {/* Delete Confirmation Dialog */}

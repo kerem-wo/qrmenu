@@ -101,10 +101,10 @@ export default function OrderTrackingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center premium-bg-gradient">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 mx-auto"></div>
-          <p className="mt-4 text-slate-600">Sipariş bilgileri yükleniyor...</p>
+          <div className="premium-spinner mx-auto"></div>
+          <p className="mt-4 text-gray-600 font-medium">Sipariş bilgileri yükleniyor...</p>
         </div>
       </div>
     );
@@ -112,14 +112,17 @@ export default function OrderTrackingPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Card className="card-modern max-w-md">
-          <CardContent className="py-12 text-center">
-            <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-slate-900 mb-2">Sipariş Bulunamadı</h2>
-            <p className="text-slate-600">Sipariş numarasını kontrol edin.</p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
+        <div className="premium-card p-12 text-center max-w-md animate-premium-scale-in">
+          <div className="relative inline-flex items-center justify-center mb-6">
+            <div className="absolute inset-0 bg-red-200 rounded-3xl blur-xl opacity-30"></div>
+            <div className="relative w-20 h-20 bg-red-100 rounded-3xl flex items-center justify-center">
+              <XCircle className="w-10 h-10 text-red-500" />
+            </div>
+          </div>
+          <h2 className="premium-heading-3 mb-4">Sipariş Bulunamadı</h2>
+          <p className="text-gray-600 font-medium">Sipariş numarasını kontrol edin.</p>
+        </div>
       </div>
     );
   }
@@ -127,46 +130,44 @@ export default function OrderTrackingPage() {
   const StatusIcon = statusConfig[order.status]?.icon || Clock;
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4">
-      <div className="container mx-auto max-w-2xl">
-        <Card className="card-modern">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-2xl font-bold text-slate-900">
-                  Sipariş #{order.orderNumber}
-                </CardTitle>
-                <CardDescription className="text-sm mt-1">
-                  {new Date(order.createdAt).toLocaleString("tr-TR")}
-                </CardDescription>
-              </div>
-              <div className="flex items-center gap-2">
-                <StatusIcon className="w-6 h-6" />
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                  statusConfig[order.status]?.color || "bg-slate-100 text-slate-800"
-                }`}>
-                  {statusConfig[order.status]?.label || order.status}
-                </span>
-              </div>
+    <div className="min-h-screen premium-bg-gradient py-8 px-4">
+      <div className="premium-container max-w-2xl mx-auto">
+        <div className="premium-card p-10 animate-premium-fade-in">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h1 className="premium-heading-2 mb-2">
+                Sipariş #{order.orderNumber}
+              </h1>
+              <p className="text-sm text-gray-600 font-medium">
+                {new Date(order.createdAt).toLocaleString("tr-TR")}
+              </p>
             </div>
-            <p className="text-slate-600 mt-2">
-              {statusConfig[order.status]?.description}
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            <div className="flex items-center gap-2">
+              <StatusIcon className="w-6 h-6 text-gray-400" />
+              <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
+              }`}>
+                {statusConfig[order.status]?.label || order.status}
+              </span>
+            </div>
+          </div>
+          <p className="text-gray-600 font-medium mb-8 pb-6 border-b border-gray-200">
+            {statusConfig[order.status]?.description}
+          </p>
+          <div className="space-y-6">
             {/* Müşteri Bilgileri */}
             {(order.tableNumber || order.customerName || order.customerPhone) && (
-              <div className="bg-slate-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-slate-900 mb-2">Sipariş Bilgileri</h3>
-                <div className="space-y-1 text-sm">
+              <div className="bg-gray-50 p-6 rounded-xl">
+                <h3 className="font-bold text-gray-900 mb-4">Sipariş Bilgileri</h3>
+                <div className="space-y-2 text-sm">
                   {order.tableNumber && (
-                    <p><span className="font-medium text-slate-600">Masa:</span> {order.tableNumber}</p>
+                    <p><span className="font-bold text-gray-600">Masa:</span> <span className="text-gray-900 font-semibold">{order.tableNumber}</span></p>
                   )}
                   {order.customerName && (
-                    <p><span className="font-medium text-slate-600">İsim:</span> {order.customerName}</p>
+                    <p><span className="font-bold text-gray-600">İsim:</span> <span className="text-gray-900 font-semibold">{order.customerName}</span></p>
                   )}
                   {order.customerPhone && (
-                    <p><span className="font-medium text-slate-600">Telefon:</span> {order.customerPhone}</p>
+                    <p><span className="font-bold text-gray-600">Telefon:</span> <span className="text-gray-900 font-semibold">{order.customerPhone}</span></p>
                   )}
                 </div>
               </div>
@@ -174,14 +175,14 @@ export default function OrderTrackingPage() {
 
             {/* Sipariş Ürünleri */}
             <div>
-              <h3 className="font-semibold text-slate-900 mb-3">Sipariş Detayları</h3>
-              <div className="space-y-2">
+              <h3 className="font-bold text-gray-900 mb-4">Sipariş Detayları</h3>
+              <div className="space-y-3">
                 {order.items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm py-2 border-b border-slate-200">
-                    <span className="text-slate-700">
+                  <div key={item.id} className="flex justify-between text-sm py-3 border-b border-gray-200">
+                    <span className="text-gray-700 font-medium">
                       {item.product.name} x {item.quantity}
                     </span>
-                    <span className="font-medium text-slate-900">
+                    <span className="font-bold text-gray-900">
                       {(item.price * item.quantity).toFixed(2)} ₺
                     </span>
                   </div>
@@ -190,23 +191,23 @@ export default function OrderTrackingPage() {
             </div>
 
             {/* Toplam */}
-            <div className="border-t border-slate-200 pt-4">
+            <div className="border-t border-gray-200 pt-6">
               <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold text-slate-900">Toplam:</span>
-                <span className="text-2xl font-bold text-slate-900">
+                <span className="text-xl font-bold text-gray-900">Toplam:</span>
+                <span className="text-3xl font-black text-gray-900">
                   {order.total.toFixed(2)} ₺
                 </span>
               </div>
             </div>
 
             {/* Durum Açıklaması */}
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-blue-900">
+            <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
+              <p className="text-sm text-blue-900 font-medium">
                 <strong>Not:</strong> Bu sayfa otomatik olarak güncellenir. Sipariş durumunuz değiştiğinde burada görebilirsiniz.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

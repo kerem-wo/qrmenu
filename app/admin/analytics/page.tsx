@@ -105,62 +105,62 @@ export default function AnalyticsPage() {
                       {analytics.avgOrderValue.toFixed(2)} ₺
                     </p>
                     </div>
-                    <TrendingUp className="w-8 h-8 text-purple-500" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="card-modern">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-slate-600 mb-1">En Çok Satan</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {analytics.topProducts[0]?.productName || "Yok"}
-                      </p>
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-purple-400 rounded-2xl blur-lg opacity-30"></div>
+                      <div className="relative w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                        <TrendingUp className="w-7 h-7 text-white" />
+                      </div>
                     </div>
-                    <Package className="w-8 h-8 text-orange-500" />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+
+              <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.3s' }}>
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <p className="text-sm font-bold text-gray-600 uppercase tracking-wider mb-2">En Çok Satan</p>
+                    <p className="text-2xl font-black text-gray-900">
+                      {analytics.topProducts[0]?.productName || "Yok"}
+                    </p>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-400 rounded-2xl blur-lg opacity-30"></div>
+                    <div className="relative w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center">
+                      <Package className="w-7 h-7 text-white" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Sipariş Durumları */}
-            <Card className="card-modern mb-8">
-              <CardHeader>
-                <CardTitle>Sipariş Durumları</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-                  {analytics.ordersByStatus.map((item: any) => (
-                    <div key={item.status} className="text-center p-4 bg-slate-50 rounded-lg">
-                      <p className="text-2xl font-bold text-slate-900">{item._count}</p>
-                      <p className="text-sm text-slate-600 capitalize">{item.status}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Premium Sipariş Durumları */}
+            <div className="premium-card p-8 mb-10 animate-premium-fade-in">
+              <h2 className="premium-heading-3 mb-6">Sipariş Durumları</h2>
+              <div className="premium-grid premium-grid-4">
+                {analytics.ordersByStatus.map((item: any, index: number) => (
+                  <div key={item.status} className="text-center p-6 bg-gray-50 rounded-xl premium-hover-lift animate-premium-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <p className="text-3xl font-black text-gray-900 mb-2">{item._count}</p>
+                    <p className="text-sm font-bold text-gray-600 uppercase tracking-wider capitalize">{item.status}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-            {/* En Çok Satan Ürünler */}
-            <Card className="card-modern">
-              <CardHeader>
-                <CardTitle>En Çok Satan Ürünler</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {analytics.topProducts.map((item: any, index: number) => (
-                    <div key={item.productId} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <span className="text-lg font-bold text-slate-400">#{index + 1}</span>
-                        <span className="font-medium text-slate-900">{item.productName}</span>
-                      </div>
-                      <span className="text-slate-600">{item.totalQuantity} adet</span>
+            {/* Premium En Çok Satan Ürünler */}
+            <div className="premium-card p-8 animate-premium-fade-in">
+              <h2 className="premium-heading-3 mb-6">En Çok Satan Ürünler</h2>
+              <div className="space-y-3">
+                {analytics.topProducts.map((item: any, index: number) => (
+                  <div key={item.productId} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl premium-hover-lift animate-premium-fade-in" style={{ animationDelay: `${index * 0.05}s` }}>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xl font-black text-gray-400">#{index + 1}</span>
+                      <span className="font-bold text-gray-900">{item.productName}</span>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <span className="text-gray-600 font-bold">{item.totalQuantity} adet</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </>
         )}
       </div>

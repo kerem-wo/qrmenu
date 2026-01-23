@@ -106,24 +106,24 @@ export default function QRCodePage() {
           <div className="space-y-6">
             {qrCodeUrl && (
               <div className="flex flex-col items-center space-y-6">
-                <div className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm">
+                <div className="bg-white p-8 rounded-2xl border border-gray-200 premium-shadow-md">
                   <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
                 </div>
-                <Button onClick={downloadQRCode} className="bg-slate-900 hover:bg-slate-800 w-full md:w-auto">
-                  <Download className="w-4 h-4 mr-2" />
+                <Button onClick={downloadQRCode} className="premium-btn-primary w-full md:w-auto">
+                  <Download className="w-5 h-5 mr-2" />
                   QR Kodu İndir
                 </Button>
               </div>
             )}
 
-            <div className="border-t border-slate-200 pt-6">
-              <h3 className="font-semibold text-slate-900 mb-3">Menü Linki:</h3>
+            <div className="border-t border-gray-200 pt-6">
+              <h3 className="font-bold text-gray-900 mb-4">Menü Linki:</h3>
               <div className="flex gap-3">
                 <input
                   type="text"
                   value={menuUrl}
                   readOnly
-                  className="flex-1 px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-sm font-mono focus:outline-none"
+                  className="flex-1 premium-input font-mono text-sm"
                 />
                 <Button
                   variant="outline"
@@ -131,24 +131,24 @@ export default function QRCodePage() {
                     navigator.clipboard.writeText(menuUrl);
                     toast.success("Link kopyalandı!");
                   }}
-                  className="border-slate-300"
+                  className="premium-btn-secondary px-6"
                 >
                   Kopyala
                 </Button>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-6 rounded-lg border border-slate-200">
-              <h4 className="font-semibold text-slate-900 mb-3">Kullanım Önerileri:</h4>
-              <ul className="text-sm text-slate-700 space-y-2">
+            <div className="bg-gray-50 p-6 rounded-xl border border-gray-200">
+              <h4 className="font-bold text-gray-900 mb-4">Kullanım Önerileri:</h4>
+              <ul className="text-sm text-gray-700 space-y-2 font-medium">
                 <li>• QR kodunu yazdırıp masalara yerleştirin</li>
                 <li>• Menü panosuna asın</li>
                 <li>• Müşterilerinize WhatsApp veya e-posta ile gönderin</li>
                 <li>• Sosyal medya hesaplarınızda paylaşın</li>
               </ul>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
     </div>
   );

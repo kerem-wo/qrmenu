@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -54,24 +53,27 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md card-modern">
-        <CardHeader className="space-y-1 text-center pb-6">
-          <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-            </svg>
+    <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
+      <div className="w-full max-w-md animate-premium-scale-in">
+        <div className="premium-card p-10">
+          <div className="text-center mb-8">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400 to-red-600 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gradient-to-br from-orange-500 to-red-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="premium-heading-2 mb-3">Şifremi Unuttum</h1>
+            <p className="text-gray-600 font-medium">
+              E-posta adresinizi girin, size şifre sıfırlama linki gönderelim
+            </p>
           </div>
-          <CardTitle className="text-2xl font-bold text-slate-900">Şifremi Unuttum</CardTitle>
-          <CardDescription className="text-slate-600">
-            E-posta adresinizi girin, size şifre sıfırlama linki gönderelim
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
           {!resetToken ? (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-slate-700">E-posta</Label>
+                <Label htmlFor="email" className="text-sm font-bold text-gray-700">E-posta</Label>
                 <Input
                   id="email"
                   type="email"
@@ -79,12 +81,12 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-11 border-slate-300 focus:border-slate-900 focus:ring-slate-900"
+                  className="premium-input"
                 />
               </div>
               <Button 
                 type="submit" 
-                className="w-full bg-slate-900 hover:bg-slate-800 h-11 font-medium" 
+                className="premium-btn-primary w-full" 
                 disabled={loading}
               >
                 {loading ? "Gönderiliyor..." : "Şifre Sıfırlama Linki Gönder"}
@@ -92,7 +94,7 @@ export default function ForgotPasswordPage() {
               <div className="text-center">
                 <Link 
                   href="/admin/login" 
-                  className="text-sm text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2"
+                  className="text-sm text-gray-600 hover:text-gray-900 font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Giriş sayfasına dön
@@ -100,19 +102,19 @@ export default function ForgotPasswordPage() {
               </div>
             </form>
           ) : (
-            <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800 font-medium mb-2">
+            <div className="space-y-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                <p className="text-sm text-blue-800 font-bold mb-2">
                   Şifre sıfırlama linki oluşturuldu!
                 </p>
-                <p className="text-xs text-blue-600 mb-3">
+                <p className="text-xs text-blue-600 mb-4 font-medium">
                   Development modunda link aşağıda gösteriliyor. Production'da bu link e-posta ile gönderilir.
                 </p>
-                <div className="bg-white rounded p-3 border border-blue-200">
-                  <p className="text-xs text-slate-600 mb-1 font-medium">Şifre Sıfırlama Linki:</p>
+                <div className="bg-white rounded-xl p-4 border border-blue-200">
+                  <p className="text-xs text-gray-600 mb-2 font-bold">Şifre Sıfırlama Linki:</p>
                   <a 
                     href={resetUrl || `/admin/reset-password/${resetToken}`}
-                    className="text-xs text-blue-600 hover:text-blue-800 break-all underline"
+                    className="text-xs text-blue-600 hover:text-blue-800 break-all underline font-medium"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -123,7 +125,7 @@ export default function ForgotPasswordPage() {
                   onClick={() => {
                     window.location.href = resetUrl || `/admin/reset-password/${resetToken}`;
                   }}
-                  className="w-full mt-3 bg-blue-600 hover:bg-blue-700 h-10 text-sm"
+                  className="premium-btn-primary w-full mt-4"
                 >
                   Şifre Sıfırlama Sayfasına Git
                 </Button>
@@ -131,7 +133,7 @@ export default function ForgotPasswordPage() {
               <div className="text-center">
                 <Link 
                   href="/admin/login" 
-                  className="text-sm text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2"
+                  className="text-sm text-gray-600 hover:text-gray-900 font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Giriş sayfasına dön
@@ -139,8 +141,8 @@ export default function ForgotPasswordPage() {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

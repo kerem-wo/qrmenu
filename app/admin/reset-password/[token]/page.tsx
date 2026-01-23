@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -65,23 +64,26 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <Card className="w-full max-w-md card-modern">
-        <CardHeader className="space-y-1 text-center pb-6">
-          <div className="w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
+    <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
+      <div className="w-full max-w-md animate-premium-scale-in">
+        <div className="premium-card p-10">
+          <div className="text-center mb-8">
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-blue-600 rounded-3xl blur-xl opacity-30"></div>
+              <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+            </div>
+            <h1 className="premium-heading-2 mb-3">Yeni Şifre Belirle</h1>
+            <p className="text-gray-600 font-medium">
+              Yeni şifrenizi girin
+            </p>
           </div>
-          <CardTitle className="text-2xl font-bold text-slate-900">Yeni Şifre Belirle</CardTitle>
-          <CardDescription className="text-slate-600">
-            Yeni şifrenizi girin
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-slate-700">Yeni Şifre</Label>
+              <Label htmlFor="password" className="text-sm font-bold text-gray-700">Yeni Şifre</Label>
               <Input
                 id="password"
                 type="password"
@@ -90,12 +92,12 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="h-11 border-slate-300 focus:border-slate-900 focus:ring-slate-900"
+                className="premium-input"
               />
-              <p className="text-xs text-slate-500">En az 6 karakter</p>
+              <p className="text-xs text-gray-500 font-medium">En az 6 karakter</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">Şifre Tekrar</Label>
+              <Label htmlFor="confirmPassword" className="text-sm font-bold text-gray-700">Şifre Tekrar</Label>
               <Input
                 id="confirmPassword"
                 type="password"
@@ -104,12 +106,12 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="h-11 border-slate-300 focus:border-slate-900 focus:ring-slate-900"
+                className="premium-input"
               />
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-slate-900 hover:bg-slate-800 h-11 font-medium" 
+              className="premium-btn-primary w-full" 
               disabled={loading}
             >
               {loading ? "Sıfırlanıyor..." : "Şifreyi Sıfırla"}
@@ -117,15 +119,15 @@ export default function ResetPasswordPage() {
             <div className="text-center">
               <Link 
                 href="/admin/login" 
-                className="text-sm text-slate-600 hover:text-slate-900 flex items-center justify-center gap-2"
+                className="text-sm text-gray-600 hover:text-gray-900 font-semibold flex items-center justify-center gap-2 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Giriş sayfasına dön
               </Link>
             </div>
           </form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

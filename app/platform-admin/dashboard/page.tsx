@@ -110,121 +110,122 @@ export default function PlatformAdminDashboard() {
         </div>
       </header>
 
-      <main className="container mx-auto px-6 py-8">
-        {/* İstatistikler */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-slate-900">{stats.total}</div>
-              <p className="text-sm text-slate-600">Toplam Restoran</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-              <p className="text-sm text-slate-600">Bekleyen</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-green-600">{stats.approved}</div>
-              <p className="text-sm text-slate-600">Onaylanan</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-2xl font-bold text-red-600">{stats.rejected}</div>
-              <p className="text-sm text-slate-600">Reddedilen</p>
-            </CardContent>
-          </Card>
+      <main className="premium-container py-10">
+        {/* Premium İstatistikler */}
+        <div className="premium-grid premium-grid-4 mb-10">
+          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in">
+            <div className="text-4xl font-black text-gray-900 mb-2">{stats.total}</div>
+            <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Toplam Restoran</p>
+          </div>
+          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
+            <div className="text-4xl font-black text-yellow-600 mb-2">{stats.pending}</div>
+            <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Bekleyen</p>
+          </div>
+          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="text-4xl font-black text-green-600 mb-2">{stats.approved}</div>
+            <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Onaylanan</p>
+          </div>
+          <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="text-4xl font-black text-red-600 mb-2">{stats.rejected}</div>
+            <p className="text-sm font-bold text-gray-600 uppercase tracking-wider">Reddedilen</p>
+          </div>
         </div>
 
-        {/* Filtreler */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex gap-2 flex-wrap">
-              <Button
-                variant={filter === 'all' ? 'default' : 'outline'}
-                onClick={() => setFilter('all')}
-                size="sm"
-              >
-                Tümü ({stats.total})
-              </Button>
-              <Button
-                variant={filter === 'pending' ? 'default' : 'outline'}
-                onClick={() => setFilter('pending')}
-                size="sm"
-                className="bg-yellow-500 hover:bg-yellow-600"
-              >
-                Bekleyen ({stats.pending})
-              </Button>
-              <Button
-                variant={filter === 'approved' ? 'default' : 'outline'}
-                onClick={() => setFilter('approved')}
-                size="sm"
-                className="bg-green-500 hover:bg-green-600"
-              >
-                Onaylanan ({stats.approved})
-              </Button>
-              <Button
-                variant={filter === 'rejected' ? 'default' : 'outline'}
-                onClick={() => setFilter('rejected')}
-                size="sm"
-                className="bg-red-500 hover:bg-red-600"
-              >
-                Reddedilen ({stats.rejected})
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Premium Filtreler */}
+        <div className="premium-card p-6 mb-10 animate-premium-fade-in">
+          <div className="flex gap-2 flex-wrap">
+            <Button
+              variant={filter === 'all' ? 'default' : 'outline'}
+              onClick={() => setFilter('all')}
+              size="sm"
+              className={filter === 'all' ? 'premium-btn-primary px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+            >
+              Tümü ({stats.total})
+            </Button>
+            <Button
+              variant={filter === 'pending' ? 'default' : 'outline'}
+              onClick={() => setFilter('pending')}
+              size="sm"
+              className={filter === 'pending' ? 'bg-yellow-500 hover:bg-yellow-600 px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+            >
+              Bekleyen ({stats.pending})
+            </Button>
+            <Button
+              variant={filter === 'approved' ? 'default' : 'outline'}
+              onClick={() => setFilter('approved')}
+              size="sm"
+              className={filter === 'approved' ? 'bg-green-500 hover:bg-green-600 px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+            >
+              Onaylanan ({stats.approved})
+            </Button>
+            <Button
+              variant={filter === 'rejected' ? 'default' : 'outline'}
+              onClick={() => setFilter('rejected')}
+              size="sm"
+              className={filter === 'rejected' ? 'bg-red-500 hover:bg-red-600 px-4 py-2' : 'premium-btn-secondary px-4 py-2'}
+            >
+              Reddedilen ({stats.rejected})
+            </Button>
+          </div>
+        </div>
 
-        {/* Restoran Listesi */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Restoran Kayıtları</CardTitle>
-            <CardDescription>Tüm restoran kayıtlarını görüntüleyin ve yönetin</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {filteredRestaurants.length === 0 ? (
-              <div className="text-center py-12 text-slate-500">
-                <Building2 className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                <p>Henüz restoran kaydı bulunmuyor</p>
+        {/* Premium Restoran Listesi */}
+        <div className="premium-card p-8 animate-premium-fade-in">
+          <div className="mb-6">
+            <h2 className="premium-heading-3 mb-2">Restoran Kayıtları</h2>
+            <p className="text-gray-600 font-medium">Tüm restoran kayıtlarını görüntüleyin ve yönetin</p>
+          </div>
+          {filteredRestaurants.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="relative inline-flex items-center justify-center mb-6">
+                <div className="absolute inset-0 bg-gray-200 rounded-3xl blur-xl opacity-30"></div>
+                <div className="relative w-20 h-20 bg-gray-100 rounded-3xl flex items-center justify-center">
+                  <Building2 className="w-10 h-10 text-gray-400" />
+                </div>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {filteredRestaurants.map((restaurant) => (
-                  <div
-                    key={restaurant.id}
-                    className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition-colors"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Building2 className="w-5 h-5 text-slate-600" />
-                        <h3 className="font-semibold text-slate-900">{restaurant.name}</h3>
-                        {getStatusBadge(restaurant.status)}
+              <h3 className="premium-heading-3 mb-4">Henüz restoran kaydı bulunmuyor</h3>
+              <p className="text-gray-600 font-medium">Restoranlar kayıt olduğunda burada görünecek</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredRestaurants.map((restaurant, index) => (
+                <div
+                  key={restaurant.id}
+                  className="premium-card p-6 premium-hover-lift animate-premium-fade-in flex items-center justify-between"
+                  style={{ animationDelay: `${index * 0.05}s` }}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gray-200 rounded-xl blur-lg opacity-30"></div>
+                        <div className="relative w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                          <Building2 className="w-5 h-5 text-gray-600" />
+                        </div>
                       </div>
-                      <div className="text-sm text-slate-600 space-y-1">
-                        <p>E-posta: {restaurant.admin?.email || 'N/A'}</p>
-                        <p>Slug: /menu/{restaurant.slug}</p>
-                        <p>Kayıt Tarihi: {new Date(restaurant.createdAt).toLocaleDateString('tr-TR')}</p>
-                      </div>
+                      <h3 className="font-bold text-gray-900 text-lg">{restaurant.name}</h3>
+                      {getStatusBadge(restaurant.status)}
                     </div>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="ml-4"
-                    >
-                      <Link href={`/platform-admin/restaurants/${restaurant.id}`}>
-                        <Eye className="w-4 h-4 mr-2" />
-                        Detayları Gör
-                      </Link>
-                    </Button>
+                    <div className="text-sm text-gray-600 space-y-1 font-medium">
+                      <p>E-posta: <span className="text-gray-900 font-semibold">{restaurant.admin?.email || 'N/A'}</span></p>
+                      <p>Slug: <span className="text-gray-900 font-semibold">/menu/{restaurant.slug}</span></p>
+                      <p>Kayıt Tarihi: <span className="text-gray-900 font-semibold">{new Date(restaurant.createdAt).toLocaleDateString('tr-TR')}</span></p>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="premium-btn-secondary ml-4"
+                  >
+                    <Link href={`/platform-admin/restaurants/${restaurant.id}`}>
+                      <Eye className="w-5 h-5 mr-2" />
+                      Detayları Gör
+                    </Link>
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
