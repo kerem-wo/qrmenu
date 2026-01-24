@@ -25,6 +25,13 @@ interface Order {
   items: OrderItem[];
   createdAt: string;
   updatedAt: string;
+  queue?: {
+    ahead: number;
+    avgPrepMinMinutes: number;
+    avgPrepMaxMinutes: number;
+    etaMinMinutes: number;
+    etaMaxMinutes: number;
+  };
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: any; description: string }> = {
@@ -128,6 +135,8 @@ export default function OrderTrackingPage() {
   }
 
   const StatusIcon = statusConfig[order.status]?.icon || Clock;
+  const queue = order.queue;
+  const showEta = order.status === "pending" || order.status === "confirmed" || order.status === "preparing";
 
   return (
     <div className="min-h-screen premium-bg-gradient py-8 px-4">
@@ -154,6 +163,33 @@ export default function OrderTrackingPage() {
           <p className="text-gray-600 font-medium mb-8 pb-6 border-b border-gray-200">
             {statusConfig[order.status]?.description}
           </p>
+          {showEta && queue ? (
+            <div className="mb-8 -mt-4">
+              {queue.ahead > 0 && (order.status === "pending" || order.status === "confirmed") ? (
+                <div className="bg-amber-50 p-5 rounded-xl border border-amber-200">
+                  <p className="text-sm text-amber-900 font-semibold">
+                    Sıraya alındınız.
+                    <span className="font-bold">
+                      {" "}
+                      Tahmini süre: {queue.etaMinMinutes}-{queue.etaMaxMinutes} dakika
+                    </span>
+                  </p>
+                  <p className="mt-1 text-xs text-amber-800/80">
+                    Ortalama hazırlanma süresi (kahve): {queue.avgPrepMinMinutes}-{queue.avgPrepMaxMinutes} dakika.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-200">
+                  <p className="text-sm text-emerald-900 font-semibold">
+                    Tahmini süre: {queue.etaMinMinutes}-{queue.etaMaxMinutes} dakika
+                  </p>
+                  <p className="mt-1 text-xs text-emerald-800/80">
+                    Ortalama hazırlanma süresi (kahve): {queue.avgPrepMinMinutes}-{queue.avgPrepMaxMinutes} dakika.
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : null}
           <div className="space-y-6">
             {/* Müşteri Bilgileri */}
             {(order.tableNumber || order.customerName || order.customerPhone) && (

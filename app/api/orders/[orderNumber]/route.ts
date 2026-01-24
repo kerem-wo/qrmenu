@@ -37,7 +37,33 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(order);
+    // Queue / ETA (simple heuristic)
+    // Coffee average preparation: 5–10 minutes per order.
+    const avgPrepMinMinutes = 5;
+    const avgPrepMaxMinutes = 10;
+
+    const activeStatuses: Array<string> = ["pending", "confirmed", "preparing"];
+    const queueAhead = await prisma.order.count({
+      where: {
+        restaurantId: order.restaurantId,
+        createdAt: { lt: order.createdAt },
+        status: { in: activeStatuses },
+      },
+    });
+
+    const etaMinMinutes = (queueAhead + 1) * avgPrepMinMinutes;
+    const etaMaxMinutes = (queueAhead + 1) * avgPrepMaxMinutes;
+
+    return NextResponse.json({
+      ...order,
+      queue: {
+        ahead: queueAhead,
+        avgPrepMinMinutes,
+        avgPrepMaxMinutes,
+        etaMinMinutes,
+        etaMaxMinutes,
+      },
+    });
   } catch (error) {
     console.error("Error fetching order:", error);
     return NextResponse.json(
