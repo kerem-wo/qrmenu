@@ -135,7 +135,13 @@ export default function MenuPage() {
       const res = await fetch(`/api/campaigns/validate?code=${couponCode}&amount=${subtotal}`);
       const data = await res.json();
       
-      if (res.ok) {
+      if (!res.ok) {
+        setDiscount(0);
+        toast.error(data.error || "Kupon geçersiz!");
+        return;
+      }
+
+      if (data?.valid) {
         setDiscount(data.discount || 0);
         if (data.discount > 0) {
           toast.success(`Kupon uygulandı! İndirim: ${data.discount.toFixed(2)} ₺`);
@@ -144,7 +150,7 @@ export default function MenuPage() {
         }
       } else {
         setDiscount(0);
-        toast.error(data.error || "Kupon geçersiz!");
+        toast.error(data?.error || "Kupon geçersiz!");
       }
     } catch (error) {
       console.error("Error validating coupon:", error);

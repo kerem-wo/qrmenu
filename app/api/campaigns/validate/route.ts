@@ -7,14 +7,14 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const code = searchParams.get("code");
-    const amount = parseFloat(searchParams.get("amount") || "0");
+    const rawCode = searchParams.get("code");
+    const parsedAmount = Number.parseFloat(searchParams.get("amount") || "0");
+    const amount = Number.isFinite(parsedAmount) ? parsedAmount : 0;
 
+    const code = (rawCode || "").trim();
     if (!code) {
-      return NextResponse.json(
-        { error: "Kupon kodu gerekli" },
-        { status: 400 }
-      );
+      // Business validation failure: return 200 to avoid noisy "Failed to load resource" logs.
+      return NextResponse.json({ valid: false, error: "Kupon kodu gerekli" });
     }
 
     const campaign = await prisma.campaign.findUnique({
@@ -22,40 +22,25 @@ export async function GET(request: Request) {
     });
 
     if (!campaign) {
-      return NextResponse.json(
-        { error: "Kupon kodu bulunamadı" },
-        { status: 404 }
-      );
+      return NextResponse.json({ valid: false, error: "Kupon kodu bulunamadı" });
     }
 
     // Kontroller
     if (!campaign.isActive) {
-      return NextResponse.json(
-        { error: "Kupon aktif değil" },
-        { status: 400 }
-      );
+      return NextResponse.json({ valid: false, error: "Kupon aktif değil" });
     }
 
     const now = new Date();
     if (now < campaign.startDate || now > campaign.endDate) {
-      return NextResponse.json(
-        { error: "Kupon geçerli tarih aralığında değil" },
-        { status: 400 }
-      );
+      return NextResponse.json({ valid: false, error: "Kupon geçerli tarih aralığında değil" });
     }
 
     if (campaign.usageLimit && campaign.usedCount >= campaign.usageLimit) {
-      return NextResponse.json(
-        { error: "Kupon kullanım limiti dolmuş" },
-        { status: 400 }
-      );
+      return NextResponse.json({ valid: false, error: "Kupon kullanım limiti dolmuş" });
     }
 
     if (campaign.minAmount && amount < campaign.minAmount) {
-      return NextResponse.json(
-        { error: `Minimum sipariş tutarı: ${campaign.minAmount} ₺` },
-        { status: 400 }
-      );
+      return NextResponse.json({ valid: false, error: `Minimum sipariş tutarı: ${campaign.minAmount} ₺` });
     }
 
     // İndirim hesaplama
