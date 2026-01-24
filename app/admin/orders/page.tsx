@@ -13,6 +13,7 @@ interface OrderItem {
   id: string;
   quantity: number;
   price: number;
+  notes?: string | null;
   product: {
     name: string;
   };
@@ -314,13 +315,20 @@ export default function OrdersPage() {
                         <h4 className="font-bold text-gray-900 mb-3">Ürünler:</h4>
                         <div className="space-y-2">
                           {order.items.map((item) => (
-                            <div key={item.id} className="flex justify-between text-sm py-2">
-                              <span className="text-gray-700 font-medium">
-                                {item.product.name} x {item.quantity}
-                              </span>
-                              <span className="font-bold text-gray-900">
-                                {(item.price * item.quantity).toFixed(2)} ₺
-                              </span>
+                            <div key={item.id} className="py-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-700 font-medium">
+                                  {item.product.name} x {item.quantity}
+                                </span>
+                                <span className="font-bold text-gray-900">
+                                  {(item.price * item.quantity).toFixed(2)} ₺
+                                </span>
+                              </div>
+                              {item.notes ? (
+                                <div className="mt-1 text-xs text-gray-500">
+                                  <span className="font-bold text-gray-600">Not:</span> {item.notes}
+                                </div>
+                              ) : null}
                             </div>
                           ))}
                         </div>
