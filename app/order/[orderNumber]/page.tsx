@@ -27,10 +27,14 @@ interface Order {
   updatedAt: string;
   queue?: {
     ahead: number;
-    avgPrepMinMinutes: number;
-    avgPrepMaxMinutes: number;
     etaMinMinutes: number;
     etaMaxMinutes: number;
+    breakdown?: {
+      aheadMinMinutes: number;
+      aheadMaxMinutes: number;
+      currentMinMinutes: number;
+      currentMaxMinutes: number;
+    };
   };
 }
 
@@ -174,18 +178,23 @@ export default function OrderTrackingPage() {
                       Tahmini süre: {queue.etaMinMinutes}-{queue.etaMaxMinutes} dakika
                     </span>
                   </p>
-                  <p className="mt-1 text-xs text-amber-800/80">
-                    Ortalama hazırlanma süresi (kahve): {queue.avgPrepMinMinutes}-{queue.avgPrepMaxMinutes} dakika.
-                  </p>
+                  {queue.breakdown ? (
+                    <p className="mt-1 text-xs text-amber-800/80">
+                      Önünüzdeki siparişler: {queue.breakdown.aheadMinMinutes}-{queue.breakdown.aheadMaxMinutes} dk •
+                      Sizin siparişiniz: {queue.breakdown.currentMinMinutes}-{queue.breakdown.currentMaxMinutes} dk
+                    </p>
+                  ) : null}
                 </div>
               ) : (
                 <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-200">
                   <p className="text-sm text-emerald-900 font-semibold">
                     Tahmini süre: {queue.etaMinMinutes}-{queue.etaMaxMinutes} dakika
                   </p>
-                  <p className="mt-1 text-xs text-emerald-800/80">
-                    Ortalama hazırlanma süresi (kahve): {queue.avgPrepMinMinutes}-{queue.avgPrepMaxMinutes} dakika.
-                  </p>
+                  {queue.breakdown ? (
+                    <p className="mt-1 text-xs text-emerald-800/80">
+                      Sizin siparişiniz: {queue.breakdown.currentMinMinutes}-{queue.breakdown.currentMaxMinutes} dk
+                    </p>
+                  ) : null}
                 </div>
               )}
             </div>

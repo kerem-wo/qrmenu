@@ -32,6 +32,8 @@ export default function EditProductPage() {
     stock: "",
     isAvailable: true,
     order: "0",
+    prepMinMinutes: "5",
+    prepMaxMinutes: "10",
   });
 
   useEffect(() => {
@@ -73,6 +75,8 @@ export default function EditProductPage() {
           stock: product.stock?.toString() || "",
           isAvailable: product.isAvailable,
           order: product.order?.toString() || "0",
+          prepMinMinutes: (product.prepMinMinutes ?? 5).toString(),
+          prepMaxMinutes: (product.prepMaxMinutes ?? 10).toString(),
         });
       } else {
         toast.error("Ürün bulunamadı!");
@@ -91,6 +95,13 @@ export default function EditProductPage() {
     setSaving(true);
 
     try {
+      const minPrep = parseInt(formData.prepMinMinutes || "5", 10);
+      const maxPrep = parseInt(formData.prepMaxMinutes || "10", 10);
+      if (!Number.isFinite(minPrep) || !Number.isFinite(maxPrep) || minPrep <= 0 || maxPrep <= 0 || minPrep > maxPrep) {
+        toast.error("Tahmini süre aralığı geçersiz (min <= max olmalı)");
+        return;
+      }
+
       const res = await fetch(`/api/admin/products/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -99,6 +110,8 @@ export default function EditProductPage() {
           price: parseFloat(formData.price),
           stock: formData.stock ? parseInt(formData.stock) : null,
           order: parseInt(formData.order) || 0,
+          prepMinMinutes: minPrep,
+          prepMaxMinutes: maxPrep,
         }),
       });
 
@@ -193,6 +206,37 @@ export default function EditProductPage() {
                     value={formData.stock}
                     onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                     placeholder="Sınırsız"
+                    className="h-11 border-slate-300 focus:border-slate-900"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prepMinMinutes" className="text-sm font-medium text-slate-700">
+                    Hazırlama Süresi Min (dk) *
+                  </Label>
+                  <Input
+                    id="prepMinMinutes"
+                    type="number"
+                    value={formData.prepMinMinutes}
+                    onChange={(e) => setFormData({ ...formData, prepMinMinutes: e.target.value })}
+                    min={1}
+                    placeholder="5"
+                    className="h-11 border-slate-300 focus:border-slate-900"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prepMaxMinutes" className="text-sm font-medium text-slate-700">
+                    Hazırlama Süresi Max (dk) *
+                  </Label>
+                  <Input
+                    id="prepMaxMinutes"
+                    type="number"
+                    value={formData.prepMaxMinutes}
+                    onChange={(e) => setFormData({ ...formData, prepMaxMinutes: e.target.value })}
+                    min={1}
+                    placeholder="10"
                     className="h-11 border-slate-300 focus:border-slate-900"
                   />
                 </div>

@@ -23,6 +23,8 @@ export async function GET(
             product: {
               select: {
                 name: true,
+                prepMinMinutes: true,
+                prepMaxMinutes: true,
               },
             },
           },
@@ -37,31 +39,63 @@ export async function GET(
       );
     }
 
-    // Queue / ETA (simple heuristic)
-    // Coffee average preparation: 5–10 minutes per order.
-    const avgPrepMinMinutes = 5;
-    const avgPrepMaxMinutes = 10;
-
     const activeStatuses: Array<string> = ["pending", "confirmed", "preparing"];
-    const queueAhead = await prisma.order.count({
+    const aheadOrders = await prisma.order.findMany({
       where: {
         restaurantId: order.restaurantId,
         createdAt: { lt: order.createdAt },
         status: { in: activeStatuses },
       },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        items: {
+          select: {
+            quantity: true,
+            product: {
+              select: {
+                prepMinMinutes: true,
+                prepMaxMinutes: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    const etaMinMinutes = (queueAhead + 1) * avgPrepMinMinutes;
-    const etaMaxMinutes = (queueAhead + 1) * avgPrepMaxMinutes;
+    const currentMin = order.items.reduce(
+      (sum, it) => sum + (it.product.prepMinMinutes ?? 5) * it.quantity,
+      0
+    );
+    const currentMax = order.items.reduce(
+      (sum, it) => sum + (it.product.prepMaxMinutes ?? 10) * it.quantity,
+      0
+    );
+
+    const aheadMin = aheadOrders.reduce((sum, o) => {
+      const m = o.items.reduce((s, it) => s + (it.product.prepMinMinutes ?? 5) * it.quantity, 0);
+      return sum + m;
+    }, 0);
+    const aheadMax = aheadOrders.reduce((sum, o) => {
+      const m = o.items.reduce((s, it) => s + (it.product.prepMaxMinutes ?? 10) * it.quantity, 0);
+      return sum + m;
+    }, 0);
+
+    const etaMinMinutes = aheadMin + currentMin;
+    const etaMaxMinutes = aheadMax + currentMax;
 
     return NextResponse.json({
       ...order,
       queue: {
-        ahead: queueAhead,
-        avgPrepMinMinutes,
-        avgPrepMaxMinutes,
+        ahead: aheadOrders.length,
         etaMinMinutes,
         etaMaxMinutes,
+        breakdown: {
+          aheadMinMinutes: aheadMin,
+          aheadMaxMinutes: aheadMax,
+          currentMinMinutes: currentMin,
+          currentMaxMinutes: currentMax,
+        },
       },
     });
   } catch (error) {

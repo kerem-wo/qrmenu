@@ -59,6 +59,15 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
+    const prepMin = Number.isFinite(Number(data.prepMinMinutes)) ? parseInt(String(data.prepMinMinutes), 10) : 5;
+    const prepMax = Number.isFinite(Number(data.prepMaxMinutes)) ? parseInt(String(data.prepMaxMinutes), 10) : 10;
+
+    if (prepMin <= 0 || prepMax <= 0 || prepMin > prepMax) {
+      return NextResponse.json(
+        { error: "Tahmini süre aralığı geçersiz (min <= max olmalı)" },
+        { status: 400 }
+      );
+    }
 
     // Verify category belongs to restaurant
     const category = await prisma.category.findFirst({
@@ -83,6 +92,8 @@ export async function POST(request: Request) {
         image: data.image || null,
         isAvailable: data.isAvailable ?? true,
         stock: data.stock !== undefined ? (data.stock === "" ? null : parseInt(String(data.stock), 10)) : null,
+        prepMinMinutes: prepMin,
+        prepMaxMinutes: prepMax,
         order: data.order || 0,
         categoryId: data.categoryId,
       },

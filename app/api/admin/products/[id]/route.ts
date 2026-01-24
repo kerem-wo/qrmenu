@@ -60,6 +60,24 @@ export async function PUT(
 
     const { id } = await params;
     const data = await request.json();
+    const prepMin =
+      data.prepMinMinutes === undefined || data.prepMinMinutes === null || data.prepMinMinutes === ""
+        ? undefined
+        : parseInt(String(data.prepMinMinutes), 10);
+    const prepMax =
+      data.prepMaxMinutes === undefined || data.prepMaxMinutes === null || data.prepMaxMinutes === ""
+        ? undefined
+        : parseInt(String(data.prepMaxMinutes), 10);
+
+    if (
+      (prepMin !== undefined && (!Number.isFinite(prepMin) || prepMin <= 0)) ||
+      (prepMax !== undefined && (!Number.isFinite(prepMax) || prepMax <= 0))
+    ) {
+      return NextResponse.json(
+        { error: "Tahmini süre aralığı geçersiz" },
+        { status: 400 }
+      );
+    }
 
     // Verify product belongs to restaurant
     const existingProduct = await prisma.product.findFirst({
@@ -95,6 +113,18 @@ export async function PUT(
       }
     }
 
+    // If either is present, validate min <= max
+    if (prepMin !== undefined || prepMax !== undefined) {
+      const nextMin = prepMin ?? existingProduct.prepMinMinutes;
+      const nextMax = prepMax ?? existingProduct.prepMaxMinutes;
+      if (nextMin > nextMax) {
+        return NextResponse.json(
+          { error: "Tahmini süre aralığı geçersiz (min <= max olmalı)" },
+          { status: 400 }
+        );
+      }
+    }
+
     const product = await prisma.product.update({
       where: { id },
       data: {
@@ -103,6 +133,8 @@ export async function PUT(
         price: data.price,
         image: data.image || null,
         stock: data.stock !== undefined ? (data.stock === "" || data.stock === null ? null : parseInt(String(data.stock), 10)) : undefined,
+        prepMinMinutes: prepMin ?? undefined,
+        prepMaxMinutes: prepMax ?? undefined,
         isAvailable: data.isAvailable ?? true,
         order: data.order ?? undefined,
         categoryId: data.categoryId || undefined,
