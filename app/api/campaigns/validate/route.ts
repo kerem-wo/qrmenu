@@ -47,11 +47,13 @@ export async function GET(request: Request) {
     let discount = 0;
     if (campaign.type === "percentage") {
       discount = (amount * campaign.value) / 100;
-      if (campaign.maxDiscount) {
-        discount = Math.min(discount, campaign.maxDiscount);
-      }
     } else {
       discount = campaign.value;
+    }
+
+    // Maksimum indirim limiti (hem yüzde hem sabit tutar için)
+    if (campaign.maxDiscount !== null && campaign.maxDiscount !== undefined) {
+      discount = Math.min(discount, campaign.maxDiscount);
     }
 
     return NextResponse.json({
