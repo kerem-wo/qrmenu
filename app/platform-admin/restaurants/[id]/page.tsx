@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Building2, FileText, Download, Eye, CheckCircle, XCircle, Clock, Mail, Calendar } from "lucide-react";
+import { ArrowLeft, Building2, FileText, Download, Eye, CheckCircle, XCircle, Clock, Mail, Calendar, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Restaurant {
@@ -132,6 +132,42 @@ export default function RestaurantDetailPage() {
     }
   };
 
+  const handleDeleteRestaurant = async () => {
+    if (!restaurant) return;
+
+    const canDelete =
+      restaurant.status === "approved" || restaurant.status === "rejected" || !restaurant.admin?.email;
+
+    if (!canDelete) {
+      toast.error("Sadece onaylanmış, reddedilmiş veya hesabı silinmiş kayıtlar silinebilir.");
+      return;
+    }
+
+    if (!confirm(`"${restaurant.name}" kaydını kalıcı olarak silmek istiyor musunuz? Bu işlem geri alınamaz.`)) {
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const res = await fetch(`/api/platform-admin/restaurants/${restaurant.id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        toast.success("Kayıt silindi");
+        setTimeout(() => router.push("/platform-admin/dashboard"), 800);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || "Silme sırasında bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error deleting restaurant:", error);
+      toast.error("Bir hata oluştu");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const handleDownloadDocument = (url: string, filename: string) => {
     if (!url) return;
     
@@ -245,27 +281,40 @@ export default function RestaurantDetailPage() {
               </div>
               {getStatusBadge(restaurant.status)}
             </div>
-            {restaurant.status === 'pending' && (
-              <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap justify-end">
+              {restaurant.status === 'pending' && (
+                <>
+                  <Button
+                    onClick={handleApprove}
+                    disabled={processing}
+                    className="premium-btn-primary bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Onayla
+                  </Button>
+                  <Button
+                    onClick={() => setShowRejectDialog(true)}
+                    disabled={processing}
+                    variant="destructive"
+                    className="premium-btn-secondary bg-red-600 hover:bg-red-700 border-red-600"
+                  >
+                    <XCircle className="w-5 h-5 mr-2" />
+                    Reddet
+                  </Button>
+                </>
+              )}
+              {(restaurant.status === "approved" || restaurant.status === "rejected" || !restaurant.admin?.email) && (
                 <Button
-                  onClick={handleApprove}
+                  onClick={handleDeleteRestaurant}
                   disabled={processing}
-                  className="premium-btn-primary bg-green-600 hover:bg-green-700"
+                  variant="outline"
+                  className="premium-btn-secondary hover:bg-red-50 hover:border-red-300 hover:text-red-600"
                 >
-                  <CheckCircle className="w-5 h-5 mr-2" />
-                  Onayla
+                  <Trash2 className="w-5 h-5 mr-2" />
+                  Sil
                 </Button>
-                <Button
-                  onClick={() => setShowRejectDialog(true)}
-                  disabled={processing}
-                  variant="destructive"
-                  className="premium-btn-secondary bg-red-600 hover:bg-red-700 border-red-600"
-                >
-                  <XCircle className="w-5 h-5 mr-2" />
-                  Reddet
-                </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Eye, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Building2, Eye, CheckCircle, XCircle, Clock, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface Restaurant {
@@ -81,6 +81,38 @@ export default function PlatformAdminDashboard() {
         return <Badge>{status}</Badge>;
     }
   };
+
+  const handleDeleteRestaurant = useCallback(
+    async (restaurantId: string, name: string, status: Restaurant["status"], hasAdmin: boolean) => {
+      const canDelete = status === "approved" || status === "rejected" || !hasAdmin;
+      if (!canDelete) {
+        toast.error("Sadece onaylanmış, reddedilmiş veya hesabı silinmiş kayıtlar silinebilir.");
+        return;
+      }
+
+      if (!confirm(`"${name}" kaydını kalıcı olarak silmek istiyor musunuz? Bu işlem geri alınamaz.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/platform-admin/restaurants/${restaurantId}`, {
+          method: "DELETE",
+        });
+
+        if (res.ok) {
+          toast.success("Kayıt silindi");
+          setRestaurants((prev) => prev.filter((r) => r.id !== restaurantId));
+        } else {
+          const data = await res.json().catch(() => ({}));
+          toast.error(data.error || "Silme sırasında bir hata oluştu");
+        }
+      } catch (error) {
+        console.error("Error deleting restaurant:", error);
+        toast.error("Bir hata oluştu");
+      }
+    },
+    []
+  );
 
   const filteredRestaurants =
     filter === "all" ? restaurants : restaurants.filter((r) => r.status === filter);
@@ -258,12 +290,41 @@ export default function PlatformAdminDashboard() {
                       </p>
                     </div>
                   </div>
-                  <Button asChild variant="outline" className="premium-btn-secondary ml-4">
-                    <Link href={`/platform-admin/restaurants/${restaurant.id}`}>
-                      <Eye className="w-5 h-5 mr-2" />
-                      Detayları Gör
-                    </Link>
-                  </Button>
+                  <div className="flex items-center gap-2 ml-4 flex-wrap justify-end">
+                    <Button asChild variant="outline" className="premium-btn-secondary">
+                      <Link href={`/platform-admin/restaurants/${restaurant.id}`}>
+                        <Eye className="w-5 h-5 mr-2" />
+                        Detayları Gör
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="premium-btn-secondary hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                      onClick={() =>
+                        handleDeleteRestaurant(
+                          restaurant.id,
+                          restaurant.name,
+                          restaurant.status,
+                          Boolean(restaurant.admin?.email)
+                        )
+                      }
+                      disabled={
+                        !(
+                          restaurant.status === "approved" ||
+                          restaurant.status === "rejected" ||
+                          !restaurant.admin?.email
+                        )
+                      }
+                      title={
+                        restaurant.status === "pending" && restaurant.admin?.email
+                          ? "Bekleyen kayıtlar önce onaylanmalı veya reddedilmeli"
+                          : "Kayıt sil"
+                      }
+                    >
+                      <Trash2 className="w-5 h-5 mr-2" />
+                      Sil
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
