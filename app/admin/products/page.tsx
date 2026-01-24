@@ -165,18 +165,23 @@ export default function ProductsPage() {
                       {product.price.toFixed(2)} ₺
                     </span>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="icon" asChild className="premium-btn-secondary p-2">
+                      <Button variant="outline" asChild className="premium-btn-secondary px-3 py-2 text-sm font-bold">
                         <Link href={`/admin/products/${product.id}/edit`}>
-                          <Edit className="w-4 h-4" />
+                          <span className="inline-flex items-center gap-2">
+                            <Edit className="w-4 h-4" />
+                            Düzenle
+                          </span>
                         </Link>
                       </Button>
                       <Button
                         variant="outline"
-                        size="icon"
                         onClick={() => handleDelete(product.id)}
-                        className="premium-btn-secondary p-2 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                        className="premium-btn-secondary px-3 py-2 text-sm font-bold hover:bg-red-50 hover:border-red-300 hover:text-red-600"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <span className="inline-flex items-center gap-2">
+                          <Trash2 className="w-4 h-4" />
+                          Sil
+                        </span>
                       </Button>
                     </div>
                   </div>
