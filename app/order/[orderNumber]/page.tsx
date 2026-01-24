@@ -143,35 +143,35 @@ export default function OrderTrackingPage() {
   const showEta = order.status === "pending" || order.status === "confirmed" || order.status === "preparing";
 
   return (
-    <div className="min-h-screen premium-bg-gradient py-8 px-4">
+    <div className="min-h-screen premium-bg-gradient py-6 sm:py-8 px-4">
       <div className="premium-container max-w-2xl mx-auto">
-        <div className="premium-card p-10 animate-premium-fade-in">
-          <div className="flex justify-between items-start mb-8">
+        <div className="premium-card p-6 sm:p-8 md:p-10 animate-premium-fade-in">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 sm:mb-8">
             <div>
-              <h1 className="premium-heading-2 mb-2">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight mb-2">
                 Sipariş #{order.orderNumber}
               </h1>
               <p className="text-sm text-gray-600 font-medium">
                 {new Date(order.createdAt).toLocaleString("tr-TR")}
               </p>
             </div>
-            <div className="flex items-center gap-2">
-              <StatusIcon className="w-6 h-6 text-gray-400" />
-              <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+            <div className="flex items-center gap-2 self-start">
+              <StatusIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+              <span className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-bold ${
                 statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
               }`}>
                 {statusConfig[order.status]?.label || order.status}
               </span>
             </div>
           </div>
-          <p className="text-gray-600 font-medium mb-8 pb-6 border-b border-gray-200">
+          <p className="text-gray-600 font-medium mb-6 sm:mb-8 pb-5 sm:pb-6 border-b border-gray-200">
             {statusConfig[order.status]?.description}
           </p>
           {showEta && queue ? (
-            <div className="mb-8 -mt-4">
+            <div className="mb-6 sm:mb-8 -mt-2 sm:-mt-4">
               {queue.ahead > 0 && (order.status === "pending" || order.status === "confirmed") ? (
-                <div className="bg-amber-50 p-5 rounded-xl border border-amber-200">
-                  <p className="text-sm text-amber-900 font-semibold">
+                <div className="bg-amber-50 p-4 sm:p-5 rounded-xl border border-amber-200">
+                  <p className="text-sm sm:text-base text-amber-900 font-semibold">
                     Sıraya alındınız.
                     <span className="font-bold">
                       {" "}
@@ -186,8 +186,8 @@ export default function OrderTrackingPage() {
                   ) : null}
                 </div>
               ) : (
-                <div className="bg-emerald-50 p-5 rounded-xl border border-emerald-200">
-                  <p className="text-sm text-emerald-900 font-semibold">
+                <div className="bg-emerald-50 p-4 sm:p-5 rounded-xl border border-emerald-200">
+                  <p className="text-sm sm:text-base text-emerald-900 font-semibold">
                     Tahmini süre: {queue.etaMinMinutes}-{queue.etaMaxMinutes} dakika
                   </p>
                   {queue.breakdown ? (
@@ -202,17 +202,26 @@ export default function OrderTrackingPage() {
           <div className="space-y-6">
             {/* Müşteri Bilgileri */}
             {(order.tableNumber || order.customerName || order.customerPhone) && (
-              <div className="bg-gray-50 p-6 rounded-xl">
+              <div className="bg-gray-50 p-4 sm:p-6 rounded-xl">
                 <h3 className="font-bold text-gray-900 mb-4">Sipariş Bilgileri</h3>
-                <div className="space-y-2 text-sm">
+                <div className="grid gap-2 text-sm sm:grid-cols-3">
                   {order.tableNumber && (
-                    <p><span className="font-bold text-gray-600">Masa:</span> <span className="text-gray-900 font-semibold">{order.tableNumber}</span></p>
+                    <p className="min-w-0">
+                      <span className="font-bold text-gray-600">Masa:</span>{" "}
+                      <span className="text-gray-900 font-semibold break-words">{order.tableNumber}</span>
+                    </p>
                   )}
                   {order.customerName && (
-                    <p><span className="font-bold text-gray-600">İsim:</span> <span className="text-gray-900 font-semibold">{order.customerName}</span></p>
+                    <p className="min-w-0">
+                      <span className="font-bold text-gray-600">İsim:</span>{" "}
+                      <span className="text-gray-900 font-semibold break-words">{order.customerName}</span>
+                    </p>
                   )}
                   {order.customerPhone && (
-                    <p><span className="font-bold text-gray-600">Telefon:</span> <span className="text-gray-900 font-semibold">{order.customerPhone}</span></p>
+                    <p className="min-w-0">
+                      <span className="font-bold text-gray-600">Telefon:</span>{" "}
+                      <span className="text-gray-900 font-semibold break-words">{order.customerPhone}</span>
+                    </p>
                   )}
                 </div>
               </div>
@@ -221,15 +230,17 @@ export default function OrderTrackingPage() {
             {/* Sipariş Ürünleri */}
             <div>
               <h3 className="font-bold text-gray-900 mb-4">Sipariş Detayları</h3>
-              <div className="space-y-3">
+              <div className="space-y-1">
                 {order.items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm py-3 border-b border-gray-200">
-                    <span className="text-gray-700 font-medium">
-                      {item.product.name} x {item.quantity}
-                    </span>
-                    <span className="font-bold text-gray-900">
-                      {(item.price * item.quantity).toFixed(2)} ₺
-                    </span>
+                  <div key={item.id} className="py-3 border-b border-gray-200">
+                    <div className="flex items-start justify-between gap-4 text-sm">
+                      <span className="text-gray-700 font-medium min-w-0 break-words">
+                        {item.product.name} x {item.quantity}
+                      </span>
+                      <span className="font-bold text-gray-900 whitespace-nowrap">
+                        {(item.price * item.quantity).toFixed(2)} ₺
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -237,17 +248,17 @@ export default function OrderTrackingPage() {
 
             {/* Toplam */}
             <div className="border-t border-gray-200 pt-6">
-              <div className="flex justify-between items-center">
-                <span className="text-xl font-bold text-gray-900">Toplam:</span>
-                <span className="text-3xl font-black text-gray-900">
+              <div className="flex justify-between items-center gap-4">
+                <span className="text-lg sm:text-xl font-bold text-gray-900">Toplam:</span>
+                <span className="text-2xl sm:text-3xl font-black text-gray-900 whitespace-nowrap">
                   {order.total.toFixed(2)} ₺
                 </span>
               </div>
             </div>
 
             {/* Durum Açıklaması */}
-            <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
-              <p className="text-sm text-blue-900 font-medium">
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-xl border border-blue-200">
+              <p className="text-sm text-blue-900 font-medium leading-relaxed">
                 <strong>Not:</strong> Bu sayfa otomatik olarak güncellenir. Sipariş durumunuz değiştiğinde burada görebilirsiniz.
               </p>
             </div>
