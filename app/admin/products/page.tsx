@@ -160,29 +160,32 @@ export default function ProductsPage() {
                       Stok: {product.stock} adet
                     </p>
                   )}
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <span className="text-2xl font-black text-gray-900">
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <span className="text-xl sm:text-2xl font-black text-gray-900 whitespace-nowrap">
                       {product.price.toFixed(2)} ₺
                     </span>
-                    <div className="flex gap-2">
-                      <Button variant="outline" asChild className="premium-btn-secondary px-3 py-2 text-sm font-bold">
-                        <Link href={`/admin/products/${product.id}/edit`}>
+                    <div className="flex flex-wrap gap-2 sm:justify-end">
+                      <Button variant="outline" asChild className="premium-btn-secondary px-3 py-2 text-sm font-bold whitespace-nowrap">
+                        <Link href={`/admin/products/${product.id}/edit`} aria-label="Ürünü düzenle">
                           <span className="inline-flex items-center gap-2">
                             <Edit className="w-4 h-4" />
-                            Düzenle
+                            <span className="hidden md:inline">Düzenle</span>
                           </span>
                         </Link>
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => handleDelete(product.id)}
-                        className="premium-btn-secondary px-3 py-2 text-sm font-bold hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                        className="premium-btn-secondary px-3 py-2 text-sm font-bold whitespace-nowrap hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                        aria-label="Ürünü sil"
                       >
                         <span className="inline-flex items-center gap-2">
                           <Trash2 className="w-4 h-4" />
-                          Sil
+                          <span className="hidden md:inline">Sil</span>
                         </span>
                       </Button>
+                    </div>
                     </div>
                   </div>
                 </div>
