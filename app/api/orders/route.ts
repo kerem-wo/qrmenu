@@ -92,22 +92,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // Stok azaltma ve sipariş oluşturma
+    // Sipariş oluşturma (stok rezervasyonu admin onayında yapılır)
     const order = await prisma.$transaction(async (tx) => {
-      // Stokları azalt
-      for (const item of data.items) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-        });
-
-        if (product && product.stock !== null) {
-          await tx.product.update({
-            where: { id: item.productId },
-            data: { stock: product.stock - item.quantity },
-          });
-        }
-      }
-
       // Kupon kullanım sayısını artır
       if (data.couponCode) {
         await tx.campaign.updateMany({

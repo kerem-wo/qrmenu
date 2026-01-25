@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const platformAdminEmail =
-    (process.env.PLATFORM_ADMIN_EMAIL || "admin@platform.com").trim().toLowerCase();
+    (process.env.PLATFORM_ADMIN_EMAIL || "softwareofuture@gmail.com").trim().toLowerCase();
   const platformAdminPassword = process.env.PLATFORM_ADMIN_PASSWORD || "";
 
   const demoAdminEmail =
