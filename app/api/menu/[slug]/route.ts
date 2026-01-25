@@ -17,6 +17,7 @@ export async function GET(
         description: true,
         logo: true,
         language: true,
+        enableTakeaway: true,
       },
     });
 
@@ -97,6 +98,7 @@ export async function GET(
       name: restaurantTranslation?.name || restaurant.name,
       description: restaurantTranslation?.description ?? restaurant.description,
       logo: restaurant.logo,
+      enableTakeaway: restaurant.enableTakeaway,
     };
 
     const resolvedCategories = categories.map((c) => {

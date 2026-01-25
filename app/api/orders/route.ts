@@ -22,6 +22,24 @@ export async function POST(request: Request) {
       );
     }
 
+    // Restaurant settings check (enableTakeaway)
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: data.restaurantId },
+      select: { enableTakeaway: true },
+    });
+    if (!restaurant) {
+      return NextResponse.json(
+        { error: "Restoran bulunamadı" },
+        { status: 404 }
+      );
+    }
+    if (orderType === "takeaway" && !restaurant.enableTakeaway) {
+      return NextResponse.json(
+        { error: "Gel Al seçeneği şu anda kapalı" },
+        { status: 400 }
+      );
+    }
+
     // Stok kontrolü
     for (const item of data.items) {
       const product = await prisma.product.findUnique({

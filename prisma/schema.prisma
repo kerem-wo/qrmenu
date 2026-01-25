@@ -18,6 +18,7 @@ model Restaurant {
   logo        String?
   theme       String   @default("default")
   language    String   @default("tr") // tr, en, de, vb.
+  enableTakeaway Boolean @default(true) // Gel Al seçeneği
   
   // KVKK ve Onaylar
   kvkkConsent          Boolean   @default(false) // KVKK Aydınlatma Metni onayı

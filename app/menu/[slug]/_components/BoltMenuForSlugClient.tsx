@@ -42,6 +42,7 @@ type ApiRestaurant = {
   name: string;
   description: string | null;
   logo: string | null;
+  enableTakeaway?: boolean;
 };
 
 type BoltItem = {
@@ -701,6 +702,7 @@ export function BoltMenuForSlugClient() {
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   const S = STRINGS[lang];
+  const enableTakeaway = restaurant?.enableTakeaway ?? true;
 
   useEffect(() => {
     try {
@@ -720,6 +722,12 @@ export function BoltMenuForSlugClient() {
       // ignore
     }
   }, [lang]);
+
+  useEffect(() => {
+    if (!enableTakeaway) {
+      setOrderType("restaurant");
+    }
+  }, [enableTakeaway]);
 
   const popularScrollRef = useRef<HTMLDivElement | null>(null);
   const popularDragRef = useRef({
@@ -1167,6 +1175,7 @@ export function BoltMenuForSlugClient() {
         isValidatingCoupon={isValidatingCoupon}
         onApplyCoupon={applyCoupon}
         labels={S}
+        enableTakeaway={enableTakeaway}
         orderType={orderType}
         setOrderType={setOrderType}
         onSubmit={async () => {
@@ -1591,6 +1600,7 @@ function OrderConfirmSheet({
   onApplyCoupon,
   onSubmit,
   labels,
+  enableTakeaway,
   orderType,
   setOrderType,
 }: {
@@ -1612,6 +1622,7 @@ function OrderConfirmSheet({
   onApplyCoupon: () => Promise<void>;
   onSubmit: () => Promise<void>;
   labels: Strings;
+  enableTakeaway: boolean;
   orderType: OrderType;
   setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
 }) {
@@ -1670,38 +1681,40 @@ function OrderConfirmSheet({
             </div>
 
             <div className="max-h-[65vh] overflow-y-auto px-5 py-4 space-y-4">
-              <div className="rounded-2xl border border-gray-100 bg-white p-4 space-y-3">
-                <div className="text-sm font-extrabold text-gray-950">{labels.orderTypeTitle}</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setOrderType("restaurant")}
-                    className={[
-                      "h-11 rounded-2xl border px-4 text-sm font-extrabold transition-colors",
-                      orderType === "restaurant"
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-800"
-                        : "border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100",
-                    ].join(" ")}
-                  >
-                    {labels.orderTypeRestaurant}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOrderType("takeaway");
-                      setOrderForm((s) => ({ ...s, tableNumber: "" }));
-                    }}
-                    className={[
-                      "h-11 rounded-2xl border px-4 text-sm font-extrabold transition-colors",
-                      orderType === "takeaway"
-                        ? "border-emerald-500 bg-emerald-50 text-emerald-800"
-                        : "border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100",
-                    ].join(" ")}
-                  >
-                    {labels.orderTypeTakeaway}
-                  </button>
+              {enableTakeaway ? (
+                <div className="rounded-2xl border border-gray-100 bg-white p-4 space-y-3">
+                  <div className="text-sm font-extrabold text-gray-950">{labels.orderTypeTitle}</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setOrderType("restaurant")}
+                      className={[
+                        "h-11 rounded-2xl border px-4 text-sm font-extrabold transition-colors",
+                        orderType === "restaurant"
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                          : "border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100",
+                      ].join(" ")}
+                    >
+                      {labels.orderTypeRestaurant}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOrderType("takeaway");
+                        setOrderForm((s) => ({ ...s, tableNumber: "" }));
+                      }}
+                      className={[
+                        "h-11 rounded-2xl border px-4 text-sm font-extrabold transition-colors",
+                        orderType === "takeaway"
+                          ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                          : "border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100",
+                      ].join(" ")}
+                    >
+                      {labels.orderTypeTakeaway}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               <div className="rounded-2xl border border-gray-100 bg-white p-4">
                 <div className="text-sm font-extrabold text-gray-950">{labels.orderSummary}</div>

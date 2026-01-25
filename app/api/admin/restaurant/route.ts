@@ -57,6 +57,8 @@ export async function PUT(request: Request) {
           logo: data.logo || null,
           theme: data.theme || "default",
           language: typeof data.language === "string" && data.language ? data.language : undefined,
+          enableTakeaway:
+            typeof data.enableTakeaway === "boolean" ? data.enableTakeaway : undefined,
         },
       });
 

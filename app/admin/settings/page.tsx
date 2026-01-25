@@ -25,6 +25,7 @@ export default function SettingsPage() {
     theme: "default",
     slug: "",
     language: "tr",
+    enableTakeaway: true,
     translations: {
       en: { name: "", description: "" },
       de: { name: "", description: "" },
@@ -70,6 +71,7 @@ export default function SettingsPage() {
           theme: data.theme || "default",
           slug: data.slug,
           language: data.language || "tr",
+          enableTakeaway: data.enableTakeaway ?? true,
           translations: map,
         });
       }
@@ -105,6 +107,7 @@ export default function SettingsPage() {
           logo: formData.logo,
           theme: formData.theme,
           language: formData.language,
+          enableTakeaway: formData.enableTakeaway,
           translations: Object.entries(formData.translations).map(([language, t]) => ({
             language,
             name: (t?.name || "").trim(),
@@ -248,6 +251,30 @@ export default function SettingsPage() {
               <p className="text-xs text-gray-600 mt-1 font-medium">
                 Müşteri menüsü dil seçimi yoksa bu dil kullanılır.
               </p>
+            </div>
+
+            <div className="premium-card p-6 border border-gray-200/70">
+              <div className="mb-2">
+                <h3 className="font-bold text-gray-900">Sipariş Ayarları</h3>
+                <p className="text-sm text-gray-600 font-medium">
+                  Müşterinin QR menüden hangi sipariş türlerini seçebileceğini belirleyin.
+                </p>
+              </div>
+
+              <label className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                <div>
+                  <div className="text-sm font-bold text-gray-900">Gel Al</div>
+                  <div className="text-xs text-gray-600 font-medium">
+                    Açık olursa müşteri “Gel Al” seçebilir. Kapalı olursa bu seçenek gösterilmez.
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData.enableTakeaway)}
+                  onChange={(e) => setFormData((s) => ({ ...s, enableTakeaway: e.target.checked }))}
+                  className="h-5 w-5 rounded border-gray-300"
+                />
+              </label>
             </div>
 
             <div className="premium-card p-6 border border-gray-200/70">

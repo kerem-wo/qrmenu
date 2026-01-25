@@ -19,6 +19,7 @@ model Restaurant {
   logo        String?
   theme       String   @default("default")
   language    String   @default("tr") // tr, en, de, vb.
+  enableTakeaway Boolean @default(true) // Gel Al seçeneği
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
