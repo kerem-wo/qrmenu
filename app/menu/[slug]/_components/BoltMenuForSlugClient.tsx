@@ -55,6 +55,7 @@ type BoltItem = {
   priceCents: number;
   imageUrl: string;
   isVegetarian?: boolean;
+  stock: number | null; // null = sınırsız
 };
 
 type CartLine = {
@@ -150,6 +151,9 @@ type Strings = {
   orderTypeTitle: string;
   orderTypeRestaurant: string;
   orderTypeTakeaway: string;
+
+  stockLabel: string;
+  stockUnlimited: string;
 };
 
 const LANG_OPTIONS: Array<{ id: Lang; label: string }> = [
@@ -233,6 +237,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "Sipariş türü",
     orderTypeRestaurant: "Restoran siparişi",
     orderTypeTakeaway: "Gel al",
+
+    stockLabel: "Stok",
+    stockUnlimited: "Sınırsız",
   },
   en: {
     language: "Language",
@@ -304,6 +311,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "Order type",
     orderTypeRestaurant: "Restaurant order",
     orderTypeTakeaway: "Takeaway",
+
+    stockLabel: "Stock",
+    stockUnlimited: "Unlimited",
   },
   de: {
     language: "Sprache",
@@ -375,6 +385,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "Bestellart",
     orderTypeRestaurant: "Im Restaurant",
     orderTypeTakeaway: "Zum Mitnehmen",
+
+    stockLabel: "Bestand",
+    stockUnlimited: "Unbegrenzt",
   },
   ru: {
     language: "Язык",
@@ -446,6 +459,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "Тип заказа",
     orderTypeRestaurant: "В ресторане",
     orderTypeTakeaway: "С собой",
+
+    stockLabel: "Наличие",
+    stockUnlimited: "Без ограничений",
   },
   ar: {
     language: "اللغة",
@@ -517,6 +533,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "نوع الطلب",
     orderTypeRestaurant: "طلب داخل المطعم",
     orderTypeTakeaway: "استلام",
+
+    stockLabel: "المخزون",
+    stockUnlimited: "غير محدود",
   },
   fr: {
     language: "Langue",
@@ -588,6 +607,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "Type de commande",
     orderTypeRestaurant: "Sur place",
     orderTypeTakeaway: "À emporter",
+
+    stockLabel: "Stock",
+    stockUnlimited: "Illimité",
   },
   es: {
     language: "Idioma",
@@ -659,6 +681,9 @@ const STRINGS: Record<Lang, Strings> = {
     orderTypeTitle: "Tipo de pedido",
     orderTypeRestaurant: "En el restaurante",
     orderTypeTakeaway: "Para llevar",
+
+    stockLabel: "Stock",
+    stockUnlimited: "Ilimitado",
   },
 };
 
@@ -794,6 +819,7 @@ export function BoltMenuForSlugClient() {
             p.image ||
             "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
           isVegetarian: looksVeg || undefined,
+          stock: p.stock ?? null,
         });
       }
     }
@@ -1085,6 +1111,9 @@ export function BoltMenuForSlugClient() {
                   <div className="mt-1 text-xs text-gray-500 line-clamp-1">
                     {item.shortDescription}
                   </div>
+                  <div className="mt-2 text-xs font-semibold text-gray-500">
+                    {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                  </div>
                 </div>
               </button>
             ))}
@@ -1277,6 +1306,9 @@ function MenuRow({ item, onOpen, labels }: { item: BoltItem; onOpen: () => void;
           </div>
           <div className="mt-1 text-xs text-gray-500 line-clamp-2">{item.shortDescription}</div>
           <div className="mt-2 text-sm font-extrabold text-gray-950">{formatTry(item.priceCents)}</div>
+          <div className="mt-1 text-xs font-semibold text-gray-500">
+            {labels.stockLabel}: {item.stock === null ? labels.stockUnlimited : item.stock}
+          </div>
         </div>
 
         <div className="relative h-[86px] w-[98px] shrink-0">
