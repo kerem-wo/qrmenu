@@ -69,7 +69,7 @@ export default function PlatformAdminLogin() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@platform.com"
+                  placeholder="softwareofuture@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="premium-input premium-input-with-icon"

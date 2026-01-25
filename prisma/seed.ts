@@ -11,6 +11,21 @@ config();
 const prisma = new PrismaClient();
 
 async function main() {
+  const platformAdminEmail =
+    (process.env.PLATFORM_ADMIN_EMAIL || "softwareofuture@gmail.com").trim().toLowerCase();
+  const platformAdminPassword = process.env.PLATFORM_ADMIN_PASSWORD || "";
+
+  const demoAdminEmail =
+    (process.env.DEMO_ADMIN_EMAIL || platformAdminEmail).trim().toLowerCase();
+  const demoAdminPassword = process.env.DEMO_ADMIN_PASSWORD || platformAdminPassword || "";
+
+  if (!platformAdminPassword) {
+    throw new Error("Missing PLATFORM_ADMIN_PASSWORD. Set it in .env.local (not committed).");
+  }
+  if (!demoAdminPassword) {
+    throw new Error("Missing DEMO_ADMIN_PASSWORD (or PLATFORM_ADMIN_PASSWORD). Set it in .env.local (not committed).");
+  }
+
   // Create a demo restaurant (approved for demo purposes)
   const restaurant = await prisma.restaurant.upsert({
     where: { slug: 'demo-restoran' },
@@ -24,14 +39,22 @@ async function main() {
     },
   });
 
-  // Create admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  // Remove legacy demo credentials
+  await prisma.admin.deleteMany({
+    where: { email: { in: ["admin@demo.com", "admin@demo"] } },
+  });
+
+  // Create demo restaurant admin user
+  const demoAdminHashedPassword = await bcrypt.hash(demoAdminPassword, 10);
   await prisma.admin.upsert({
-    where: { email: 'admin@demo.com' },
-    update: {},
+    where: { email: demoAdminEmail },
+    update: {
+      password: demoAdminHashedPassword,
+      restaurantId: restaurant.id,
+    },
     create: {
-      email: 'admin@demo.com',
-      password: hashedPassword,
+      email: demoAdminEmail,
+      password: demoAdminHashedPassword,
       restaurantId: restaurant.id,
     },
   });
@@ -169,20 +192,29 @@ async function main() {
     },
   });
 
-  // Create platform admin (default credentials: admin@platform.com / admin123)
-  const platformAdminPassword = await bcrypt.hash('admin123', 10);
+  // Remove legacy platform credentials
+  await prisma.platformAdmin.deleteMany({
+    where: { email: { in: ["admin@platform.com", "admin@platform"] } },
+  });
+
+  // Create platform admin
+  const platformAdminHashedPassword = await bcrypt.hash(platformAdminPassword, 10);
   await prisma.platformAdmin.upsert({
-    where: { email: 'admin@platform.com' },
-    update: {},
+    where: { email: platformAdminEmail },
+    update: {
+      password: platformAdminHashedPassword,
+      name: "Platform Yöneticisi",
+    },
     create: {
-      email: 'admin@platform.com',
-      password: platformAdminPassword,
-      name: 'Platform Yöneticisi',
+      email: platformAdminEmail,
+      password: platformAdminHashedPassword,
+      name: "Platform Yöneticisi",
     },
   });
 
   console.log('Seed data created successfully!');
-  console.log('Platform Admin: admin@platform.com / admin123');
+  console.log(`Platform Admin: ${platformAdminEmail} / (password from env)`);
+  console.log(`Demo Admin: ${demoAdminEmail} / (password from env)`);
 }
 
 main()
