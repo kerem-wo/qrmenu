@@ -35,6 +35,23 @@ export default function NewCampaignPage() {
     });
   }, []);
 
+  // datetime-local helpers (use local time, store as ISO)
+  const toLocalInput = (d: Date) => {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(
+      d.getMinutes()
+    )}`;
+  };
+
+  useEffect(() => {
+    // Sensible defaults so created campaigns show immediately
+    if (formData.startDate || formData.endDate) return;
+    const now = new Date();
+    const end = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    setFormData((s) => ({ ...s, startDate: toLocalInput(now), endDate: toLocalInput(end) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -56,6 +73,8 @@ export default function NewCampaignPage() {
     setLoading(true);
 
     try {
+      const startIso = new Date(formData.startDate).toISOString();
+      const endIso = new Date(formData.endDate).toISOString();
       const res = await fetch("/api/admin/campaigns", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,6 +84,8 @@ export default function NewCampaignPage() {
           minAmount: formData.minAmount ? parseFloat(formData.minAmount) : null,
           maxDiscount: formData.maxDiscount ? parseFloat(formData.maxDiscount) : null,
           usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : null,
+          startDate: startIso,
+          endDate: endIso,
         }),
       });
 

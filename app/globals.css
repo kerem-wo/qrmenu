@@ -576,6 +576,25 @@
     }
   }
 
+  /* Marquee (campaign banner) */
+  @keyframes marquee {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .campaign-marquee-track {
+    animation: marquee 22s linear infinite;
+    will-change: transform;
+  }
+
+  .campaign-marquee:hover .campaign-marquee-track {
+    animation-play-state: paused;
+  }
+
   .animate-shimmer {
     animation: shimmer 2s infinite;
     background: linear-gradient(

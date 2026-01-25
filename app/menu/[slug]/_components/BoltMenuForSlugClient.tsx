@@ -7,6 +7,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Leaf, Minus, Plus, Search, X } from "lucide-react";
 import toast from "react-hot-toast";
 
+type ApiCampaign = {
+  id: string;
+  name: string;
+  code: string;
+  type: "percentage" | "fixed" | string;
+  value: number;
+  minAmount: number | null;
+  maxDiscount: number | null;
+  endDate: string;
+};
+
 type ApiProduct = {
   id: string;
   name: string;
@@ -81,6 +92,7 @@ export function BoltMenuForSlugClient() {
 
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
+  const [campaigns, setCampaigns] = useState<ApiCampaign[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [query, setQuery] = useState("");
@@ -95,6 +107,9 @@ export function BoltMenuForSlugClient() {
     tableNumber: "",
   });
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [discountTry, setDiscountTry] = useState(0);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
 
   const popularScrollRef = useRef<HTMLDivElement | null>(null);
   const popularDragRef = useRef({
@@ -108,15 +123,21 @@ export function BoltMenuForSlugClient() {
       if (!slug) return;
       setLoading(true);
       try {
-        const res = await fetch(`/api/menu/${slug}`);
+        const res = await fetch(`/api/menu/${slug}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Menu fetch failed");
-        const data = (await res.json()) as { restaurant: ApiRestaurant; categories: ApiCategory[] };
+        const data = (await res.json()) as {
+          restaurant: ApiRestaurant;
+          categories: ApiCategory[];
+          campaigns?: ApiCampaign[];
+        };
         setRestaurant(data.restaurant);
         setCategories(data.categories ?? []);
+        setCampaigns((data.campaigns ?? []).slice(0, 10));
       } catch (e) {
         console.error(e);
         setRestaurant(null);
         setCategories([]);
+        setCampaigns([]);
       } finally {
         setLoading(false);
       }
@@ -182,6 +203,39 @@ export function BoltMenuForSlugClient() {
     const totalCents = cartLines.reduce((sum, l) => sum + l.item.priceCents * l.quantity, 0);
     return { itemCount, totalCents };
   }, [cartLines]);
+
+  const discountedTotalTry = useMemo(() => {
+    const subtotal = cartTotals.totalCents / 100;
+    return Math.max(0, subtotal - (discountTry || 0));
+  }, [cartTotals.totalCents, discountTry]);
+
+  const applyCoupon = async () => {
+    const code = (couponCode || "").trim().toUpperCase();
+    if (!code) {
+      setDiscountTry(0);
+      return;
+    }
+    const subtotal = cartTotals.totalCents / 100;
+    setIsValidatingCoupon(true);
+    try {
+      const res = await fetch(`/api/campaigns/validate?code=${encodeURIComponent(code)}&amount=${subtotal}`);
+      const data = await res.json();
+      if (!res.ok || !data?.valid) {
+        setDiscountTry(0);
+        toast.error(data?.error || "Kupon geçersiz!");
+        return;
+      }
+      const d = Number(data.discount || 0);
+      setDiscountTry(Number.isFinite(d) ? d : 0);
+      toast.success(`Kupon uygulandı! İndirim: ${(Number.isFinite(d) ? d : 0).toFixed(2)} ₺`);
+    } catch (e) {
+      console.error(e);
+      setDiscountTry(0);
+      toast.error("Kupon doğrulanırken bir hata oluştu!");
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
 
   const addLine = (it: BoltItem, qty: number, note?: string) => {
     const q = Math.max(1, Math.floor(qty || 1));
@@ -261,6 +315,9 @@ export function BoltMenuForSlugClient() {
   return (
     <div className="min-h-screen bg-white text-black pb-24">
       <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 pb-6 pt-4">
+        {campaigns.length > 0 ? (
+          <CampaignMarquee campaigns={campaigns} />
+        ) : null}
         {restaurant ? (
           <div className="mb-3">
             <div className="text-xl font-extrabold text-gray-950">{restaurant.name}</div>
@@ -443,10 +500,16 @@ export function BoltMenuForSlugClient() {
         onClose={() => setConfirmOpen(false)}
         restaurantId={restaurant?.id ?? null}
         lines={cartLines}
-        totalCents={cartTotals.totalCents}
+        subtotalTry={cartTotals.totalCents / 100}
+        discountTry={discountTry}
+        totalTry={discountedTotalTry}
         orderForm={orderForm}
         setOrderForm={setOrderForm}
         isSubmitting={isSubmittingOrder}
+        couponCode={couponCode}
+        setCouponCode={setCouponCode}
+        isValidatingCoupon={isValidatingCoupon}
+        onApplyCoupon={applyCoupon}
         onSubmit={async () => {
           if (cartLines.length === 0) {
             toast.error("Sepetiniz boş!");
@@ -481,6 +544,7 @@ export function BoltMenuForSlugClient() {
                 tableNumber: orderForm.tableNumber.trim() || null,
                 customerName: orderForm.customerName.trim(),
                 customerPhone: orderForm.customerPhone.trim(),
+                couponCode: (couponCode || "").trim() ? (couponCode || "").trim().toUpperCase() : null,
                 items: cartLines.map((l) => ({
                   productId: l.item.id,
                   quantity: l.quantity,
@@ -503,6 +567,8 @@ export function BoltMenuForSlugClient() {
             setConfirmOpen(false);
             setCartOpen(false);
             setOrderForm({ customerName: "", customerPhone: "", tableNumber: "" });
+            setCouponCode("");
+            setDiscountTry(0);
 
             router.push(`/order/${orderNumber}`);
           } catch (e) {
@@ -848,22 +914,34 @@ function OrderConfirmSheet({
   onClose,
   restaurantId,
   lines,
-  totalCents,
+  subtotalTry,
+  discountTry,
+  totalTry,
   orderForm,
   setOrderForm,
   isSubmitting,
+  couponCode,
+  setCouponCode,
+  isValidatingCoupon,
+  onApplyCoupon,
   onSubmit,
 }: {
   open: boolean;
   onClose: () => void;
   restaurantId: string | null;
   lines: CartLine[];
-  totalCents: number;
+  subtotalTry: number;
+  discountTry: number;
+  totalTry: number;
   orderForm: { customerName: string; customerPhone: string; tableNumber: string };
   setOrderForm: React.Dispatch<
     React.SetStateAction<{ customerName: string; customerPhone: string; tableNumber: string }>
   >;
   isSubmitting: boolean;
+  couponCode: string;
+  setCouponCode: React.Dispatch<React.SetStateAction<string>>;
+  isValidatingCoupon: boolean;
+  onApplyCoupon: () => Promise<void>;
   onSubmit: () => Promise<void>;
 }) {
   useEffect(() => {
@@ -930,14 +1008,52 @@ function OrderConfirmSheet({
                         {l.item.name} x {l.quantity}
                       </span>
                       <span className="font-extrabold text-gray-950">
-                        {formatTry(l.item.priceCents * l.quantity)}
+                        {new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(
+                          (l.item.priceCents * l.quantity) / 100
+                        )}
                       </span>
                     </div>
                   ))}
                 </div>
                 <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-gray-600">Toplam</span>
-                  <span className="text-sm font-extrabold text-gray-950">{formatTry(totalCents)}</span>
+                  <span className="text-sm font-semibold text-gray-600">Ara Toplam</span>
+                  <span className="text-sm font-extrabold text-gray-950">
+                    {new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(subtotalTry)}
+                  </span>
+                </div>
+                {discountTry > 0 ? (
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    <span className="font-semibold text-emerald-700">İndirim</span>
+                    <span className="font-extrabold text-emerald-700">
+                      -{new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(discountTry)}
+                    </span>
+                  </div>
+                ) : null}
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <span className="font-semibold text-gray-900">Toplam</span>
+                  <span className="font-extrabold text-gray-950">
+                    {new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(totalTry)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-gray-100 bg-white p-4 space-y-3">
+                <div className="text-sm font-extrabold text-gray-950">Kupon</div>
+                <div className="flex gap-2">
+                  <input
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                    placeholder="Kupon kodu"
+                    className="h-11 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-sm font-semibold text-gray-950 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={onApplyCoupon}
+                    disabled={isValidatingCoupon}
+                    className="shrink-0 rounded-2xl bg-gray-900 px-4 text-sm font-extrabold text-white hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    {isValidatingCoupon ? "..." : "Uygula"}
+                  </button>
                 </div>
               </div>
 
@@ -996,6 +1112,125 @@ function OrderConfirmSheet({
         </>
       ) : null}
     </AnimatePresence>
+  );
+}
+
+function CampaignMarquee({ campaigns }: { campaigns: ApiCampaign[] }) {
+  const list = campaigns.slice(0, 10);
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+
+  const formatDiscount = (c: ApiCampaign) => {
+    if (c.type === "percentage") return `%${c.value}`;
+    if (c.type === "fixed") return `${c.value}₺`;
+    return `${c.value}`;
+  };
+
+  const formatDateShort = (iso: string) => {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
+  };
+
+  const copyCode = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast.success(`Kupon kopyalandı: ${code}`);
+    } catch {
+      toast("Kupon kodunu kopyalayamadım.");
+    }
+  };
+
+  useEffect(() => {
+    if (paused) return;
+    if (list.length <= 1) return;
+    const t = setInterval(() => {
+      setActive((i) => (i + 1) % list.length);
+    }, 4500);
+    return () => clearInterval(t);
+  }, [list.length, paused]);
+
+  useEffect(() => {
+    // keep active index in range if list changes
+    setActive((i) => (list.length === 0 ? 0 : Math.min(i, list.length - 1)));
+  }, [list.length]);
+
+  if (list.length === 0) return null;
+
+  const current = list[active];
+
+  return (
+    <div
+      className="mb-4 overflow-hidden rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50 via-white to-emerald-50"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="px-3 pt-2">
+        <div className="flex items-center justify-between gap-3">
+          <span className="inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-black text-emerald-800">
+            Kampanyalar
+          </span>
+          <div className="text-[11px] text-gray-500">
+            Tıkla: kuponu kopyala
+          </div>
+        </div>
+      </div>
+
+      <div className="px-3 pb-3 pt-2">
+        <div className="relative overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.button
+              key={current.id}
+              type="button"
+              onClick={() => copyCode(current.code)}
+              initial={{ opacity: 0, x: 28 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -28 }}
+              transition={{ type: "tween", duration: 0.28, ease: "easeOut" }}
+              className="w-full rounded-2xl border border-emerald-200 bg-white/90 px-4 py-3 text-left shadow-sm hover:bg-white"
+              title="Kupon kodunu kopyala"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-extrabold text-gray-900 truncate">
+                    {current.name}
+                  </div>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold text-gray-600">
+                    <span className="text-emerald-700 font-extrabold">{formatDiscount(current)}</span>
+                    <span className="font-black tracking-wider text-gray-900">
+                      KOD: <span className="font-mono">{current.code}</span>
+                    </span>
+                    {current.minAmount ? <span>Min {current.minAmount}₺</span> : null}
+                    {current.maxDiscount ? <span>Max {current.maxDiscount}₺</span> : null}
+                    <span>Bitiş {formatDateShort(current.endDate)}</span>
+                  </div>
+                </div>
+                <span className="shrink-0 rounded-full bg-emerald-600 px-3 py-1 text-xs font-extrabold text-white">
+                  Kopyala
+                </span>
+              </div>
+            </motion.button>
+          </AnimatePresence>
+        </div>
+
+        {list.length > 1 ? (
+          <div className="mt-2 flex items-center justify-center gap-1.5">
+            {list.map((c, i) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setActive(i)}
+                className={[
+                  "h-1.5 rounded-full transition-all",
+                  i === active ? "w-6 bg-emerald-500" : "w-1.5 bg-emerald-200 hover:bg-emerald-300",
+                ].join(" ")}
+                aria-label={`Kampanya ${i + 1}`}
+              />
+            ))}
+          </div>
+        ) : null}
+      </div>
+    </div>
   );
 }
 

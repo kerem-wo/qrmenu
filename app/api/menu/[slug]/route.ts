@@ -43,9 +43,39 @@ export async function GET(
       },
     });
 
+    const now = new Date();
+    const rawCampaigns = await prisma.campaign.findMany({
+      where: {
+        restaurantId: restaurant.id,
+        isActive: true,
+        startDate: { lte: now },
+        endDate: { gte: now },
+      },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        type: true,
+        value: true,
+        minAmount: true,
+        maxDiscount: true,
+        endDate: true,
+        usageLimit: true,
+        usedCount: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+
+    const campaigns = rawCampaigns
+      .filter((c) => c.usageLimit === null || c.usedCount < c.usageLimit)
+      .slice(0, 10)
+      .map(({ usageLimit, usedCount, ...rest }) => rest);
+
     return NextResponse.json({
       restaurant,
       categories,
+      campaigns,
     });
   } catch (error) {
     console.error("Error fetching menu:", error);

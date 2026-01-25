@@ -29,6 +29,13 @@ export default function EditCampaignPage() {
     isActive: true,
   });
 
+  const toLocalInput = (d: Date) => {
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(
+      d.getMinutes()
+    )}`;
+  };
+
   useEffect(() => {
     checkAuth().then((session) => {
       if (!session) {
@@ -60,8 +67,8 @@ export default function EditCampaignPage() {
           value: campaign.value.toString(),
           minAmount: campaign.minAmount?.toString() || "",
           maxDiscount: campaign.maxDiscount?.toString() || "",
-          startDate: new Date(campaign.startDate).toISOString().slice(0, 16),
-          endDate: new Date(campaign.endDate).toISOString().slice(0, 16),
+          startDate: toLocalInput(new Date(campaign.startDate)),
+          endDate: toLocalInput(new Date(campaign.endDate)),
           usageLimit: campaign.usageLimit?.toString() || "",
           isActive: campaign.isActive,
         });
@@ -86,6 +93,8 @@ export default function EditCampaignPage() {
     setSaving(true);
 
     try {
+      const startIso = formData.startDate ? new Date(formData.startDate).toISOString() : undefined;
+      const endIso = formData.endDate ? new Date(formData.endDate).toISOString() : undefined;
       const res = await fetch(`/api/admin/campaigns/${params.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -95,6 +104,8 @@ export default function EditCampaignPage() {
           minAmount: formData.minAmount ? parseFloat(formData.minAmount) : null,
           maxDiscount: formData.maxDiscount ? parseFloat(formData.maxDiscount) : null,
           usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : null,
+          startDate: startIso,
+          endDate: endIso,
         }),
       });
 
