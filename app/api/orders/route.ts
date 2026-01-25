@@ -11,6 +11,8 @@ function generateOrderNumber(): string {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
+    const orderTypeRaw = String(data.orderType || "restaurant").trim().toLowerCase();
+    const orderType = orderTypeRaw === "takeaway" || orderTypeRaw === "restaurant" ? orderTypeRaw : "restaurant";
 
     // Validate required fields
     if (!data.restaurantId || !data.items || data.items.length === 0) {
@@ -101,7 +103,8 @@ export async function POST(request: Request) {
         data: {
           orderNumber: generateOrderNumber(),
           restaurantId: data.restaurantId,
-          tableNumber: data.tableNumber || null,
+          orderType,
+          tableNumber: orderType === "takeaway" ? null : (data.tableNumber || null),
           customerName: data.customerName || null,
           customerPhone: data.customerPhone || null,
           customerId: data.customerId || null,
@@ -121,6 +124,7 @@ export async function POST(request: Request) {
           },
         },
         include: {
+          restaurant: { select: { id: true } },
           items: {
             include: {
               product: {

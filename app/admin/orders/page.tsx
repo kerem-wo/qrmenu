@@ -21,6 +21,7 @@ interface OrderItem {
 
 interface Order {
   id: string;
+  orderType?: string | null;
   tableNumber: string | null;
   customerName: string | null;
   customerPhone: string | null;
@@ -37,6 +38,11 @@ const statusConfig: Record<string, { label: string; color: string; icon: any }> 
   ready: { label: "Hazır", color: "bg-green-100 text-green-800", icon: CheckCircle },
   completed: { label: "Tamamlandı", color: "bg-gray-100 text-gray-800", icon: CheckCircle },
   cancelled: { label: "İptal", color: "bg-red-100 text-red-800", icon: XCircle },
+};
+
+const orderTypeLabel = (t?: string | null) => {
+  if (t === "takeaway") return "Gel Al";
+  return "Restoran Siparişi";
 };
 
 export default function OrdersPage() {
@@ -273,6 +279,11 @@ export default function OrdersPage() {
                         <h3 className="text-lg font-bold text-gray-900">
                           Sipariş #{order.id.slice(0, 8)}
                         </h3>
+                        <div className="mt-1 flex flex-wrap items-center gap-2">
+                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-[11px] font-bold text-gray-700">
+                            {orderTypeLabel(order.orderType)}
+                          </span>
+                        </div>
                         <p className="text-sm text-gray-600 font-medium">
                           {new Date(order.createdAt).toLocaleString("tr-TR")}
                         </p>

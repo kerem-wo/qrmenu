@@ -62,6 +62,8 @@ type CartLine = {
   note?: string;
 };
 
+type OrderType = "restaurant" | "takeaway";
+
 function formatTry(cents: number) {
   const value = (cents ?? 0) / 100;
   return new Intl.NumberFormat("tr-TR", {
@@ -143,6 +145,10 @@ type Strings = {
   campaignDot: (n: number) => string;
 
   addItemAria: (name: string) => string;
+
+  orderTypeTitle: string;
+  orderTypeRestaurant: string;
+  orderTypeTakeaway: string;
 };
 
 const LANG_OPTIONS: Array<{ id: Lang; label: string }> = [
@@ -222,6 +228,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `Kampanya ${n}`,
 
     addItemAria: (name) => `${name} ekle`,
+
+    orderTypeTitle: "Sipariş türü",
+    orderTypeRestaurant: "Restoran siparişi",
+    orderTypeTakeaway: "Gel al",
   },
   en: {
     language: "Language",
@@ -289,6 +299,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `Campaign ${n}`,
 
     addItemAria: (name) => `Add ${name}`,
+
+    orderTypeTitle: "Order type",
+    orderTypeRestaurant: "Restaurant order",
+    orderTypeTakeaway: "Takeaway",
   },
   de: {
     language: "Sprache",
@@ -356,6 +370,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `Aktion ${n}`,
 
     addItemAria: (name) => `${name} hinzufügen`,
+
+    orderTypeTitle: "Bestellart",
+    orderTypeRestaurant: "Im Restaurant",
+    orderTypeTakeaway: "Zum Mitnehmen",
   },
   ru: {
     language: "Язык",
@@ -423,6 +441,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `Акция ${n}`,
 
     addItemAria: (name) => `Добавить ${name}`,
+
+    orderTypeTitle: "Тип заказа",
+    orderTypeRestaurant: "В ресторане",
+    orderTypeTakeaway: "С собой",
   },
   ar: {
     language: "اللغة",
@@ -490,6 +512,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `عرض ${n}`,
 
     addItemAria: (name) => `أضف ${name}`,
+
+    orderTypeTitle: "نوع الطلب",
+    orderTypeRestaurant: "طلب داخل المطعم",
+    orderTypeTakeaway: "استلام",
   },
   fr: {
     language: "Langue",
@@ -557,6 +583,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `Offre ${n}`,
 
     addItemAria: (name) => `Ajouter ${name}`,
+
+    orderTypeTitle: "Type de commande",
+    orderTypeRestaurant: "Sur place",
+    orderTypeTakeaway: "À emporter",
   },
   es: {
     language: "Idioma",
@@ -624,6 +654,10 @@ const STRINGS: Record<Lang, Strings> = {
     campaignDot: (n) => `Promo ${n}`,
 
     addItemAria: (name) => `Añadir ${name}`,
+
+    orderTypeTitle: "Tipo de pedido",
+    orderTypeRestaurant: "En el restaurante",
+    orderTypeTakeaway: "Para llevar",
   },
 };
 
@@ -660,6 +694,7 @@ export function BoltMenuForSlugClient() {
     customerPhone: "",
     tableNumber: "",
   });
+  const [orderType, setOrderType] = useState<OrderType>("restaurant");
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [discountTry, setDiscountTry] = useState(0);
@@ -1132,6 +1167,8 @@ export function BoltMenuForSlugClient() {
         isValidatingCoupon={isValidatingCoupon}
         onApplyCoupon={applyCoupon}
         labels={S}
+        orderType={orderType}
+        setOrderType={setOrderType}
         onSubmit={async () => {
           if (cartLines.length === 0) {
             toast.error(S.cartEmpty);
@@ -1163,7 +1200,8 @@ export function BoltMenuForSlugClient() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 restaurantId: restaurant.id,
-                tableNumber: orderForm.tableNumber.trim() || null,
+                orderType,
+                tableNumber: orderType === "takeaway" ? null : (orderForm.tableNumber.trim() || null),
                 customerName: orderForm.customerName.trim(),
                 customerPhone: orderForm.customerPhone.trim(),
                 couponCode: (couponCode || "").trim() ? (couponCode || "").trim().toUpperCase() : null,
@@ -1189,6 +1227,7 @@ export function BoltMenuForSlugClient() {
             setConfirmOpen(false);
             setCartOpen(false);
             setOrderForm({ customerName: "", customerPhone: "", tableNumber: "" });
+            setOrderType("restaurant");
             setCouponCode("");
             setDiscountTry(0);
 
@@ -1552,6 +1591,8 @@ function OrderConfirmSheet({
   onApplyCoupon,
   onSubmit,
   labels,
+  orderType,
+  setOrderType,
 }: {
   open: boolean;
   onClose: () => void;
@@ -1571,6 +1612,8 @@ function OrderConfirmSheet({
   onApplyCoupon: () => Promise<void>;
   onSubmit: () => Promise<void>;
   labels: Strings;
+  orderType: OrderType;
+  setOrderType: React.Dispatch<React.SetStateAction<OrderType>>;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -1627,6 +1670,39 @@ function OrderConfirmSheet({
             </div>
 
             <div className="max-h-[65vh] overflow-y-auto px-5 py-4 space-y-4">
+              <div className="rounded-2xl border border-gray-100 bg-white p-4 space-y-3">
+                <div className="text-sm font-extrabold text-gray-950">{labels.orderTypeTitle}</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("restaurant")}
+                    className={[
+                      "h-11 rounded-2xl border px-4 text-sm font-extrabold transition-colors",
+                      orderType === "restaurant"
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                        : "border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100",
+                    ].join(" ")}
+                  >
+                    {labels.orderTypeRestaurant}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOrderType("takeaway");
+                      setOrderForm((s) => ({ ...s, tableNumber: "" }));
+                    }}
+                    className={[
+                      "h-11 rounded-2xl border px-4 text-sm font-extrabold transition-colors",
+                      orderType === "takeaway"
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                        : "border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100",
+                    ].join(" ")}
+                  >
+                    {labels.orderTypeTakeaway}
+                  </button>
+                </div>
+              </div>
+
               <div className="rounded-2xl border border-gray-100 bg-white p-4">
                 <div className="text-sm font-extrabold text-gray-950">{labels.orderSummary}</div>
                 <div className="mt-2 space-y-2 text-sm">
@@ -1713,17 +1789,19 @@ function OrderConfirmSheet({
                   />
                 </div>
 
-                <div className="grid gap-2">
-                  <label className="text-xs font-bold text-gray-700">
-                    {labels.tableLabel} <span className="text-gray-400">({labels.optional})</span>
-                  </label>
-                  <input
-                    value={orderForm.tableNumber}
-                    onChange={(e) => setOrderForm((s) => ({ ...s, tableNumber: e.target.value }))}
-                    className="h-11 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-sm font-semibold text-gray-950 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
-                    placeholder={labels.tablePlaceholder}
-                  />
-                </div>
+                {orderType === "restaurant" ? (
+                  <div className="grid gap-2">
+                    <label className="text-xs font-bold text-gray-700">
+                      {labels.tableLabel} <span className="text-gray-400">({labels.optional})</span>
+                    </label>
+                    <input
+                      value={orderForm.tableNumber}
+                      onChange={(e) => setOrderForm((s) => ({ ...s, tableNumber: e.target.value }))}
+                      className="h-11 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-sm font-semibold text-gray-950 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                      placeholder={labels.tablePlaceholder}
+                    />
+                  </div>
+                ) : null}
               </div>
             </div>
 

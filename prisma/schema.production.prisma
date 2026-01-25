@@ -116,6 +116,7 @@ model Order {
   customerPhone String?
   status       String   @default("pending") // pending, confirmed, preparing, ready, completed, cancelled
   total        Float
+  orderType    String   @default("restaurant") // restaurant | takeaway
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   items        OrderItem[]

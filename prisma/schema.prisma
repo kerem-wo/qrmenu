@@ -186,6 +186,7 @@ model ProductVariant {
 model Order {
   id           String   @id @default(cuid())
   orderNumber  String   @unique // Takip için benzersiz numara
+  orderType    String   @default("restaurant") // restaurant | takeaway
   tableNumber  String?
   customerName String?
   customerPhone String?
