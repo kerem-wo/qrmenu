@@ -14,6 +14,7 @@ export async function GET() {
 
     const restaurant = await prisma.restaurant.findUnique({
       where: { id: session.restaurantId },
+      include: { translations: true },
     });
 
     if (!restaurant) {
@@ -44,15 +45,52 @@ export async function PUT(request: Request) {
     }
 
     const data = await request.json();
+    const allowedLangs = new Set(["tr", "en", "de", "ru", "ar", "fr", "es"]);
+    const rawTranslations = Array.isArray(data.translations) ? data.translations : [];
 
-    const restaurant = await prisma.restaurant.update({
-      where: { id: session.restaurantId },
-      data: {
-        name: data.name,
-        description: data.description || null,
-        logo: data.logo || null,
-        theme: data.theme || "default",
-      },
+    const restaurant = await prisma.$transaction(async (tx) => {
+      const updated = await tx.restaurant.update({
+        where: { id: session.restaurantId },
+        data: {
+          name: data.name,
+          description: data.description || null,
+          logo: data.logo || null,
+          theme: data.theme || "default",
+          language: typeof data.language === "string" && data.language ? data.language : undefined,
+        },
+      });
+
+      for (const t of rawTranslations) {
+        const language = String(t?.language || "").trim().toLowerCase();
+        if (!language || !allowedLangs.has(language) || language === "tr") continue;
+        const name = String(t?.name || "").trim();
+        const description =
+          t?.description === null || t?.description === undefined ? "" : String(t.description).trim();
+
+        if (!name && !description) {
+          await tx.restaurantTranslation.deleteMany({ where: { restaurantId: updated.id, language } });
+          continue;
+        }
+
+        await tx.restaurantTranslation.upsert({
+          where: { restaurantId_language: { restaurantId: updated.id, language } },
+          update: {
+            name: name || updated.name,
+            description: description ? description : null,
+          },
+          create: {
+            restaurantId: updated.id,
+            language,
+            name: name || updated.name,
+            description: description ? description : null,
+          },
+        });
+      }
+
+      return tx.restaurant.findUnique({
+        where: { id: updated.id },
+        include: { translations: true },
+      });
     });
 
     return NextResponse.json(restaurant);

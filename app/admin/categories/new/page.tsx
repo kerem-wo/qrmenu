@@ -11,6 +11,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 
+const TRANSLATION_LANGS = [
+  { id: "en", label: "English" },
+  { id: "de", label: "Deutsch" },
+  { id: "ru", label: "Русский" },
+  { id: "ar", label: "العربية" },
+  { id: "fr", label: "Français" },
+  { id: "es", label: "Español" },
+] as const;
+
 export default function NewCategoryPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -19,6 +28,14 @@ export default function NewCategoryPage() {
     description: "",
     image: "",
     order: "0",
+    translations: {
+      en: { name: "", description: "" },
+      de: { name: "", description: "" },
+      ru: { name: "", description: "" },
+      ar: { name: "", description: "" },
+      fr: { name: "", description: "" },
+      es: { name: "", description: "" },
+    } as Record<string, { name: string; description: string }>,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +49,11 @@ export default function NewCategoryPage() {
         body: JSON.stringify({
           ...formData,
           order: parseInt(formData.order) || 0,
+          translations: Object.entries(formData.translations).map(([language, t]) => ({
+            language,
+            name: (t?.name || "").trim(),
+            description: (t?.description || "").trim() || null,
+          })),
         }),
       });
 
@@ -93,6 +115,57 @@ export default function NewCategoryPage() {
                   rows={4}
                   className="border-slate-300 focus:border-slate-900"
                 />
+              </div>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <div className="mb-3">
+                  <div className="text-sm font-bold text-slate-900">Çeviriler</div>
+                  <div className="mt-1 text-xs text-slate-500">
+                    Türkçe alanlar yukarıdaki ana alanlardan gelir. Diğer diller için isim/açıklama girebilirsiniz.
+                  </div>
+                </div>
+                <div className="space-y-5">
+                  {TRANSLATION_LANGS.map((l) => (
+                    <div key={l.id} className="grid gap-3">
+                      <div className="text-xs font-bold text-slate-700">{l.label}</div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-slate-600">İsim</Label>
+                        <Input
+                          value={formData.translations[l.id]?.name || ""}
+                          onChange={(e) =>
+                            setFormData((s) => ({
+                              ...s,
+                              translations: {
+                                ...s.translations,
+                                [l.id]: { ...(s.translations[l.id] || { name: "", description: "" }), name: e.target.value },
+                              },
+                            }))
+                          }
+                          placeholder={`${formData.name || "Kategori adı"} (${l.label})`}
+                          className="h-11 border-slate-300 focus:border-slate-900"
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label className="text-xs text-slate-600">Açıklama</Label>
+                        <Textarea
+                          value={formData.translations[l.id]?.description || ""}
+                          onChange={(e) =>
+                            setFormData((s) => ({
+                              ...s,
+                              translations: {
+                                ...s.translations,
+                                [l.id]: { ...(s.translations[l.id] || { name: "", description: "" }), description: e.target.value },
+                              },
+                            }))
+                          }
+                          placeholder="Opsiyonel"
+                          rows={3}
+                          className="border-slate-300 focus:border-slate-900"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">

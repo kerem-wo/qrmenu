@@ -47,6 +47,21 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
+    const allowedLangs = new Set(["tr", "en", "de", "ru", "ar", "fr", "es"]);
+    const rawTranslations = Array.isArray(data.translations) ? data.translations : [];
+    const translations = rawTranslations
+      .map((t: any) => ({
+        language: String(t?.language || "").trim().toLowerCase(),
+        name: String(t?.name || "").trim(),
+        description: (t?.description === null || t?.description === undefined) ? "" : String(t.description).trim(),
+      }))
+      .filter((t: any) => t.language && allowedLangs.has(t.language) && t.language !== "tr")
+      .filter((t: any) => t.name || t.description)
+      .map((t: any) => ({
+        language: t.language,
+        name: t.name || String(data.name || "").trim(),
+        description: t.description ? t.description : null,
+      }));
 
     const category = await prisma.category.create({
       data: {
@@ -55,7 +70,9 @@ export async function POST(request: Request) {
         image: data.image || null,
         order: data.order || 0,
         restaurantId: session.restaurantId,
+        translations: translations.length > 0 ? { create: translations } : undefined,
       },
+      include: { translations: true },
     });
 
     return NextResponse.json(category, { status: 201 });

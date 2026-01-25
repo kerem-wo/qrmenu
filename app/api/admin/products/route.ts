@@ -59,6 +59,21 @@ export async function POST(request: Request) {
     }
 
     const data = await request.json();
+    const allowedLangs = new Set(["tr", "en", "de", "ru", "ar", "fr", "es"]);
+    const rawTranslations = Array.isArray(data.translations) ? data.translations : [];
+    const translations = rawTranslations
+      .map((t: any) => ({
+        language: String(t?.language || "").trim().toLowerCase(),
+        name: String(t?.name || "").trim(),
+        description: (t?.description === null || t?.description === undefined) ? "" : String(t.description).trim(),
+      }))
+      .filter((t: any) => t.language && allowedLangs.has(t.language) && t.language !== "tr")
+      .filter((t: any) => t.name || t.description)
+      .map((t: any) => ({
+        language: t.language,
+        name: t.name || String(data.name || "").trim(),
+        description: t.description ? t.description : null,
+      }));
     const prepMin = Number.isFinite(Number(data.prepMinMinutes)) ? parseInt(String(data.prepMinMinutes), 10) : 5;
     const prepMax = Number.isFinite(Number(data.prepMaxMinutes)) ? parseInt(String(data.prepMaxMinutes), 10) : 10;
 
@@ -96,9 +111,11 @@ export async function POST(request: Request) {
         prepMaxMinutes: prepMax,
         order: data.order || 0,
         categoryId: data.categoryId,
+        translations: translations.length > 0 ? { create: translations } : undefined,
       },
       include: {
         category: true,
+        translations: true,
       },
     });
 

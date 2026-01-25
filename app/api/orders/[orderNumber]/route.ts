@@ -7,6 +7,8 @@ export async function GET(
 ) {
   try {
     const { orderNumber } = await params;
+    const url = new URL(request.url);
+    const requestedLang = (url.searchParams.get("lang") || "").trim().toLowerCase() || "";
 
     if (!orderNumber) {
       return NextResponse.json(
@@ -18,6 +20,11 @@ export async function GET(
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: {
+        restaurant: {
+          select: {
+            language: true,
+          },
+        },
         items: {
           include: {
             product: {
@@ -25,6 +32,14 @@ export async function GET(
                 name: true,
                 prepMinMinutes: true,
                 prepMaxMinutes: true,
+                translations: {
+                  where: {
+                    language: requestedLang || "tr",
+                  },
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
           },
@@ -37,6 +52,36 @@ export async function GET(
         { error: "Sipariş bulunamadı" },
         { status: 404 }
       );
+    }
+
+    const lang = requestedLang || order.restaurant?.language || "tr";
+
+    // If requested lang wasn't provided, reload translations using restaurant default language
+    if (!requestedLang && lang !== "tr") {
+      const reloaded = await prisma.order.findUnique({
+        where: { orderNumber },
+        include: {
+          restaurant: { select: { language: true } },
+          items: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                  prepMinMinutes: true,
+                  prepMaxMinutes: true,
+                  translations: {
+                    where: { language: lang },
+                    select: { name: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      if (reloaded) {
+        (order as any).items = reloaded.items;
+      }
     }
 
     const activeStatuses: Array<string> = ["pending", "confirmed", "preparing"];
@@ -84,8 +129,16 @@ export async function GET(
     const etaMinMinutes = aheadMin + currentMin;
     const etaMaxMinutes = aheadMax + currentMax;
 
+    const resolvedItems = order.items.map((it) => ({
+      ...it,
+      product: {
+        name: it.product.translations?.[0]?.name || it.product.name,
+      },
+    }));
+
     return NextResponse.json({
       ...order,
+      items: resolvedItems,
       queue: {
         ahead: aheadOrders.length,
         etaMinMinutes,

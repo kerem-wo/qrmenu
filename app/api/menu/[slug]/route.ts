@@ -7,6 +7,8 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    const url = new URL(request.url);
+    const requestedLang = (url.searchParams.get("lang") || "").trim().toLowerCase() || "";
     const restaurant = await prisma.restaurant.findUnique({
       where: { slug },
       select: {
@@ -14,6 +16,7 @@ export async function GET(
         name: true,
         description: true,
         logo: true,
+        language: true,
       },
     });
 
@@ -24,14 +27,31 @@ export async function GET(
       );
     }
 
+    const lang = requestedLang || restaurant.language || "tr";
+
+    const restaurantTranslation = await prisma.restaurantTranslation.findFirst({
+      where: { restaurantId: restaurant.id, language: lang },
+      select: { name: true, description: true },
+    });
+
     const categories = await prisma.category.findMany({
       where: {
         restaurantId: restaurant.id,
       },
       include: {
+        translations: {
+          where: { language: lang },
+          select: { name: true, description: true },
+        },
         products: {
           where: {
             isAvailable: true,
+          },
+          include: {
+            translations: {
+              where: { language: lang },
+              select: { name: true, description: true },
+            },
           },
           orderBy: {
             order: "asc",
@@ -72,9 +92,34 @@ export async function GET(
       .slice(0, 10)
       .map(({ usageLimit, usedCount, ...rest }) => rest);
 
+    const resolvedRestaurant = {
+      id: restaurant.id,
+      name: restaurantTranslation?.name || restaurant.name,
+      description: restaurantTranslation?.description ?? restaurant.description,
+      logo: restaurant.logo,
+    };
+
+    const resolvedCategories = categories.map((c) => {
+      const cName = c.translations?.[0]?.name || c.name;
+      const cDesc = c.translations?.[0]?.description ?? c.description;
+      const products = (c.products ?? []).map((p) => ({
+        ...p,
+        name: p.translations?.[0]?.name || p.name,
+        description: p.translations?.[0]?.description ?? p.description,
+        translations: undefined,
+      }));
+      return {
+        ...c,
+        name: cName,
+        description: cDesc,
+        products,
+        translations: undefined,
+      };
+    });
+
     return NextResponse.json({
-      restaurant,
-      categories,
+      restaurant: resolvedRestaurant,
+      categories: resolvedCategories,
       campaigns,
     });
   } catch (error) {

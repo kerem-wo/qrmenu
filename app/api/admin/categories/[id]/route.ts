@@ -22,6 +22,7 @@ export async function GET(
         restaurantId: session.restaurantId,
       },
       include: {
+        translations: true,
         products: {
           orderBy: {
             order: "asc",
@@ -62,29 +63,63 @@ export async function PUT(
 
     const { id } = await params;
     const data = await request.json();
+    const allowedLangs = new Set(["tr", "en", "de", "ru", "ar", "fr", "es"]);
+    const rawTranslations = Array.isArray(data.translations) ? data.translations : [];
 
-    const category = await prisma.category.updateMany({
-      where: {
-        id,
-        restaurantId: session.restaurantId,
-      },
-      data: {
-        name: data.name,
-        description: data.description || null,
-        image: data.image || null,
-        order: data.order ?? undefined,
-      },
+    const existingCategory = await prisma.category.findFirst({
+      where: { id, restaurantId: session.restaurantId },
+      select: { id: true, name: true },
     });
 
-    if (category.count === 0) {
+    if (!existingCategory) {
       return NextResponse.json(
         { error: "Kategori bulunamadı" },
         { status: 404 }
       );
     }
 
-    const updatedCategory = await prisma.category.findUnique({
-      where: { id },
+    const updatedCategory = await prisma.$transaction(async (tx) => {
+      await tx.category.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description || null,
+          image: data.image || null,
+          order: data.order ?? undefined,
+        },
+      });
+
+      for (const t of rawTranslations) {
+        const language = String(t?.language || "").trim().toLowerCase();
+        if (!language || !allowedLangs.has(language) || language === "tr") continue;
+        const name = String(t?.name || "").trim();
+        const description =
+          t?.description === null || t?.description === undefined ? "" : String(t.description).trim();
+
+        if (!name && !description) {
+          await tx.categoryTranslation.deleteMany({ where: { categoryId: id, language } });
+          continue;
+        }
+
+        await tx.categoryTranslation.upsert({
+          where: { categoryId_language: { categoryId: id, language } },
+          update: {
+            name: name || existingCategory.name,
+            description: description ? description : null,
+          },
+          create: {
+            categoryId: id,
+            language,
+            name: name || existingCategory.name,
+            description: description ? description : null,
+          },
+        });
+      }
+
+      return tx.category.findUnique({
+        where: { id },
+        include: { translations: true },
+      });
     });
 
     return NextResponse.json(updatedCategory);

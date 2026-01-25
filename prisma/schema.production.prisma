@@ -18,12 +18,14 @@ model Restaurant {
   description String?
   logo        String?
   theme       String   @default("default")
+  language    String   @default("tr") // tr, en, de, vb.
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
   categories  Category[]
   orders      Order[]
   admin       Admin?
+  translations RestaurantTranslation[]
 }
 
 model Admin {
@@ -45,6 +47,7 @@ model Category {
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   products     Product[]
+  translations CategoryTranslation[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -62,8 +65,48 @@ model Product {
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   orderItems  OrderItem[]
+  translations ProductTranslation[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model RestaurantTranslation {
+  id           String   @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  language     String   // tr, en, de, ru, ar, fr, es...
+  name         String
+  description  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([restaurantId, language])
+}
+
+model CategoryTranslation {
+  id         String   @id @default(cuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  language   String   // tr, en, de, ru, ar, fr, es...
+  name       String
+  description String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([categoryId, language])
+}
+
+model ProductTranslation {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  language   String   // tr, en, de, ru, ar, fr, es...
+  name       String
+  description String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([productId, language])
 }
 
 model Order {

@@ -24,19 +24,53 @@ export default function SettingsPage() {
     logo: "",
     theme: "default",
     slug: "",
+    language: "tr",
+    translations: {
+      en: { name: "", description: "" },
+      de: { name: "", description: "" },
+      ru: { name: "", description: "" },
+      ar: { name: "", description: "" },
+      fr: { name: "", description: "" },
+      es: { name: "", description: "" },
+    } as Record<string, { name: string; description: string }>,
   });
+
+  const TRANSLATION_LANGS = [
+    { id: "en", label: "English" },
+    { id: "de", label: "Deutsch" },
+    { id: "ru", label: "Русский" },
+    { id: "ar", label: "العربية" },
+    { id: "fr", label: "Français" },
+    { id: "es", label: "Español" },
+  ] as const;
 
   const fetchRestaurant = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/restaurant");
       if (res.ok) {
         const data = await res.json();
+        const map: Record<string, { name: string; description: string }> = {
+          en: { name: "", description: "" },
+          de: { name: "", description: "" },
+          ru: { name: "", description: "" },
+          ar: { name: "", description: "" },
+          fr: { name: "", description: "" },
+          es: { name: "", description: "" },
+        };
+        const ts = Array.isArray(data.translations) ? data.translations : [];
+        for (const t of ts) {
+          const lang = String(t.language || "").toLowerCase();
+          if (!map[lang]) continue;
+          map[lang] = { name: t.name || "", description: t.description || "" };
+        }
         setFormData({
           name: data.name,
           description: data.description || "",
           logo: data.logo || "",
           theme: data.theme || "default",
           slug: data.slug,
+          language: data.language || "tr",
+          translations: map,
         });
       }
     } catch (error) {
@@ -70,6 +104,12 @@ export default function SettingsPage() {
           description: formData.description,
           logo: formData.logo,
           theme: formData.theme,
+          language: formData.language,
+          translations: Object.entries(formData.translations).map(([language, t]) => ({
+            language,
+            name: (t?.name || "").trim(),
+            description: (t?.description || "").trim() || null,
+          })),
         }),
       });
 
@@ -187,6 +227,78 @@ export default function SettingsPage() {
                 rows={4}
                 className="premium-input"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="language" className="text-sm font-bold text-gray-700">Varsayılan Menü Dili</Label>
+              <select
+                id="language"
+                value={formData.language}
+                onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                className="premium-input h-11"
+              >
+                <option value="tr">Türkçe</option>
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="ru">Русский</option>
+                <option value="ar">العربية</option>
+                <option value="fr">Français</option>
+                <option value="es">Español</option>
+              </select>
+              <p className="text-xs text-gray-600 mt-1 font-medium">
+                Müşteri menüsü dil seçimi yoksa bu dil kullanılır.
+              </p>
+            </div>
+
+            <div className="premium-card p-6 border border-gray-200/70">
+              <div className="mb-4">
+                <h3 className="font-bold text-gray-900">Çeviriler</h3>
+                <p className="text-sm text-gray-600 font-medium">
+                  Türkçe alanlar ana alanlardan gelir. Diğer diller için isim/açıklama girebilirsiniz.
+                </p>
+              </div>
+              <div className="space-y-6">
+                {TRANSLATION_LANGS.map((l) => (
+                  <div key={l.id} className="space-y-3">
+                    <div className="text-sm font-bold text-gray-800">{l.label}</div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-gray-700">İsim</Label>
+                      <Input
+                        value={formData.translations[l.id]?.name || ""}
+                        onChange={(e) =>
+                          setFormData((s) => ({
+                            ...s,
+                            translations: {
+                              ...s.translations,
+                              [l.id]: { ...(s.translations[l.id] || { name: "", description: "" }), name: e.target.value },
+                            },
+                          }))
+                        }
+                        placeholder={`${formData.name || "Restoran adı"} (${l.label})`}
+                        className="premium-input"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs font-bold text-gray-700">Açıklama</Label>
+                      <Textarea
+                        value={formData.translations[l.id]?.description || ""}
+                        onChange={(e) =>
+                          setFormData((s) => ({
+                            ...s,
+                            translations: {
+                              ...s.translations,
+                              [l.id]: { ...(s.translations[l.id] || { name: "", description: "" }), description: e.target.value },
+                            },
+                          }))
+                        }
+                        placeholder="Opsiyonel"
+                        rows={3}
+                        className="premium-input"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="space-y-2">

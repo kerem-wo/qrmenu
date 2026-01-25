@@ -25,6 +25,7 @@ export async function GET(
       },
       include: {
         category: true,
+        translations: true,
       },
     });
 
@@ -60,6 +61,8 @@ export async function PUT(
 
     const { id } = await params;
     const data = await request.json();
+    const allowedLangs = new Set(["tr", "en", "de", "ru", "ar", "fr", "es"]);
+    const rawTranslations = Array.isArray(data.translations) ? data.translations : [];
     const prepMin =
       data.prepMinMinutes === undefined || data.prepMinMinutes === null || data.prepMinMinutes === ""
         ? undefined
@@ -125,26 +128,65 @@ export async function PUT(
       }
     }
 
-    const product = await prisma.product.update({
-      where: { id },
-      data: {
-        name: data.name,
-        description: data.description || null,
-        price: data.price,
-        image: data.image || null,
-        stock: data.stock !== undefined ? (data.stock === "" || data.stock === null ? null : parseInt(String(data.stock), 10)) : undefined,
-        prepMinMinutes: prepMin ?? undefined,
-        prepMaxMinutes: prepMax ?? undefined,
-        isAvailable: data.isAvailable ?? true,
-        order: data.order ?? undefined,
-        categoryId: data.categoryId || undefined,
-      },
-      include: {
-        category: true,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      const product = await tx.product.update({
+        where: { id },
+        data: {
+          name: data.name,
+          description: data.description || null,
+          price: data.price,
+          image: data.image || null,
+          stock:
+            data.stock !== undefined
+              ? data.stock === "" || data.stock === null
+                ? null
+                : parseInt(String(data.stock), 10)
+              : undefined,
+          prepMinMinutes: prepMin ?? undefined,
+          prepMaxMinutes: prepMax ?? undefined,
+          isAvailable: data.isAvailable ?? true,
+          order: data.order ?? undefined,
+          categoryId: data.categoryId || undefined,
+        },
+        include: {
+          category: true,
+        },
+      });
+
+      for (const t of rawTranslations) {
+        const language = String(t?.language || "").trim().toLowerCase();
+        if (!language || !allowedLangs.has(language) || language === "tr") continue;
+        const name = String(t?.name || "").trim();
+        const description =
+          t?.description === null || t?.description === undefined ? "" : String(t.description).trim();
+
+        if (!name && !description) {
+          await tx.productTranslation.deleteMany({ where: { productId: id, language } });
+          continue;
+        }
+
+        await tx.productTranslation.upsert({
+          where: { productId_language: { productId: id, language } },
+          update: {
+            name: name || existingProduct.name,
+            description: description ? description : null,
+          },
+          create: {
+            productId: id,
+            language,
+            name: name || existingProduct.name,
+            description: description ? description : null,
+          },
+        });
+      }
+
+      return tx.product.findUnique({
+        where: { id },
+        include: { category: true, translations: true },
+      });
     });
 
-    return NextResponse.json(product);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error updating product:", error);
     return NextResponse.json(

@@ -698,7 +698,7 @@ export function BoltMenuForSlugClient() {
       if (!slug) return;
       setLoading(true);
       try {
-        const res = await fetch(`/api/menu/${slug}`, { cache: "no-store" });
+        const res = await fetch(`/api/menu/${slug}?lang=${encodeURIComponent(lang)}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Menu fetch failed");
         const data = (await res.json()) as {
           restaurant: ApiRestaurant;
@@ -719,7 +719,7 @@ export function BoltMenuForSlugClient() {
     };
 
     if (slug) fetchMenu();
-  }, [slug]);
+  }, [slug, lang]);
 
   const tabs = useMemo(() => {
     const dynamic = [...categories]
@@ -756,6 +756,24 @@ export function BoltMenuForSlugClient() {
     }
     return fromApi;
   }, [categories]);
+
+  // When language changes, refresh any already-selected/cart items
+  useEffect(() => {
+    if (items.length === 0) return;
+    const byId = new Map(items.map((i) => [i.id, i] as const));
+
+    setSelected((prev) => {
+      if (!prev) return prev;
+      return byId.get(prev.id) ?? prev;
+    });
+
+    setCartLines((prev) =>
+      prev.map((l) => ({
+        ...l,
+        item: byId.get(l.item.id) ?? l.item,
+      }))
+    );
+  }, [items]);
 
   const filteredItems = useMemo(() => {
     const q = normalize(query);
