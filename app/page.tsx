@@ -51,15 +51,9 @@ export default function Home() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo.png"
-                alt="Rivo QR"
-                width={40}
-                height={40}
-                className="h-10 w-auto"
-              />
-              <span className="text-xl font-bold text-white">Rivo QR</span>
+            <div className="flex items-center gap-0">
+              <span className="text-xl font-bold" style={{ color: '#FF6F00' }}>Rivo</span>
+              <span className="text-xl font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"> QR</span>
             </div>
             <nav className="hidden md:flex items-center gap-8">
               <Link href="#features" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
@@ -370,15 +364,9 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Image
-                  src="/logo.png"
-                  alt="Rivo QR"
-                  width={32}
-                  height={32}
-                  className="h-8 w-auto"
-                />
-                <span className="text-lg font-bold text-white">Rivo QR</span>
+              <div className="flex items-center gap-0 mb-4">
+                <span className="text-lg font-bold" style={{ color: '#FF6F00' }}>Rivo</span>
+                <span className="text-lg font-bold text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"> QR</span>
               </div>
               <p className="text-sm text-gray-500 leading-relaxed">
                 Profesyonel dijital QR menü çözümü.
@@ -432,7 +420,7 @@ export default function Home() {
           </div>
           <div className="pt-8 border-t border-gray-800/50">
             <p className="text-xs text-gray-600 text-center">
-              © 2026 Rivo QR. Tüm hakları saklıdır.{" "}
+              © 2026 <span style={{ color: '#FF6F00' }}>Rivo</span><span className="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]"> QR</span>. Tüm hakları saklıdır.{" "}
               <span className="text-gray-700">Developed by{" "}
                 <a
                   href="https://softwareoffuture.com"
