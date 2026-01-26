@@ -16,6 +16,9 @@ export async function POST(request: Request) {
       );
     }
 
+    // Sanitize email
+    const sanitizedEmail = sanitizeInput(email.trim().toLowerCase());
+
     const admin = await prisma.platformAdmin.findUnique({
       where: { email: sanitizedEmail },
       select: {
@@ -36,6 +39,14 @@ export async function POST(request: Request) {
     const isValid = await bcrypt.compare(password, admin.password);
 
     if (!isValid) {
+      await logSecurityEvent({
+        action: 'FAILED_PLATFORM_ADMIN_LOGIN_ATTEMPT',
+        userType: 'anonymous',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        details: { email: sanitizedEmail },
+        timestamp: new Date(),
+      });
       return NextResponse.json(
         { error: "Geçersiz e-posta veya şifre" },
         { status: 401 }
