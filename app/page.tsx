@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { QrCode, Smartphone, Clock, TrendingUp, Sparkles, Zap, Shield, ArrowRight, Star, CheckCircle, MessageSquare } from "lucide-react";
+import { QrCode, ArrowRight, Star, CheckCircle, MessageSquare } from "lucide-react";
 
 export default function Home() {
   return (
@@ -38,7 +38,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 bg-gradient-to-b from-gray-50 to-white">
+      <section className="relative py-20 md:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
@@ -147,15 +147,15 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 leading-relaxed italic">
-                "Rivo QR sistemi sayesinde restoranımızın menü yönetimi çok daha pratik hale geldi. Müşterilerimiz QR kod okutarak anında menüye erişebiliyor ve siparişlerini hızlıca verebiliyorlar. Hem işletmemiz hem de müşterilerimiz için harika bir deneyim!"
+                "QR Menü yazılımı restoranımıza çok yakıştı. Menüdeki değişiklikleri anında yapabiliyoruz ve müşterilerimiz de menüye hızlıca erişebiliyor. Hem zamandan hem de maliyetten tasarruf ettik."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-full flex items-center justify-center text-white font-bold">
-                  MA
+                  SS
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Mehmet A.</p>
-                  <p className="text-sm text-gray-600">Lezzet Durağı Restaurant</p>
+                  <p className="font-bold text-gray-900">Soner S.</p>
+                  <p className="text-sm text-gray-600">Yiyin & İçin Espiye</p>
                 </div>
               </div>
             </div>
@@ -168,18 +168,38 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 leading-relaxed italic">
-                "Dijital menü sistemine geçiş yapmak bizim için en doğru karardı. Müşteri geri bildirimlerini kolayca toplayabiliyoruz ve menü güncellemelerini anında yapabiliyoruz. Rivo QR ekibine teşekkürler!"
+                "Google yorum sayımızı arttırmak için talep ettik. Müşterilerimiz masa üzerinde ki pleksilerden qr okutuarak direkt Google işletme hesabımıza yorum bırakabiliyorlar. Biz çok sevdik."
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-full flex items-center justify-center text-white font-bold">
-                  AK
+                  SB
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Ayşe K.</p>
-                  <p className="text-sm text-gray-600">Café Modern</p>
+                  <p className="font-bold text-gray-900">Saime B.</p>
+                  <p className="text-sm text-gray-600">Denizim Beach Club</p>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Professional Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+              Daha Profesyonel
+              <br />
+              ve Güçlü Öneriler.
+            </h2>
+            <Link
+              href="/restaurant/register"
+              className="text-[#FF6F00] font-bold text-lg hover:text-[#E55F00] transition-colors inline-flex items-center gap-2"
+            >
+              Bizi Tanıyın.
+              <ArrowRight className="w-5 h-5" />
+            </Link>
           </div>
         </div>
       </section>
