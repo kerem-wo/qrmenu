@@ -19,7 +19,36 @@ export async function getAdminSession(): Promise<AdminSession | null> {
       return null;
     }
     
-    const session = JSON.parse(sessionCookie.value) as AdminSession;
+    // Verify signature
+    const crypto = await import('crypto');
+    const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
+    const [sessionData, signature] = sessionCookie.value.split('.');
+    
+    if (!signature) {
+      // Legacy session format (backward compatibility)
+      try {
+        const session = JSON.parse(sessionCookie.value) as AdminSession;
+        const admin = await prisma.admin.findUnique({
+          where: { id: session.id },
+          select: { id: true },
+        });
+        return admin ? session : null;
+      } catch {
+        return null;
+      }
+    }
+    
+    // Verify signature
+    const expectedSignature = crypto.createHmac('sha256', secret)
+      .update(sessionData)
+      .digest('hex');
+    
+    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+      console.error("Session signature verification failed - possible tampering");
+      return null;
+    }
+    
+    const session = JSON.parse(sessionData) as AdminSession;
     
     // Verify session is still valid
     const admin = await prisma.admin.findUnique({
@@ -44,12 +73,20 @@ export async function getAdminSession(): Promise<AdminSession | null> {
 export async function setAdminSession(session: AdminSession) {
   try {
     const cookieStore = cookies();
-    const cookieValue = JSON.stringify(session);
     
-    cookieStore.set("admin_session", cookieValue, {
+    // Sign session with secret to prevent tampering
+    const crypto = await import('crypto');
+    const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
+    const sessionData = JSON.stringify(session);
+    const signature = crypto.createHmac('sha256', secret)
+      .update(sessionData)
+      .digest('hex');
+    const signedSession = `${sessionData}.${signature}`;
+    
+    cookieStore.set("admin_session", signedSession, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      sameSite: "strict", // CSRF protection
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });

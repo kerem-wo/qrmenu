@@ -5,10 +5,39 @@ import bcrypt from "bcryptjs";
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: Request) {
+import { rateLimit, getClientIP, logSecurityEvent, requireHTTPS, sanitizeInput } from "@/lib/security";
+import { NextRequest } from "next/server";
+
+export async function POST(request: NextRequest) {
   try {
+    // HTTPS Check
+    if (!requireHTTPS(request)) {
+      return NextResponse.json(
+        { error: "HTTPS required" },
+        { status: 403 }
+      );
+    }
+
+    // Rate Limiting
+    const clientIP = getClientIP(request);
+    const rateLimitKey = `login:${clientIP}`;
+    if (!rateLimit(rateLimitKey, 5, 60000)) { // 5 attempts per minute
+      await logSecurityEvent({
+        action: 'LOGIN_RATE_LIMIT_EXCEEDED',
+        userType: 'anonymous',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        timestamp: new Date(),
+      });
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { email, password } = await request.json();
 
+    // Input validation
     if (!email || !password) {
       return NextResponse.json(
         { error: "E-posta ve şifre gereklidir" },
@@ -16,9 +45,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // Sanitize inputs
+    const sanitizedEmail = sanitizeInput(email.trim().toLowerCase());
+    const sanitizedPassword = password; // Don't sanitize password (it's hashed anyway)
+
     // Select only needed fields to avoid schema mismatch issues
     const admin = await prisma.admin.findUnique({
-      where: { email },
+      where: { email: sanitizedEmail },
       select: {
         id: true,
         email: true,

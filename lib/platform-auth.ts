@@ -16,7 +16,36 @@ export async function getPlatformAdminSession(): Promise<PlatformAdminSession | 
       return null;
     }
     
-    const session = JSON.parse(sessionCookie.value) as PlatformAdminSession;
+    // Verify signature
+    const crypto = await import('crypto');
+    const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
+    const [sessionData, signature] = sessionCookie.value.split('.');
+    
+    if (!signature) {
+      // Legacy session format (backward compatibility)
+      try {
+        const session = JSON.parse(sessionCookie.value) as PlatformAdminSession;
+        const admin = await prisma.platformAdmin.findUnique({
+          where: { id: session.id },
+          select: { id: true },
+        });
+        return admin ? session : null;
+      } catch {
+        return null;
+      }
+    }
+    
+    // Verify signature
+    const expectedSignature = crypto.createHmac('sha256', secret)
+      .update(sessionData)
+      .digest('hex');
+    
+    if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+      console.error("Platform admin session signature verification failed - possible tampering");
+      return null;
+    }
+    
+    const session = JSON.parse(sessionData) as PlatformAdminSession;
     
     // Verify session is still valid
     const admin = await prisma.platformAdmin.findUnique({
@@ -36,12 +65,27 @@ export async function getPlatformAdminSession(): Promise<PlatformAdminSession | 
 }
 
 export async function setPlatformAdminSession(session: PlatformAdminSession) {
-  const cookieStore = cookies();
-  cookieStore.set("platform_admin_session", JSON.stringify(session), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: "/",
-  });
+  try {
+    const cookieStore = cookies();
+    
+    // Sign session with secret to prevent tampering
+    const crypto = await import('crypto');
+    const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
+    const sessionData = JSON.stringify(session);
+    const signature = crypto.createHmac('sha256', secret)
+      .update(sessionData)
+      .digest('hex');
+    const signedSession = `${sessionData}.${signature}`;
+    
+    cookieStore.set("platform_admin_session", signedSession, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      sameSite: "strict", // CSRF protection
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: "/",
+    });
+  } catch (error) {
+    console.error("Error setting platform admin session cookie:", error);
+    throw error;
+  }
 }

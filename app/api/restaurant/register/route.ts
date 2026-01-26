@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { rateLimit, getClientIP, logSecurityEvent, requireHTTPS, sanitizeInput } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
 
@@ -121,11 +122,20 @@ export async function POST(request: Request) {
     // Şifreyi hashle
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Import encryption for document storage
+    const { encryptDataUrl } = await import("@/lib/encryption");
+
     // Transaction ile restaurant ve admin oluştur
     const result = await prisma.$transaction(async (tx) => {
       // Theme validation - sadece geçerli temalar kabul edilir
       const validThemes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
       const selectedTheme = theme && validThemes.includes(theme) ? theme : "default";
+
+      // Encrypt documents before storage
+      const encryptedTaxDocument = taxDocument ? encryptDataUrl(taxDocument) : null;
+      const encryptedBusinessLicense = businessLicense ? encryptDataUrl(businessLicense) : null;
+      const encryptedTradeRegistry = tradeRegistry ? encryptDataUrl(tradeRegistry) : null;
+      const encryptedIdentityDocument = identityDocument ? encryptDataUrl(identityDocument) : null;
 
       // Restaurant oluştur (status: pending - platform admin onayı bekliyor)
       const restaurant = await tx.restaurant.create({
@@ -139,10 +149,10 @@ export async function POST(request: Request) {
           kvkkConsent: kvkkConsent === true,
           privacyConsent: privacyConsent === true,
           marketingSmsConsent: marketingSmsConsent === true,
-          taxDocument: taxDocument || null,
-          businessLicense: businessLicense || null,
-          tradeRegistry: tradeRegistry || null,
-          identityDocument: identityDocument || null,
+          taxDocument: encryptedTaxDocument,
+          businessLicense: encryptedBusinessLicense,
+          tradeRegistry: encryptedTradeRegistry,
+          identityDocument: encryptedIdentityDocument,
           status: 'pending', // Platform admin onayı bekliyor
         },
       });

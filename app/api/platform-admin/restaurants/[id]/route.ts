@@ -1,16 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPlatformAdminSession } from "@/lib/platform-auth";
+import { decryptDataUrl } from "@/lib/encryption";
+import { getClientIP, logSecurityEvent, requireHTTPS } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // HTTPS Check
+    if (!requireHTTPS(request)) {
+      return NextResponse.json(
+        { error: "HTTPS required" },
+        { status: 403 }
+      );
+    }
+
     const session = await getPlatformAdminSession();
     if (!session) {
+      await logSecurityEvent({
+        action: 'UNAUTHORIZED_RESTAURANT_ACCESS_ATTEMPT',
+        userType: 'anonymous',
+        ip: getClientIP(request),
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        timestamp: new Date(),
+      });
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -38,7 +55,30 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(restaurant);
+    // Decrypt documents for platform admin viewing
+    const decryptedRestaurant = {
+      ...restaurant,
+      taxDocument: restaurant.taxDocument ? decryptDataUrl(restaurant.taxDocument) : null,
+      businessLicense: restaurant.businessLicense ? decryptDataUrl(restaurant.businessLicense) : null,
+      tradeRegistry: restaurant.tradeRegistry ? decryptDataUrl(restaurant.tradeRegistry) : null,
+      identityDocument: restaurant.identityDocument ? decryptDataUrl(restaurant.identityDocument) : null,
+    };
+
+    // Log document access
+    await logSecurityEvent({
+      action: 'RESTAURANT_DOCUMENTS_ACCESSED',
+      userId: session.id,
+      userType: 'platform-admin',
+      ip: getClientIP(request),
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      details: {
+        restaurantId: id,
+        restaurantName: restaurant.name,
+      },
+      timestamp: new Date(),
+    });
+
+    return NextResponse.json(decryptedRestaurant);
   } catch (error) {
     console.error("Error fetching restaurant:", error);
     return NextResponse.json(
