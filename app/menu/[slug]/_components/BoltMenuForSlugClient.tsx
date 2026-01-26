@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Globe, Leaf, Minus, Plus, Search, X, Bell, Receipt } from "lucide-react";
+import { Globe, Leaf, Minus, Plus, Search, X, Bell, Receipt, Menu } from "lucide-react";
 import toast from "react-hot-toast";
 
 type ApiCampaign = {
@@ -733,64 +733,70 @@ export function BoltMenuForSlugClient() {
   const [darkMode, setDarkMode] = useState(false);
   const [isRequestingWaiter, setIsRequestingWaiter] = useState(false);
   const [isRequestingBill, setIsRequestingBill] = useState(false);
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
+  const [requestType, setRequestType] = useState<"waiter" | "bill" | null>(null);
+  const [requestTableNumber, setRequestTableNumber] = useState("");
+  const [requestNote, setRequestNote] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const S = STRINGS[lang];
   const enableTakeaway = restaurant?.enableTakeaway ?? true;
 
-  const handleRequestWaiter = async () => {
-    if (!restaurant?.id) {
+  const openRequestModal = (type: "waiter" | "bill") => {
+    setRequestType(type);
+    setRequestTableNumber(orderForm.tableNumber || "");
+    setRequestNote("");
+    setRequestModalOpen(true);
+  };
+
+  const handleSubmitRequest = async () => {
+    if (!restaurant?.id || !requestType) {
       toast.error("Restoran bilgisi bulunamadı");
       return;
     }
-    setIsRequestingWaiter(true);
+
+    if (!requestTableNumber.trim()) {
+      toast.error("Lütfen masa numarası girin");
+      return;
+    }
+
+    if (requestType === "waiter") {
+      setIsRequestingWaiter(true);
+    } else {
+      setIsRequestingBill(true);
+    }
+
     try {
       const res = await fetch("/api/table-requests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           restaurantId: restaurant.id,
-          type: "waiter",
-          tableNumber: orderForm.tableNumber || null,
+          type: requestType,
+          tableNumber: requestTableNumber.trim() || null,
+          note: requestNote.trim() || null,
         }),
       });
       if (res.ok) {
-        toast.success("Garson çağrıldı!");
+        toast.success(
+          requestType === "waiter" ? "Garson çağrıldı!" : "Hesap istendi!"
+        );
+        setRequestModalOpen(false);
+        setRequestTableNumber("");
+        setRequestNote("");
+        setRequestType(null);
       } else {
-        toast.error("Garson çağrılırken bir hata oluştu");
+        toast.error(
+          requestType === "waiter"
+            ? "Garson çağrılırken bir hata oluştu"
+            : "Hesap istenirken bir hata oluştu"
+        );
       }
     } catch (error) {
-      console.error("Error requesting waiter:", error);
+      console.error("Error submitting request:", error);
       toast.error("Bir hata oluştu");
     } finally {
       setIsRequestingWaiter(false);
-    }
-  };
-
-  const handleRequestBill = async () => {
-    if (!restaurant?.id) {
-      toast.error("Restoran bilgisi bulunamadı");
-      return;
-    }
-    setIsRequestingBill(true);
-    try {
-      const res = await fetch("/api/table-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          restaurantId: restaurant.id,
-          type: "bill",
-          tableNumber: orderForm.tableNumber || null,
-        }),
-      });
-      if (res.ok) {
-        toast.success("Hesap istendi!");
-      } else {
-        toast.error("Hesap istenirken bir hata oluştu");
-      }
-    } catch (error) {
-      console.error("Error requesting bill:", error);
-      toast.error("Bir hata oluştu");
-    } finally {
       setIsRequestingBill(false);
     }
   };
@@ -2055,10 +2061,67 @@ export function BoltMenuForSlugClient() {
         {renderThemeLayout()}
       </div>
 
-      {/* Floating action buttons - Garson Çağır & Hesap İste */}
-      <div className="fixed right-4 top-20 z-40 flex flex-col gap-3">
+      {/* Mobile Hamburger Menu Button */}
+      <div className="md:hidden fixed right-4 top-20 z-40">
         <button
-          onClick={handleRequestWaiter}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className={`flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-all ${
+            theme === "premium-plus" || theme === "ultra-plus"
+              ? "bg-amber-500 hover:bg-amber-600"
+              : "bg-gray-800 hover:bg-gray-900"
+          }`}
+          title="Menü"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+      </div>
+
+      {/* Mobile Menu Overlay & Dropdown */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="md:hidden fixed inset-0 z-30 bg-black/20"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="md:hidden fixed right-4 top-32 z-40 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden min-w-[200px]"
+            >
+              <button
+                onClick={() => {
+                  openRequestModal("waiter");
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+              >
+                <Bell className="w-5 h-5 text-blue-500" />
+                <span className="text-sm font-bold text-gray-900">Garson Çağır</span>
+              </button>
+              <button
+                onClick={() => {
+                  openRequestModal("bill");
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-t border-gray-100"
+              >
+                <Receipt className="w-5 h-5 text-green-500" />
+                <span className="text-sm font-bold text-gray-900">Hesap İste</span>
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Floating action buttons - Garson Çağır & Hesap İste */}
+      <div className="hidden md:flex fixed right-4 top-20 z-40 flex-col gap-3">
+        <button
+          onClick={() => openRequestModal("waiter")}
           disabled={isRequestingWaiter}
           className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
             theme === "premium-plus" || theme === "ultra-plus"
@@ -2068,10 +2131,10 @@ export function BoltMenuForSlugClient() {
           title="Garson Çağır"
         >
           <Bell className="w-5 h-5" />
-          <span className="text-sm font-bold hidden sm:inline">Garson Çağır</span>
+          <span className="text-sm font-bold">Garson Çağır</span>
         </button>
         <button
-          onClick={handleRequestBill}
+          onClick={() => openRequestModal("bill")}
           disabled={isRequestingBill}
           className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
             theme === "premium-plus" || theme === "ultra-plus"
@@ -2081,9 +2144,123 @@ export function BoltMenuForSlugClient() {
           title="Hesap İste"
         >
           <Receipt className="w-5 h-5" />
-          <span className="text-sm font-bold hidden sm:inline">Hesap İste</span>
+          <span className="text-sm font-bold">Hesap İste</span>
         </button>
       </div>
+
+      {/* Request Modal */}
+      <AnimatePresence>
+        {requestModalOpen && requestType && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+            onClick={() => setRequestModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-md rounded-2xl shadow-2xl ${
+                theme === "premium-plus" || theme === "ultra-plus"
+                  ? "bg-gray-800"
+                  : "bg-white"
+              }`}
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className={`text-xl font-bold ${
+                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
+                  }`}>
+                    {requestType === "waiter" ? "Garson Çağır" : "Hesap İste"}
+                  </h2>
+                  <button
+                    onClick={() => setRequestModalOpen(false)}
+                    className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "hover:bg-gray-700" : ""
+                    }`}
+                  >
+                    <X className={`w-5 h-5 ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-600"
+                    }`} />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className={`block text-sm font-bold mb-2 ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
+                    }`}>
+                      Masa Numarası *
+                    </label>
+                    <input
+                      type="text"
+                      value={requestTableNumber}
+                      onChange={(e) => setRequestTableNumber(e.target.value)}
+                      placeholder="Örn: 5, A12"
+                      className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 ${
+                        theme === "premium-plus" || theme === "ultra-plus"
+                          ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
+                          : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                      }`}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className={`block text-sm font-bold mb-2 ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
+                    }`}>
+                      Not (Opsiyonel)
+                    </label>
+                    <textarea
+                      value={requestNote}
+                      onChange={(e) => setRequestNote(e.target.value)}
+                      placeholder="Eklemek istediğiniz bir not var mı?"
+                      rows={3}
+                      className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 resize-none ${
+                        theme === "premium-plus" || theme === "ultra-plus"
+                          ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
+                          : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                      }`}
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-2">
+                    <button
+                      onClick={() => setRequestModalOpen(false)}
+                      className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${
+                        theme === "premium-plus" || theme === "ultra-plus"
+                          ? "bg-gray-700 text-white hover:bg-gray-600"
+                          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                      }`}
+                    >
+                      İptal
+                    </button>
+                    <button
+                      onClick={handleSubmitRequest}
+                      disabled={!requestTableNumber.trim() || isRequestingWaiter || isRequestingBill}
+                      className={`flex-1 px-4 py-3 rounded-xl font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        requestType === "waiter"
+                          ? theme === "premium-plus" || theme === "ultra-plus"
+                            ? "bg-amber-500 hover:bg-amber-600"
+                            : "bg-blue-500 hover:bg-blue-600"
+                          : theme === "premium-plus" || theme === "ultra-plus"
+                            ? "bg-amber-500 hover:bg-amber-600"
+                            : "bg-green-500 hover:bg-green-600"
+                      }`}
+                    >
+                      {(isRequestingWaiter || isRequestingBill) ? "Gönderiliyor..." : "Gönder"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Floating mini cart bar */}
       <AnimatePresence>

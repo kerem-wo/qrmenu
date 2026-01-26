@@ -187,8 +187,13 @@ export default function AdminDashboard() {
                         {request.type === "waiter" ? "Garson Çağrısı" : "Hesap İsteği"}
                       </h3>
                       {request.tableNumber && (
-                        <p className="text-sm text-gray-600 mb-2">
+                        <p className="text-sm text-gray-600 mb-1">
                           Masa: {request.tableNumber}
+                        </p>
+                      )}
+                      {request.note && (
+                        <p className="text-sm text-gray-700 mb-2 italic">
+                          "{request.note}"
                         </p>
                       )}
                       <p className="text-xs text-gray-500">

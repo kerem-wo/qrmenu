@@ -191,6 +191,7 @@ model TableRequest {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   type         String   // "waiter" (garson çağır) veya "bill" (hesap iste)
   tableNumber  String?  // Masa numarası (varsa)
+  note         String?  // Müşteri notu
   isRead       Boolean  @default(false) // Okundu mu?
   createdAt    DateTime @default(now())
   readAt       DateTime? // Okunma tarihi

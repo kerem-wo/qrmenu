@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { restaurantId, type, tableNumber } = data;
+    const { restaurantId, type, tableNumber, note } = data;
 
     if (!restaurantId || !type) {
       return NextResponse.json(
@@ -24,11 +24,19 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!tableNumber || !tableNumber.trim()) {
+      return NextResponse.json(
+        { error: "Masa numarası gerekli" },
+        { status: 400 }
+      );
+    }
+
     const tableRequest = await prisma.tableRequest.create({
       data: {
         restaurantId,
         type,
-        tableNumber: tableNumber || null,
+        tableNumber: tableNumber.trim() || null,
+        note: note?.trim() || null,
         isRead: false,
       },
     });
