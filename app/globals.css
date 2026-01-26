@@ -595,6 +595,25 @@
     animation-play-state: paused;
   }
 
+  /* Logo Marquee Animation */
+  @keyframes logo-marquee {
+    0% {
+      transform: translate3d(0, 0, 0);
+    }
+    100% {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  .animate-marquee {
+    animation: logo-marquee 30s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+
   .animate-shimmer {
     animation: shimmer 2s infinite;
     background: linear-gradient(

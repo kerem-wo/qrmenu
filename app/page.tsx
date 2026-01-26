@@ -16,10 +16,16 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Dinamik logo placeholder'ları (rastgele restoran logoları simülasyonu)
+  // Gerçek restoran logoları (placeholder yerine gerçek logo URL'leri)
   const restaurantLogos = [
-    "Restaurant A", "Café B", "Bistro C", "Diner D", "Eatery E",
-    "Food F", "Grill G", "Kitchen H", "Lounge I", "Market J"
+    "https://logo.clearbit.com/mcdonalds.com",
+    "https://logo.clearbit.com/starbucks.com",
+    "https://logo.clearbit.com/burgerking.com",
+    "https://logo.clearbit.com/kfc.com",
+    "https://logo.clearbit.com/pizzahut.com",
+    "https://logo.clearbit.com/dominos.com",
+    "https://logo.clearbit.com/subway.com",
+    "https://logo.clearbit.com/tacobell.com",
   ];
 
   return (
@@ -111,25 +117,21 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-br from-[#FF6F00]/30 to-transparent rounded-3xl blur-3xl transform rotate-6 animate-pulse"></div>
                 <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl border border-gray-800">
                   <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2rem] overflow-hidden aspect-[9/19] border border-gray-700">
-                    <div className="h-full bg-gradient-to-br from-gray-900 to-gray-950 p-4 overflow-y-auto">
-                      <div className="space-y-4">
-                        <div className="h-48 bg-gradient-to-br from-[#FF6F00]/20 to-[#FF6F00]/5 rounded-2xl flex items-center justify-center border border-[#FF6F00]/20">
-                          <QrCode className="w-20 h-20 text-[#FF6F00]/40" />
-                        </div>
-                        <div className="space-y-3">
-                          <div className="h-6 bg-gray-800 rounded-lg w-3/4 border border-gray-700"></div>
-                          <div className="h-4 bg-gray-800 rounded-lg w-1/2 border border-gray-700"></div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="h-32 bg-gray-800 rounded-xl border border-gray-700"></div>
-                          <div className="h-32 bg-gray-800 rounded-xl border border-gray-700"></div>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="h-4 bg-gray-800 rounded-lg w-full border border-gray-700"></div>
-                          <div className="h-4 bg-gray-800 rounded-lg w-2/3 border border-gray-700"></div>
-                        </div>
-                      </div>
-                    </div>
+                    {/* Gerçek Demo Menü - iframe */}
+                    <iframe
+                      src="/menu/demo-restoran"
+                      className="w-full h-full border-0"
+                      style={{ 
+                        width: '100%',
+                        height: '100%',
+                        transform: 'scale(0.8)',
+                        transformOrigin: 'top left',
+                        pointerEvents: 'none'
+                      }}
+                      title="Demo Menu"
+                      scrolling="no"
+                      loading="lazy"
+                    />
                   </div>
                 </div>
               </div>
@@ -138,23 +140,55 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Reference Logo Section */}
-      <section className="py-16 bg-gray-900/50 border-y border-gray-800/50">
+      {/* Reference Logo Section - Scrolling Banner */}
+      <section className="py-16 bg-gray-900/50 border-y border-gray-800/50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-gray-300 mb-12">
             Dijital dönüşümünü bizimle yapan işletmeler
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-            {restaurantLogos.map((name, index) => (
-              <div
-                key={index}
-                className="h-16 bg-gray-800/50 rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 hover:bg-gray-800 transition-all group"
-              >
-                <span className="text-gray-500 group-hover:text-[#FF6F00] text-sm font-medium transition-colors">
-                  {name}
-                </span>
-              </div>
-            ))}
+          <div className="relative">
+            <div className="flex gap-8 animate-marquee whitespace-nowrap">
+              {/* İlk set */}
+              {restaurantLogos.map((logo, index) => (
+                <div
+                  key={`first-${index}`}
+                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group"
+                >
+                  <img
+                    src={logo}
+                    alt={`Restaurant ${index + 1}`}
+                    className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = '<span class="text-gray-500 text-xs font-medium">Logo</span>';
+                      }
+                    }}
+                  />
+                </div>
+              ))}
+              {/* İkinci set (sonsuz döngü için) */}
+              {restaurantLogos.map((logo, index) => (
+                <div
+                  key={`second-${index}`}
+                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group"
+                >
+                  <img
+                    src={logo}
+                    alt={`Restaurant ${index + 1}`}
+                    className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = '<span class="text-gray-500 text-xs font-medium">Logo</span>';
+                      }
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
