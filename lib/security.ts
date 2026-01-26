@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { NextRequest, NextResponse } from "next/server";
 import { getPlatformAdminSession } from "./platform-auth";
 
@@ -185,7 +186,3 @@ export async function requirePlatformAdmin(request: NextRequest): Promise<boolea
   }
   return true;
 }
-
-import crypto from 'crypto';
-import { NextRequest, NextResponse } from "next/server";
-import { getPlatformAdminSession } from "./platform-auth";
