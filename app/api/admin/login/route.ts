@@ -72,9 +72,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isValid = await bcrypt.compare(password, admin.password);
+    const isValid = await bcrypt.compare(sanitizedPassword, admin.password);
 
     if (!isValid) {
+      await logSecurityEvent({
+        action: 'FAILED_LOGIN_ATTEMPT',
+        userType: 'anonymous',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        details: { email: sanitizedEmail },
+        timestamp: new Date(),
+      });
       return NextResponse.json(
         { error: "Geçersiz e-posta veya şifre" },
         { status: 401 }
@@ -103,6 +111,17 @@ export async function POST(request: NextRequest) {
       console.error("Session cookie error (non-fatal):", sessionError?.message || sessionError);
       // Continue anyway - client will use localStorage
     }
+
+    // Log successful login
+    await logSecurityEvent({
+      action: 'SUCCESSFUL_LOGIN',
+      userId: session.id,
+      userType: 'admin',
+      ip: clientIP,
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      details: { email: sanitizedEmail },
+      timestamp: new Date(),
+    });
 
     return NextResponse.json({
       success: true,

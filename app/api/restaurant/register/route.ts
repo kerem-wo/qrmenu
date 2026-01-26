@@ -55,8 +55,33 @@ async function getUniqueSlug(baseSlug: string): Promise<string> {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // HTTPS Check
+    if (!requireHTTPS(request)) {
+      return NextResponse.json(
+        { error: "HTTPS required" },
+        { status: 403 }
+      );
+    }
+
+    // Rate Limiting
+    const clientIP = getClientIP(request);
+    const rateLimitKey = `register:${clientIP}`;
+    if (!rateLimit(rateLimitKey, 3, 3600000)) { // 3 registrations per hour
+      await logSecurityEvent({
+        action: 'REGISTRATION_RATE_LIMIT_EXCEEDED',
+        userType: 'anonymous',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        timestamp: new Date(),
+      });
+      return NextResponse.json(
+        { error: "Too many registration attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { 
       restaurantName, 
       email, 
@@ -71,15 +96,26 @@ export async function POST(request: Request) {
       identityDocument,
     } = await request.json();
 
+    // Sanitize and validate inputs
+    const sanitizedRestaurantName = sanitizeInput(restaurantName?.trim() || '');
+    const sanitizedEmail = sanitizeInput(email?.trim().toLowerCase() || '');
+
     // Validation
-    if (!restaurantName || !restaurantName.trim()) {
+    if (!sanitizedRestaurantName || sanitizedRestaurantName.length < 2) {
       return NextResponse.json(
-        { error: "Restoran adı gereklidir" },
+        { error: "Restoran adı en az 2 karakter olmalıdır" },
         { status: 400 }
       );
     }
 
-    if (!email || !email.trim()) {
+    if (sanitizedRestaurantName.length > 100) {
+      return NextResponse.json(
+        { error: "Restoran adı 100 karakterden uzun olamaz" },
+        { status: 400 }
+      );
+    }
+
+    if (!sanitizedEmail) {
       return NextResponse.json(
         { error: "E-posta adresi gereklidir" },
         { status: 400 }
@@ -93,9 +129,16 @@ export async function POST(request: Request) {
       );
     }
 
+    if (password.length > 128) {
+      return NextResponse.json(
+        { error: "Şifre çok uzun" },
+        { status: 400 }
+      );
+    }
+
     // Email format kontrolü
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (!emailRegex.test(sanitizedEmail)) {
       return NextResponse.json(
         { error: "Geçerli bir e-posta adresi giriniz" },
         { status: 400 }
@@ -104,7 +147,7 @@ export async function POST(request: Request) {
 
     // Email zaten kullanılıyor mu kontrol et
     const existingAdmin = await prisma.admin.findUnique({
-      where: { email: email.trim().toLowerCase() },
+      where: { email: sanitizedEmail },
       select: { id: true },
     });
 
@@ -116,11 +159,11 @@ export async function POST(request: Request) {
     }
 
     // Slug oluştur ve benzersizliğini kontrol et
-    const baseSlug = generateSlug(restaurantName.trim());
+    const baseSlug = generateSlug(sanitizedRestaurantName);
     const uniqueSlug = await getUniqueSlug(baseSlug);
 
     // Şifreyi hashle
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12); // Increased rounds for better security
 
     // Import encryption for document storage
     const { encryptDataUrl } = await import("@/lib/encryption");
@@ -140,7 +183,7 @@ export async function POST(request: Request) {
       // Restaurant oluştur (status: pending - platform admin onayı bekliyor)
       const restaurant = await tx.restaurant.create({
         data: {
-          name: restaurantName.trim(),
+          name: sanitizedRestaurantName,
           slug: uniqueSlug,
           description: null,
           logo: null,
@@ -160,7 +203,7 @@ export async function POST(request: Request) {
       // Admin oluştur
       const admin = await tx.admin.create({
         data: {
-          email: email.trim().toLowerCase(),
+          email: sanitizedEmail,
           password: hashedPassword,
           restaurantId: restaurant.id,
         },
@@ -172,6 +215,20 @@ export async function POST(request: Request) {
       });
 
       return { restaurant, admin };
+    });
+
+    // Log successful registration
+    await logSecurityEvent({
+      action: 'RESTAURANT_REGISTERED',
+      userType: 'anonymous',
+      ip: clientIP,
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      details: {
+        restaurantId: result.restaurant.id,
+        restaurantName: sanitizedRestaurantName,
+        email: sanitizedEmail,
+      },
+      timestamp: new Date(),
     });
 
     return NextResponse.json({

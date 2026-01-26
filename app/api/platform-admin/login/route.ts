@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const admin = await prisma.platformAdmin.findUnique({
-      where: { email },
+      where: { email: sanitizedEmail },
       select: {
         id: true,
         email: true,
@@ -55,6 +55,17 @@ export async function POST(request: Request) {
       console.error("Session cookie error (non-fatal):", sessionError?.message || sessionError);
       // Continue anyway - client will use localStorage
     }
+
+    // Log successful login
+    await logSecurityEvent({
+      action: 'PLATFORM_ADMIN_SUCCESSFUL_LOGIN',
+      userId: session.id,
+      userType: 'platform-admin',
+      ip: clientIP,
+      userAgent: request.headers.get('user-agent') || 'unknown',
+      details: { email: sanitizedEmail },
+      timestamp: new Date(),
+    });
 
     return NextResponse.json({
       success: true,

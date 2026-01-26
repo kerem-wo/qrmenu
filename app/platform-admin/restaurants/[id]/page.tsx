@@ -58,9 +58,11 @@ export default function RestaurantDetailPage() {
 
   const fetchRestaurant = async (id: string) => {
     try {
+      // Fetch restaurant data (documents are already decrypted by API)
       const res = await fetch(`/api/platform-admin/restaurants/${id}`);
       if (res.ok) {
         const data = await res.json();
+        // Documents are already decrypted by the API endpoint
         setRestaurant(data);
       } else {
         if (res.status === 401) {
