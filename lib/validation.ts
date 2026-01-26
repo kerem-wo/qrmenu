@@ -1,11 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { sanitizeInput } from "@/lib/security";
-
-export const dynamic = 'force-dynamic';
+import { sanitizeInput } from "./security";
 
 /**
- * Input validation helper
+ * Input validation helper functions
  */
+
 export function validateEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
