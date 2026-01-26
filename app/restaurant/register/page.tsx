@@ -215,7 +215,7 @@ function RestaurantRegisterContent() {
   return (
     <div className="min-h-screen flex">
       {/* Sol Bölüm - Turuncu Kayıt Daveti */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#FF6F00] via-[#FF8F33] to-[#FF6F00] items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#FF6F00] via-[#FF8F33] to-[#FF6F00] items-start justify-center pt-16 p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_50%)]"></div>
         <div className="relative z-10 text-center max-w-md animate-fade-in" style={{ animationDelay: '0.2s' }}>
           <div className="relative inline-flex items-center justify-center mb-8">
