@@ -708,8 +708,8 @@ export function BoltMenuForSlugClient() {
 
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
   
-  // Get theme from URL param (for preview) or restaurant data
-  const theme = restaurant?.theme || searchParams.get("theme") || "default";
+  // Get theme from URL param (for preview) - URL param has priority, then restaurant data
+  const theme = searchParams.get("theme") || restaurant?.theme || "default";
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([]);
   const [loading, setLoading] = useState(true);
