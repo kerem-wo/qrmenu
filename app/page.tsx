@@ -115,13 +115,13 @@ export default function Home() {
             <div className="relative lg:block hidden">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#FF6F00]/30 to-transparent rounded-[2rem] blur-3xl transform rotate-6 animate-pulse"></div>
-                {/* iPad Mockup */}
-                <div className="relative bg-gray-900 rounded-[1.5rem] p-4 shadow-2xl border border-gray-800" style={{ width: '640px', height: '480px' }}>
+                {/* iPad Mockup - Portrait (Dikey) */}
+                <div className="relative bg-gray-900 rounded-[2rem] p-3 shadow-2xl border border-gray-800" style={{ width: '480px', height: '640px' }}>
                   {/* iPad Home Indicator */}
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-700 rounded-full"></div>
                   {/* iPad Screen */}
-                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[1.25rem] overflow-hidden w-full h-full border border-gray-700 relative">
-                    {/* Gerçek Demo Menü - iframe */}
+                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[1.5rem] overflow-hidden w-full h-full border border-gray-700 relative">
+                    {/* Gerçek Demo Menü - iframe - Tablet'e uygun */}
                     <iframe
                       src="/menu/demo-restoran"
                       className="absolute inset-0 border-0"
@@ -130,7 +130,8 @@ export default function Home() {
                         height: '100%',
                         transform: 'scale(1)',
                         transformOrigin: 'top left',
-                        pointerEvents: 'none'
+                        pointerEvents: 'none',
+                        zoom: '0.75'
                       }}
                       title="Demo Menu"
                       scrolling="no"
