@@ -147,15 +147,15 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 leading-relaxed italic">
-                "QR Menü yazılımı restoranımıza çok yakıştı. Menüdeki değişiklikleri anında yapabiliyoruz ve müşterilerimiz de menüye hızlıca erişebiliyor. Hem zamandan hem de maliyetten tasarruf ettik."
+                "Rivo QR sistemi sayesinde restoranımızın menü yönetimi çok daha pratik hale geldi. Müşterilerimiz QR kod okutarak anında menüye erişebiliyor ve siparişlerini hızlıca verebiliyorlar. Hem işletmemiz hem de müşterilerimiz için harika bir deneyim!"
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-full flex items-center justify-center text-white font-bold">
-                  SS
+                  MA
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Soner S.</p>
-                  <p className="text-sm text-gray-600">Yiyin & İçin Espiye</p>
+                  <p className="font-bold text-gray-900">Mehmet A.</p>
+                  <p className="text-sm text-gray-600">Lezzet Durağı Restaurant</p>
                 </div>
               </div>
             </div>
@@ -168,15 +168,15 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 leading-relaxed italic">
-                "Google yorum sayımızı arttırmak için talep ettik. Müşterilerimiz masa üzerinde ki pleksilerden qr okutuarak direkt Google işletme hesabımıza yorum bırakabiliyorlar. Biz çok sevdik."
+                "Dijital menü sistemine geçiş yapmak bizim için en doğru karardı. Müşteri geri bildirimlerini kolayca toplayabiliyoruz ve menü güncellemelerini anında yapabiliyoruz. Rivo QR ekibine teşekkürler!"
               </p>
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-full flex items-center justify-center text-white font-bold">
-                  SB
+                  AK
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">Saime B.</p>
-                  <p className="text-sm text-gray-600">Denizim Beach Club</p>
+                  <p className="font-bold text-gray-900">Ayşe K.</p>
+                  <p className="text-sm text-gray-600">Café Modern</p>
                 </div>
               </div>
             </div>
@@ -220,157 +220,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Menu Packages Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Menü Paketleri</h2>
-            <p className="text-xl text-gray-600 font-medium mb-8 max-w-3xl mx-auto">
-              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 8 farklı Rivo QR tasarımı
-            </p>
-            <Link
-              href="/menu-packages"
-              className="bg-[#FF6F00] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#E55F00] transition-colors inline-flex items-center gap-2 shadow-lg"
-            >
-              Tüm Paketleri İncele
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-
-          {/* Package Preview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {[
-              { 
-                name: "Premium Menü", 
-                theme: "premium", 
-                popular: false,
-                image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80",
-                description: "Modern ve hızlı"
-              },
-              { 
-                name: "Kağıt Menü", 
-                theme: "paper", 
-                popular: false,
-                image: "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=400&q=80",
-                description: "Klasik ve profesyonel"
-              },
-              { 
-                name: "Modern Swipe", 
-                theme: "swipe", 
-                popular: false,
-                image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80",
-                description: "Swipe navigasyon"
-              },
-              { 
-                name: "Premium+", 
-                theme: "premium-plus", 
-                popular: true,
-                image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80",
-                description: "Lüks tasarım"
-              },
-            ].map((pkg, index) => (
-              <Link
-                key={pkg.theme}
-                href={`/restaurant/register?theme=${pkg.theme}`}
-                className="bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-[#FF6F00] hover:shadow-xl transition-all group relative overflow-hidden"
-              >
-                {pkg.popular && (
-                  <div className="absolute top-3 right-3 z-10">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-[#FF6F00] text-white text-xs font-bold rounded-full">
-                      <Sparkles className="w-3 h-3" />
-                      Popüler
-                    </span>
-                  </div>
-                )}
-                <div className="relative h-32 w-full mb-4 rounded-xl overflow-hidden bg-gray-100">
-                  <img
-                    src={pkg.image}
-                    alt={pkg.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                </div>
-                <h3 className="text-lg font-black text-gray-900 mb-2">{pkg.name}</h3>
-                <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
-                <div className="text-sm font-semibold text-[#FF6F00] group-hover:text-[#E55F00] transition-colors">
-                  Seç →
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Neden Rivo QR?</h2>
-            <p className="text-xl text-gray-600 font-medium">Modern restoranların tercihi</p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-10 text-center hover:border-[#FF6F00] hover:shadow-xl transition-all group">
-              <div className="relative inline-flex items-center justify-center mb-8">
-                <div className="absolute inset-0 bg-[#FF6F00]/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-3xl flex items-center justify-center shadow-xl">
-                  <Smartphone className="w-10 h-10 text-white" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4">Mobil Uyumlu</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Tüm cihazlarda mükemmel görünüm. Müşterileriniz telefonlarıyla kolayca sipariş verebilir.
-              </p>
-            </div>
-
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-10 text-center hover:border-[#FF6F00] hover:shadow-xl transition-all group">
-              <div className="relative inline-flex items-center justify-center mb-8">
-                <div className="absolute inset-0 bg-[#FF6F00]/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-3xl flex items-center justify-center shadow-xl">
-                  <Clock className="w-10 h-10 text-white" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4">Hızlı Kurulum</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Dakikalar içinde menünüzü oluşturun ve QR kodunuzu alın. 
-                Teknik bilgi gerektirmez.
-              </p>
-            </div>
-
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-10 text-center hover:border-[#FF6F00] hover:shadow-xl transition-all group">
-              <div className="relative inline-flex items-center justify-center mb-8">
-                <div className="absolute inset-0 bg-[#FF6F00]/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-3xl flex items-center justify-center shadow-xl">
-                  <TrendingUp className="w-10 h-10 text-white" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-black text-gray-900 mb-4">Kolay Yönetim</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Ürünlerinizi kolayca ekleyin, düzenleyin veya kaldırın. 
-                Anlık güncellemeler müşterilerinize anında yansır.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,111,0,0.1),transparent)]"></div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Hemen Başlayın</h2>
-          <p className="text-xl text-gray-300 mb-10 font-medium max-w-2xl mx-auto">
-            Restoranınız için dijital menü oluşturun ve müşterilerinize <span className="text-[#FF6F00] font-bold">modern bir deneyim</span> sunun.
-          </p>
-          <Link
-            href="/restaurant/register"
-            className="bg-[#FF6F00] text-white px-10 py-5 rounded-lg font-bold text-lg hover:bg-[#E55F00] transition-colors inline-flex items-center gap-3 shadow-lg"
-          >
-            Ücretsiz Başla
-            <ArrowRight className="w-6 h-6" />
-          </Link>
         </div>
       </section>
 
