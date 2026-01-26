@@ -29,16 +29,48 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Gerçek restoran logoları (placeholder yerine gerçek logo URL'leri)
-  const restaurantLogos = [
-    "https://logo.clearbit.com/mcdonalds.com",
-    "https://logo.clearbit.com/starbucks.com",
-    "https://logo.clearbit.com/burgerking.com",
-    "https://logo.clearbit.com/kfc.com",
-    "https://logo.clearbit.com/pizzahut.com",
-    "https://logo.clearbit.com/dominos.com",
-    "https://logo.clearbit.com/subway.com",
-    "https://logo.clearbit.com/tacobell.com",
+  // Referans logoları
+  const referenceLogos = [
+    {
+      type: "image",
+      url: "https://softwareoffuture.com/assets/logo-BN4NP9W1.jpg",
+      alt: "Software Of Future"
+    },
+    {
+      type: "text",
+      text: "PromptsyAI",
+      alt: "PromptsyAI"
+    },
+    {
+      type: "image",
+      url: "https://www.ritadanismanlik.com.tr/wp-content/uploads/2025/12/qtq_95-1-1.webp",
+      alt: "RİTA Danışmanlık"
+    },
+    {
+      type: "text",
+      text: "Bayimiz Olun",
+      alt: "Bayimiz Olun"
+    },
+    {
+      type: "text",
+      text: "Bayimiz Olun",
+      alt: "Bayimiz Olun"
+    },
+    {
+      type: "text",
+      text: "Bayimiz Olun",
+      alt: "Bayimiz Olun"
+    },
+    {
+      type: "text",
+      text: "Bayimiz Olun",
+      alt: "Bayimiz Olun"
+    },
+    {
+      type: "text",
+      text: "Bayimiz Olun",
+      alt: "Bayimiz Olun"
+    },
   ];
 
   return (
@@ -162,43 +194,55 @@ export default function Home() {
           <div className="relative">
             <div className="flex gap-8 animate-marquee whitespace-nowrap">
               {/* İlk set */}
-              {restaurantLogos.map((logo, index) => (
+              {referenceLogos.map((item, index) => (
                 <div
                   key={`first-${index}`}
-                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group"
+                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group px-4"
                 >
-                  <img
-                    src={logo}
-                    alt={`Restaurant ${index + 1}`}
-                    className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      target.style.display = 'none';
-                      if (target.parentElement) {
-                        target.parentElement.innerHTML = '<span class="text-gray-500 text-xs font-medium">Logo</span>';
-                      }
-                    }}
-                  />
+                  {item.type === "image" ? (
+                    <img
+                      src={item.url}
+                      alt={item.alt}
+                      className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full object-contain"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        if (target.parentElement) {
+                          target.parentElement.innerHTML = `<span class="text-gray-500 text-xs font-medium">${item.alt}</span>`;
+                        }
+                      }}
+                    />
+                  ) : (
+                    <span className="text-gray-700 text-sm font-semibold group-hover:text-[#FF6F00] transition-colors">
+                      {item.text}
+                    </span>
+                  )}
                 </div>
               ))}
               {/* İkinci set (sonsuz döngü için) */}
-              {restaurantLogos.map((logo, index) => (
+              {referenceLogos.map((item, index) => (
                 <div
                   key={`second-${index}`}
-                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group"
+                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group px-4"
                 >
-                  <img
-                    src={logo}
-                    alt={`Restaurant ${index + 1}`}
-                    className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      target.style.display = 'none';
-                      if (target.parentElement) {
-                        target.parentElement.innerHTML = '<span class="text-gray-500 text-xs font-medium">Logo</span>';
-                      }
-                    }}
-                  />
+                  {item.type === "image" ? (
+                    <img
+                      src={item.url}
+                      alt={item.alt}
+                      className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full object-contain"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        if (target.parentElement) {
+                          target.parentElement.innerHTML = `<span class="text-gray-500 text-xs font-medium">${item.alt}</span>`;
+                        }
+                      }}
+                    />
+                  ) : (
+                    <span className="text-gray-700 text-sm font-semibold group-hover:text-[#FF6F00] transition-colors">
+                      {item.text}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
