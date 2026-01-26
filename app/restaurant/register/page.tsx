@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,9 +11,19 @@ import toast from "react-hot-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DocumentUpload } from "@/components/DocumentUpload";
 
-export default function RestaurantRegisterPage() {
+function RestaurantRegisterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState<string>("default");
+  
+  useEffect(() => {
+    const theme = searchParams.get("theme");
+    if (theme) {
+      setSelectedTheme(theme);
+    }
+  }, [searchParams]);
+
   const [formData, setFormData] = useState({
     restaurantName: "",
     email: "",
@@ -169,6 +179,7 @@ export default function RestaurantRegisterPage() {
           restaurantName: formData.restaurantName.trim(),
           email: formData.email.trim().toLowerCase(),
           password: formData.password,
+          theme: selectedTheme,
           kvkkConsent: formData.kvkkConsent,
           privacyConsent: formData.privacyConsent,
           marketingSmsConsent: formData.marketingSmsConsent,
@@ -215,6 +226,13 @@ export default function RestaurantRegisterPage() {
             <p className="text-gray-600 font-medium text-lg">
               Restoranınızı kaydedin ve dijital menünüzü oluşturun
             </p>
+            {selectedTheme !== "default" && (
+              <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full">
+                <span className="text-sm font-semibold text-green-700">
+                  Seçilen Tasarım: <span className="capitalize">{selectedTheme.replace("-", " ")}</span>
+                </span>
+              </div>
+            )}
           </div>
           <div>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -472,5 +490,20 @@ export default function RestaurantRegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RestaurantRegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen premium-bg-gradient flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Yükleniyor...</p>
+        </div>
+      </div>
+    }>
+      <RestaurantRegisterContent />
+    </Suspense>
   );
 }

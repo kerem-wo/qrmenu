@@ -60,6 +60,7 @@ export async function POST(request: Request) {
       restaurantName, 
       email, 
       password,
+      theme,
       kvkkConsent,
       privacyConsent,
       marketingSmsConsent,
@@ -122,6 +123,10 @@ export async function POST(request: Request) {
 
     // Transaction ile restaurant ve admin oluştur
     const result = await prisma.$transaction(async (tx) => {
+      // Theme validation - sadece geçerli temalar kabul edilir
+      const validThemes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
+      const selectedTheme = theme && validThemes.includes(theme) ? theme : "default";
+
       // Restaurant oluştur (status: pending - platform admin onayı bekliyor)
       const restaurant = await tx.restaurant.create({
         data: {
@@ -129,7 +134,7 @@ export async function POST(request: Request) {
           slug: uniqueSlug,
           description: null,
           logo: null,
-          theme: "default",
+          theme: selectedTheme,
           language: "tr",
           kvkkConsent: kvkkConsent === true,
           privacyConsent: privacyConsent === true,

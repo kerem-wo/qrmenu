@@ -129,11 +129,47 @@ async function main() {
   });
 
   // Create categories
+  const startersCategory = await prisma.category.create({
+    data: {
+      name: 'Aperatifler',
+      description: 'Başlangıç lezzetleri',
+      order: 1,
+      restaurantId: restaurant.id,
+    },
+  });
+
+  const soupCategory = await prisma.category.create({
+    data: {
+      name: 'Çorbalar',
+      description: 'Sıcak çorbalar',
+      order: 2,
+      restaurantId: restaurant.id,
+    },
+  });
+
+  const mainCategory = await prisma.category.create({
+    data: {
+      name: 'Ana Yemekler',
+      description: 'Doyurucu ana yemekler',
+      order: 3,
+      restaurantId: restaurant.id,
+    },
+  });
+
   const pizzaCategory = await prisma.category.create({
     data: {
       name: 'Pizzalar',
       description: 'Taze malzemelerle hazırlanmış pizzalar',
-      order: 1,
+      order: 4,
+      restaurantId: restaurant.id,
+    },
+  });
+
+  const saladCategory = await prisma.category.create({
+    data: {
+      name: 'Salatalar',
+      description: 'Taze ve sağlıklı salatalar',
+      order: 5,
       restaurantId: restaurant.id,
     },
   });
@@ -142,17 +178,153 @@ async function main() {
     data: {
       name: 'İçecekler',
       description: 'Soğuk ve sıcak içecekler',
-      order: 2,
+      order: 6,
       restaurantId: restaurant.id,
     },
   });
 
-  // Create products
+  // Create products - Aperatifler
+  await prisma.product.create({
+    data: {
+      name: 'Cacık',
+      description: 'Yoğurt, salatalık, sarımsak',
+      price: 80.00,
+      image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      isAvailable: true,
+      order: 1,
+      categoryId: startersCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Fasulye Kavurması',
+      description: 'Taze fasulye, domates, soğan',
+      price: 150.00,
+      image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      isAvailable: true,
+      order: 2,
+      categoryId: startersCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Havuç Tarator',
+      description: 'Havuç, yoğurt, ceviz',
+      price: 80.00,
+      image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      isAvailable: true,
+      order: 3,
+      categoryId: startersCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Patates Kızartması',
+      description: 'Taze patates, tuz',
+      price: 100.00,
+      image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800',
+      isAvailable: true,
+      order: 4,
+      categoryId: startersCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Sarma',
+      description: 'Yaprak sarma, zeytinyağlı',
+      price: 150.00,
+      image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800',
+      isAvailable: true,
+      order: 5,
+      categoryId: startersCategory.id,
+    },
+  });
+
+  // Create products - Çorbalar
+  await prisma.product.create({
+    data: {
+      name: 'Domates Çorbası',
+      description: 'Taze domates, fesleğen',
+      price: 80.00,
+      image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800',
+      isAvailable: true,
+      order: 1,
+      categoryId: soupCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Ezogelin Çorba',
+      description: 'Mercimek, bulgur, nane',
+      price: 80.00,
+      image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800',
+      isAvailable: true,
+      order: 2,
+      categoryId: soupCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Mercimek Çorba',
+      description: 'Kırmızı mercimek, havuç',
+      price: 80.00,
+      image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800',
+      isAvailable: true,
+      order: 3,
+      categoryId: soupCategory.id,
+    },
+  });
+
+  // Create products - Ana Yemekler
+  await prisma.product.create({
+    data: {
+      name: 'Izgara Köfte',
+      description: 'Kıyma, soğan, baharat',
+      price: 300.00,
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
+      isAvailable: true,
+      order: 1,
+      categoryId: mainCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Tavuk Şiş',
+      description: 'Tavuk göğsü, sebze',
+      price: 300.00,
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
+      isAvailable: true,
+      order: 2,
+      categoryId: mainCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Tavuk Kanat',
+      description: 'Baharatlı tavuk kanat',
+      price: 300.00,
+      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800',
+      isAvailable: true,
+      order: 3,
+      categoryId: mainCategory.id,
+    },
+  });
+
+  // Create products - Pizzalar
   await prisma.product.create({
     data: {
       name: 'Margherita Pizza',
       description: 'Domates, mozzarella, fesleğen',
       price: 85.00,
+      image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800',
       isAvailable: true,
       order: 1,
       categoryId: pizzaCategory.id,
@@ -164,6 +336,7 @@ async function main() {
       name: 'Pepperoni Pizza',
       description: 'Domates, mozzarella, pepperoni',
       price: 95.00,
+      image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800',
       isAvailable: true,
       order: 2,
       categoryId: pizzaCategory.id,
@@ -172,9 +345,48 @@ async function main() {
 
   await prisma.product.create({
     data: {
+      name: 'Karışık Pizza',
+      description: 'Domates, mozzarella, sucuk, mantar, mısır',
+      price: 120.00,
+      image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800',
+      isAvailable: true,
+      order: 3,
+      categoryId: pizzaCategory.id,
+    },
+  });
+
+  // Create products - Salatalar
+  await prisma.product.create({
+    data: {
+      name: 'Mevsim Salatası',
+      description: 'Taze yeşillik, domates, salatalık',
+      price: 60.00,
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+      isAvailable: true,
+      order: 1,
+      categoryId: saladCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Çoban Salatası',
+      description: 'Domates, salatalık, soğan, maydanoz',
+      price: 70.00,
+      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
+      isAvailable: true,
+      order: 2,
+      categoryId: saladCategory.id,
+    },
+  });
+
+  // Create products - İçecekler
+  await prisma.product.create({
+    data: {
       name: 'Kola',
       description: '330ml',
       price: 15.00,
+      image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800',
       isAvailable: true,
       order: 1,
       categoryId: drinkCategory.id,
@@ -186,8 +398,33 @@ async function main() {
       name: 'Türk Kahvesi',
       description: 'Geleneksel Türk kahvesi',
       price: 25.00,
+      image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=800',
       isAvailable: true,
       order: 2,
+      categoryId: drinkCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Ayran',
+      description: '500ml',
+      price: 20.00,
+      image: 'https://images.unsplash.com/photo-1554866585-cd94860890b7?w=800',
+      isAvailable: true,
+      order: 3,
+      categoryId: drinkCategory.id,
+    },
+  });
+
+  await prisma.product.create({
+    data: {
+      name: 'Çay',
+      description: 'Türk çayı',
+      price: 10.00,
+      image: 'https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=800',
+      isAvailable: true,
+      order: 4,
       categoryId: drinkCategory.id,
     },
   });

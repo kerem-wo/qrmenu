@@ -9,6 +9,7 @@ export async function GET(
     const { slug } = await params;
     const url = new URL(request.url);
     const requestedLang = (url.searchParams.get("lang") || "").trim().toLowerCase() || "";
+    const requestedTheme = (url.searchParams.get("theme") || "").trim().toLowerCase() || "";
     const restaurant = await prisma.restaurant.findUnique({
       where: { slug },
       select: {
@@ -18,6 +19,7 @@ export async function GET(
         logo: true,
         language: true,
         enableTakeaway: true,
+        theme: true,
       },
     });
 
@@ -99,6 +101,7 @@ export async function GET(
       description: restaurantTranslation?.description ?? restaurant.description,
       logo: restaurant.logo,
       enableTakeaway: restaurant.enableTakeaway,
+      theme: requestedTheme || restaurant.theme || "default",
     };
 
     const resolvedCategories = categories.map((c) => {

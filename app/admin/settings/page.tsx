@@ -253,6 +253,37 @@ export default function SettingsPage() {
               </p>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="theme" className="text-sm font-bold text-gray-700">Menü Tasarım Teması</Label>
+              <select
+                id="theme"
+                value={formData.theme}
+                onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
+                className="premium-input h-11"
+              >
+                <option value="premium">Premium Menü</option>
+                <option value="paper">Kağıt Menü</option>
+                <option value="paper-image">Resimli Kağıt Menü</option>
+                <option value="swipe">Modern Swipe Menu</option>
+                <option value="premium-plus">Premium+ QR Menu</option>
+                <option value="pro">Pro QR Menu</option>
+                <option value="soft-ui">Soft UI Menü</option>
+                <option value="ultra-plus">Ultra+ Menü</option>
+              </select>
+              <p className="text-xs text-gray-600 mt-1 font-medium">
+                Menünüzün görsel tasarımını seçin. Değişiklikler kaydedildikten sonra menü sayfanızda görünecektir.
+              </p>
+              <div className="mt-3">
+                <Link
+                  href={`/menu/${formData.slug}?theme=${formData.theme}`}
+                  target="_blank"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-700 underline"
+                >
+                  Tema Önizlemesi
+                </Link>
+              </div>
+            </div>
+
             <div className="premium-card p-6 border border-gray-200/70">
               <div className="mb-2">
                 <h3 className="font-bold text-gray-900">Sipariş Ayarları</h3>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -43,6 +43,7 @@ type ApiRestaurant = {
   description: string | null;
   logo: string | null;
   enableTakeaway?: boolean;
+  theme?: string;
 };
 
 type BoltItem = {
@@ -699,12 +700,16 @@ function tabId(raw: string) {
 
 export function BoltMenuForSlugClient() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const slug = (params?.slug as string) || "";
   const router = useRouter();
 
   const [lang, setLang] = useState<Lang>("tr");
 
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
+  
+  // Get theme from URL param (for preview) or restaurant data
+  const theme = restaurant?.theme || searchParams.get("theme") || "default";
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -725,6 +730,7 @@ export function BoltMenuForSlugClient() {
   const [couponCode, setCouponCode] = useState("");
   const [discountTry, setDiscountTry] = useState(0);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   const S = STRINGS[lang];
   const enableTakeaway = restaurant?.enableTakeaway ?? true;
@@ -963,6 +969,724 @@ export function BoltMenuForSlugClient() {
     setActiveTab(name);
   };
 
+  // Theme-specific layout renderer
+  const renderThemeLayout = () => {
+    if (theme === "paper") {
+      // KAĞIT MENÜ: Demo sayfası gibi - çok basit, sade liste, görsel yok
+      return (
+        <>
+          {/* Most Popular - Kağıt Stili (Basit Liste) */}
+          {popular.length > 0 && (
+            <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
+              <h2 className="text-2xl font-bold text-amber-900 mt-8 mb-4">
+                {S.mostPopular}
+              </h2>
+              <div className="space-y-0 bg-white border-l-4 border-amber-600">
+                {popular.map((item, idx) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelected(item)}
+                    className="w-full text-left py-3 px-4 hover:bg-amber-50/50 transition-colors border-b border-amber-100 last:border-b-0"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-base font-semibold text-gray-900">{item.name}</div>
+                        {item.shortDescription && (
+                          <div className="mt-0.5 text-sm text-gray-600 line-clamp-1">{item.shortDescription}</div>
+                        )}
+                      </div>
+                      <div className="ml-4 shrink-0">
+                        <div className="text-base font-bold text-amber-700">{formatTry(item.priceCents)}</div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Categories - Kağıt Stili (Basit Liste) */}
+          <div className="mt-10 space-y-10">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className="text-2xl font-bold text-amber-900 mb-4">
+                  {cat.name}
+                </h3>
+                <div className="bg-white border-l-4 border-amber-600">
+                  {cat.items.map((item, idx) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelected(item)}
+                      className="w-full text-left py-3 px-4 hover:bg-amber-50/50 transition-colors border-b border-amber-100 last:border-b-0"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-base font-semibold text-gray-900">{item.name}</div>
+                          {item.shortDescription && (
+                            <div className="mt-0.5 text-sm text-gray-600 line-clamp-2">{item.shortDescription}</div>
+                          )}
+                        </div>
+                        <div className="ml-4 shrink-0">
+                          <div className="text-base font-bold text-amber-700">{formatTry(item.priceCents)}</div>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (theme === "swipe") {
+      // SWIPE MENÜ: Büyük kartlar, swipe odaklı
+      return (
+        <>
+          <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
+            <h2 className="text-2xl font-black text-gray-950 mt-6 mb-6">{S.mostPopular}</h2>
+            <div
+              ref={popularScrollRef}
+              className="mt-4 -mx-4 flex gap-6 overflow-x-auto px-4 pb-2 snap-x snap-mandatory select-none cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              onMouseDown={(e) => {
+                const el = popularScrollRef.current;
+                if (!el) return;
+                popularDragRef.current.isDown = true;
+                popularDragRef.current.startX = e.pageX;
+                popularDragRef.current.scrollLeft = el.scrollLeft;
+              }}
+              onMouseLeave={() => { popularDragRef.current.isDown = false; }}
+              onMouseUp={() => { popularDragRef.current.isDown = false; }}
+              onMouseMove={(e) => {
+                const el = popularScrollRef.current;
+                if (!el || !popularDragRef.current.isDown) return;
+                e.preventDefault();
+                const dx = e.pageX - popularDragRef.current.startX;
+                el.scrollLeft = popularDragRef.current.scrollLeft - dx;
+              }}
+            >
+              {popular.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelected(item)}
+                  className="snap-start shrink-0 w-[280px] md:w-[320px] overflow-hidden text-left bg-white rounded-3xl shadow-xl border-2 border-purple-200 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className="relative h-48 w-full bg-gray-100">
+                    <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-3xl" loading="lazy" />
+                    <div className="absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold bg-purple-500 text-white shadow-xl">
+                      {formatTry(item.priceCents)}
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <div className="text-base font-extrabold text-gray-950">{item.name}</div>
+                    <div className="mt-1 text-sm text-gray-500 line-clamp-1">{item.shortDescription}</div>
+                    <div className="mt-2 text-xs font-semibold text-gray-500">
+                      {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <div className="mt-10 space-y-12">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className="text-xl font-black text-gray-950 mb-6">{cat.name}</h3>
+                <div className="divide-y divide-purple-200 rounded-2xl border border-purple-200 bg-white">
+                  {cat.items.map((item) => (
+                    <MenuRow key={item.id} item={item} onOpen={() => setSelected(item)} labels={S} theme="swipe" />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (theme === "premium-plus") {
+      // PREMIUM PLUS: Lüks, gradient, koyu tema
+      return (
+        <>
+          <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
+            <h2 className="text-2xl font-black text-white mt-6 mb-6">{S.mostPopular}</h2>
+            <div
+              ref={popularScrollRef}
+              className="mt-4 -mx-4 flex gap-5 overflow-x-auto px-4 pb-2 snap-x snap-mandatory select-none cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              onMouseDown={(e) => {
+                const el = popularScrollRef.current;
+                if (!el) return;
+                popularDragRef.current.isDown = true;
+                popularDragRef.current.startX = e.pageX;
+                popularDragRef.current.scrollLeft = el.scrollLeft;
+              }}
+              onMouseLeave={() => { popularDragRef.current.isDown = false; }}
+              onMouseUp={() => { popularDragRef.current.isDown = false; }}
+              onMouseMove={(e) => {
+                const el = popularScrollRef.current;
+                if (!el || !popularDragRef.current.isDown) return;
+                e.preventDefault();
+                const dx = e.pageX - popularDragRef.current.startX;
+                el.scrollLeft = popularDragRef.current.scrollLeft - dx;
+              }}
+            >
+              {popular.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelected(item)}
+                  className="snap-start shrink-0 w-[260px] md:w-[300px] overflow-hidden text-left bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 shadow-2xl hover:border-amber-400/60 transition-all"
+                >
+                  <div className="relative h-44 w-full bg-gray-100">
+                    <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-2xl" loading="lazy" />
+                    <div className="absolute bottom-3 right-3 rounded-full px-3 py-1 text-sm font-extrabold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-2xl">
+                      {formatTry(item.priceCents)}
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <div className="text-base font-extrabold text-white">{item.name}</div>
+                    <div className="mt-1 text-sm text-gray-300 line-clamp-1">{item.shortDescription}</div>
+                    <div className="mt-2 text-xs font-semibold text-gray-400">
+                      {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <div className="mt-10 space-y-12">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className="text-xl font-black text-white mb-6">{cat.name}</h3>
+                <div className="divide-y divide-amber-500/20 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 backdrop-blur-sm">
+                  {cat.items.map((item) => (
+                    <MenuRow key={item.id} item={item} onOpen={() => setSelected(item)} labels={S} theme="premium-plus" />
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (theme === "pro") {
+      // PRO QR MENÜ: demo6.wenqr.com - Kapak görseli, kategoriler görsel kartlar, grid layout
+      return (
+        <>
+          {/* Header Image */}
+          {restaurant?.logo && (
+            <div className="mt-6 mb-8 -mx-4">
+              <img 
+                src={restaurant.logo} 
+                alt={restaurant.name || ""} 
+                className="w-full h-48 md:h-64 object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          {/* Categories Grid - Görsel Kartlar */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10">
+            {tabs.filter(t => t.name !== "Most Popular").map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => scrollTo(cat.name)}
+                className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all p-4 text-center border border-blue-200 hover:border-blue-400"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">{cat.name.charAt(0)}</span>
+                </div>
+                <div className="text-sm font-bold text-gray-900">{cat.name}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Most Popular */}
+          {popular.length > 0 && (
+            <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24 mb-10">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">{S.mostPopular}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {popular.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelected(item)}
+                    className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden border border-blue-200 text-left"
+                  >
+                    <div className="relative h-48 w-full bg-gray-100">
+                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
+                      <div className="absolute bottom-3 right-3 px-3 py-1.5 bg-blue-600 text-white text-sm font-bold rounded">
+                        {formatTry(item.priceCents)}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-base font-bold text-gray-900 mb-1">{item.name}</div>
+                      {item.shortDescription && (
+                        <div className="text-sm text-gray-600 line-clamp-2 mb-2">{item.shortDescription}</div>
+                      )}
+                      <div className="text-xs text-gray-500">
+                        {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Categories - Grid Layout */}
+          <div className="space-y-12">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">{cat.name}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {cat.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelected(item)}
+                      className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden border border-blue-200 text-left"
+                    >
+                      <div className="relative h-48 w-full bg-gray-100">
+                        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
+                        <div className="absolute bottom-3 right-3 px-3 py-1.5 bg-blue-600 text-white text-sm font-bold rounded">
+                          {formatTry(item.priceCents)}
+                        </div>
+                      </div>
+                      <div className="p-4">
+                        <div className="text-base font-bold text-gray-900 mb-1">{item.name}</div>
+                        {item.shortDescription && (
+                          <div className="text-sm text-gray-600 line-clamp-2 mb-2">{item.shortDescription}</div>
+                        )}
+                        <div className="text-xs text-gray-500">
+                          {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (theme === "premium-plus") {
+      // PREMIUM+ QR MENÜ: demo5.wenqr.com - Kategoriler grid, görsel kartlar
+      return (
+        <>
+          {/* Categories Grid - Görsel Kartlar */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-10 mt-6">
+            {tabs.filter(t => t.name !== "Most Popular").map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => scrollTo(cat.name)}
+                className="bg-gradient-to-br from-amber-500/20 to-yellow-500/20 backdrop-blur-sm rounded-2xl border-2 border-amber-500/40 hover:border-amber-400/60 transition-all p-4 text-center shadow-lg"
+              >
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl mx-auto mb-3 flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">{cat.name.charAt(0)}</span>
+                </div>
+                <div className="text-sm font-bold text-white">{cat.name}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Most Popular */}
+          {popular.length > 0 && (
+            <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24 mb-10">
+              <h2 className="text-2xl font-black text-white mb-6">{S.mostPopular}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {popular.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelected(item)}
+                    className="bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 shadow-2xl hover:border-amber-400/60 transition-all overflow-hidden text-left"
+                  >
+                    <div className="relative h-44 w-full bg-gray-100">
+                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-2xl" loading="lazy" />
+                      <div className="absolute bottom-3 right-3 rounded-full px-3 py-1 text-sm font-extrabold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-2xl">
+                        {formatTry(item.priceCents)}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <div className="text-base font-extrabold text-white">{item.name}</div>
+                      <div className="mt-1 text-sm text-gray-300 line-clamp-1">{item.shortDescription}</div>
+                      <div className="mt-2 text-xs font-semibold text-gray-400">
+                        {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Categories - Grid Layout */}
+          <div className="space-y-12">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className="text-xl font-black text-white mb-6">{cat.name}</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {cat.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelected(item)}
+                      className="bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 shadow-2xl hover:border-amber-400/60 transition-all overflow-hidden text-left"
+                    >
+                      <div className="relative h-44 w-full bg-gray-100">
+                        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-2xl" loading="lazy" />
+                        <div className="absolute bottom-3 right-3 rounded-full px-3 py-1 text-sm font-extrabold bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-2xl">
+                          {formatTry(item.priceCents)}
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <div className="text-base font-extrabold text-white">{item.name}</div>
+                        <div className="mt-1 text-sm text-gray-300 line-clamp-1">{item.shortDescription}</div>
+                        <div className="mt-2 text-xs font-semibold text-gray-400">
+                          {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (theme === "swipe") {
+      // MODERN SWIPE MENÜ: demo4.wenqr.com - Dark mode toggle, grid layout
+      return (
+        <>
+          {/* Dark Mode Toggle */}
+          <div className="mt-6 mb-4 flex justify-end">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                darkMode 
+                  ? "bg-gray-800 text-white hover:bg-gray-700" 
+                  : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-200"
+              }`}
+            >
+              {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+            </button>
+          </div>
+
+          {/* Most Popular */}
+          {popular.length > 0 && (
+            <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24 mb-10">
+              <h2 className={`text-2xl font-black mb-6 ${darkMode ? "text-white" : "text-gray-950"}`}>
+                {S.mostPopular}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {popular.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelected(item)}
+                    className={`rounded-3xl shadow-xl border-2 hover:scale-[1.02] hover:shadow-2xl transition-all overflow-hidden text-left ${
+                      darkMode 
+                        ? "bg-gray-800 border-purple-600/50" 
+                        : "bg-white border-purple-200"
+                    }`}
+                  >
+                    <div className="relative h-48 w-full bg-gray-100">
+                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-3xl" loading="lazy" />
+                      <div className={`absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold shadow-xl ${
+                        darkMode ? "bg-purple-600 text-white" : "bg-purple-500 text-white"
+                      }`}>
+                        {formatTry(item.priceCents)}
+                      </div>
+                    </div>
+                    <div className="p-5">
+                      <div className={`text-base font-extrabold ${darkMode ? "text-white" : "text-gray-950"}`}>
+                        {item.name}
+                      </div>
+                      <div className={`mt-1 text-sm line-clamp-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                        {item.shortDescription}
+                      </div>
+                      <div className={`mt-2 text-xs font-semibold ${darkMode ? "text-gray-500" : "text-gray-500"}`}>
+                        {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Categories - Grid Layout */}
+          <div className="space-y-12">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className={`text-xl font-black mb-6 ${darkMode ? "text-white" : "text-gray-950"}`}>
+                  {cat.name}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {cat.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelected(item)}
+                      className={`rounded-3xl shadow-xl border-2 hover:scale-[1.02] hover:shadow-2xl transition-all overflow-hidden text-left ${
+                        darkMode 
+                          ? "bg-gray-800 border-purple-600/50" 
+                          : "bg-white border-purple-200"
+                      }`}
+                    >
+                      <div className="relative h-48 w-full bg-gray-100">
+                        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-3xl" loading="lazy" />
+                        <div className={`absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold shadow-xl ${
+                          darkMode ? "bg-purple-600 text-white" : "bg-purple-500 text-white"
+                        }`}>
+                          {formatTry(item.priceCents)}
+                        </div>
+                      </div>
+                      <div className="p-5">
+                        <div className={`text-base font-extrabold ${darkMode ? "text-white" : "text-gray-950"}`}>
+                          {item.name}
+                        </div>
+                        <div className={`mt-1 text-sm line-clamp-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                          {item.shortDescription}
+                        </div>
+                        <div className={`mt-2 text-xs font-semibold ${darkMode ? "text-gray-500" : "text-gray-500"}`}>
+                          {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    if (theme === "paper-image") {
+      // RESİMLİ KAĞIT MENÜ: demo3.wenqr.com - Grid layout, görseller
+      return (
+        <>
+          {/* Dark Mode Toggle */}
+          <div className="mt-6 mb-4 flex justify-end">
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                darkMode 
+                  ? "bg-gray-800 text-white hover:bg-gray-700" 
+                  : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-200"
+              }`}
+            >
+              {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+            </button>
+          </div>
+
+          {/* Most Popular */}
+          {popular.length > 0 && (
+            <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24 mb-10">
+              <h2 className={`text-2xl font-bold mb-6 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                {S.mostPopular}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {popular.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelected(item)}
+                    className={`rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden text-left border ${
+                      darkMode 
+                        ? "bg-gray-800 border-amber-600/50" 
+                        : "bg-white border-amber-200"
+                    }`}
+                  >
+                    <div className="relative h-48 w-full bg-gray-100">
+                      <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
+                    </div>
+                    <div className="p-4">
+                      <div className={`text-base font-bold mb-1 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                        {item.name}
+                      </div>
+                      <div className={`text-lg font-bold mt-2 ${darkMode ? "text-amber-400" : "text-amber-700"}`}>
+                        {formatTry(item.priceCents)}
+                      </div>
+                      <div className={`mt-2 text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                        {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Categories - Grid Layout */}
+          <div className="space-y-12">
+            {grouped.map((cat) => (
+              <section key={cat.id} id={tabId(cat.name)} data-tab={cat.name} className="scroll-mt-24">
+                <h3 className={`text-2xl font-bold mb-6 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                  {cat.name}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {cat.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setSelected(item)}
+                      className={`rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden text-left border ${
+                        darkMode 
+                          ? "bg-gray-800 border-amber-600/50" 
+                          : "bg-white border-amber-200"
+                      }`}
+                    >
+                      <div className="relative h-48 w-full bg-gray-100">
+                        <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
+                      </div>
+                      <div className="p-4">
+                        <div className={`text-base font-bold mb-1 ${darkMode ? "text-white" : "text-gray-900"}`}>
+                          {item.name}
+                        </div>
+                        <div className={`text-lg font-bold mt-2 ${darkMode ? "text-amber-400" : "text-amber-700"}`}>
+                          {formatTry(item.priceCents)}
+                        </div>
+                        <div className={`mt-2 text-xs ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
+                          {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
+        </>
+      );
+    }
+
+    // DEFAULT LAYOUT (premium, soft-ui, ultra-plus, default)
+    return (
+      <>
+        <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
+          <div className="mt-6 flex items-end justify-between">
+            <h2 className={`text-xl font-extrabold ${
+              theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+            }`}>{S.mostPopular}</h2>
+          </div>
+          <div
+            ref={popularScrollRef}
+            className="mt-4 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 snap-x snap-mandatory select-none cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            onMouseDown={(e) => {
+              const el = popularScrollRef.current;
+              if (!el) return;
+              popularDragRef.current.isDown = true;
+              popularDragRef.current.startX = e.pageX;
+              popularDragRef.current.scrollLeft = el.scrollLeft;
+            }}
+            onMouseLeave={() => { popularDragRef.current.isDown = false; }}
+            onMouseUp={() => { popularDragRef.current.isDown = false; }}
+            onMouseMove={(e) => {
+              const el = popularScrollRef.current;
+              if (!el || !popularDragRef.current.isDown) return;
+              e.preventDefault();
+              const dx = e.pageX - popularDragRef.current.startX;
+              el.scrollLeft = popularDragRef.current.scrollLeft - dx;
+            }}
+          >
+            {popular.map((item) => {
+              const cardSize = getPopularCardSize();
+              const imageHeight = getPopularImageHeight();
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setSelected(item)}
+                  className={`snap-start shrink-0 ${cardSize} overflow-hidden text-left ${getCardClasses()}`}
+                >
+                  <div className={`relative ${imageHeight} w-full bg-gray-100 ${
+                    theme === "paper" ? "border-b border-amber-200" : ""
+                  }`}>
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className={`h-full w-full object-cover ${
+                        theme === "swipe" ? "rounded-t-3xl" : 
+                        theme === "soft-ui" ? "rounded-t-[2rem]" :
+                        theme === "paper" ? "" : "rounded-t-xl"
+                      }`}
+                      loading="lazy"
+                    />
+                    <div className={`absolute bottom-3 right-3 px-3 py-1 text-sm font-extrabold shadow-lg ${
+                      theme === "paper"
+                        ? "rounded-none bg-amber-600 text-white"
+                        : theme === "swipe"
+                        ? "rounded-full bg-purple-500 text-white"
+                        : theme === "premium-plus"
+                        ? "rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-white"
+                        : theme === "ultra-plus"
+                        ? "rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                        : theme === "soft-ui"
+                        ? "rounded-full bg-rose-400 text-white"
+                        : "rounded-full bg-white/95 text-gray-950"
+                    }`}>
+                      {formatTry(item.priceCents)}
+                    </div>
+                  </div>
+                  <div className={`${
+                    theme === "paper" ? "p-3" : 
+                    theme === "swipe" ? "p-5" :
+                    theme === "premium-plus" || theme === "ultra-plus" ? "p-5" :
+                    "p-4"
+                  }`}>
+                    <div className={`${
+                      theme === "paper" ? "text-sm" :
+                      theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" :
+                      "text-sm"
+                    } font-extrabold ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    }`}>{item.name}</div>
+                    <div className={`mt-1 ${
+                      theme === "swipe" ? "text-sm" : "text-xs"
+                    } line-clamp-1 ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-500"
+                    }`}>
+                      {item.shortDescription}
+                    </div>
+                    <div className={`mt-2 text-xs font-semibold ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-500"
+                    }`}>
+                      {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+            {popular.length === 0 ? (
+              <div className={`px-1 py-8 text-sm ${getDescColor()}`}>{S.noMatches}</div>
+            ) : null}
+          </div>
+        </section>
+
+        <div className="mt-8 space-y-10">
+          {grouped.map((cat) => (
+            <section
+              key={cat.id}
+              id={tabId(cat.name)}
+              data-tab={cat.name}
+              className="scroll-mt-24"
+            >
+              <h3 className={`text-lg font-extrabold ${
+                theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+              }`}>{cat.name}</h3>
+              <div className={`mt-4 ${getCardClasses()}`}>
+                {cat.items.map((item) => (
+                  <MenuRow key={item.id} item={item} onOpen={() => setSelected(item)} labels={S} theme={theme} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </>
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -974,8 +1698,202 @@ export function BoltMenuForSlugClient() {
     );
   }
 
+  // Theme-based styling
+  const getThemeClasses = () => {
+    const base = "min-h-screen pb-24";
+    switch (theme) {
+      case "paper":
+        return `${base} text-gray-900`;
+      case "paper-image":
+        return `${base} bg-gradient-to-br from-amber-50 to-orange-50 text-gray-900`;
+      case "swipe":
+        return `${base} bg-gradient-to-br from-purple-50 to-pink-50 text-gray-900`;
+      case "premium-plus":
+        return `${base} bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white`;
+      case "pro":
+        return `${base} bg-gradient-to-br from-blue-50 to-indigo-50 text-gray-900`;
+      case "soft-ui":
+        return `${base} bg-gradient-to-br from-rose-50 to-pink-50 text-gray-900`;
+      case "ultra-plus":
+        return `${base} bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white`;
+      case "premium":
+      default:
+        return `${base} bg-white text-black`;
+    }
+  };
+
+  const getCardClasses = () => {
+    switch (theme) {
+      case "paper":
+        // Kağıt: Minimal, köşesiz, sol border, gölge yok
+        return "bg-white rounded-none border-l-4 border-amber-600 shadow-none hover:shadow-md transition-shadow";
+      case "paper-image":
+        // Resimli Kağıt: Yuvarlak köşeler, hafif gölge
+        return "bg-white rounded-xl shadow-md border border-amber-200 hover:shadow-lg transition-shadow";
+      case "swipe":
+        // Swipe: Büyük yuvarlak köşeler, belirgin gölge, hover efekti
+        return "bg-white rounded-3xl shadow-xl border-2 border-purple-200 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300";
+      case "premium-plus":
+        // Premium Plus: Gradient arka plan, blur, lüks görünüm
+        return "bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 shadow-2xl hover:border-amber-400/60 transition-all";
+      case "pro":
+        // Pro: Profesyonel, sol border, minimal gölge
+        return "bg-white rounded-lg shadow-sm border-l-4 border-blue-600 hover:shadow-md transition-shadow";
+      case "soft-ui":
+        // Soft UI: Yumuşak, büyük köşeler, blur, hafif border
+        return "bg-white/90 backdrop-blur-md rounded-[2rem] shadow-lg border border-rose-200/60 hover:bg-white hover:shadow-xl transition-all";
+      case "ultra-plus":
+        // Ultra Plus: Koyu gradient, blur, lüks border
+        return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 shadow-2xl hover:border-violet-300/60 transition-all";
+      case "premium":
+      default:
+        // Premium: Standart, temiz, modern
+        return "bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow";
+    }
+  };
+
+  const getPopularCardSize = () => {
+    switch (theme) {
+      case "paper":
+        return "w-[220px] md:w-[240px]";
+      case "swipe":
+        return "w-[280px] md:w-[320px]";
+      case "premium-plus":
+      case "ultra-plus":
+        return "w-[260px] md:w-[300px]";
+      case "soft-ui":
+        return "w-[250px] md:w-[280px]";
+      default:
+        return "w-[240px] md:w-[260px]";
+    }
+  };
+
+  const getPopularImageHeight = () => {
+    switch (theme) {
+      case "swipe":
+        return "h-48";
+      case "premium-plus":
+      case "ultra-plus":
+        return "h-44";
+      case "paper":
+        return "h-32";
+      default:
+        return "h-40";
+    }
+  };
+
+  const getButtonClasses = () => {
+    switch (theme) {
+      case "paper":
+        return "bg-amber-600 hover:bg-amber-700 text-white";
+      case "paper-image":
+        return "bg-amber-500 hover:bg-amber-600 text-white";
+      case "swipe":
+        return "bg-purple-500 hover:bg-purple-600 text-white";
+      case "premium-plus":
+        return "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white";
+      case "pro":
+        return "bg-blue-600 hover:bg-blue-700 text-white";
+      case "soft-ui":
+        return "bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white";
+      case "ultra-plus":
+        return "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white";
+      case "premium":
+      default:
+        return "bg-emerald-600 hover:bg-emerald-700 text-white";
+    }
+  };
+
+  const getTabActiveClasses = () => {
+    switch (theme) {
+      case "paper":
+        return "bg-amber-600";
+      case "paper-image":
+        return "bg-amber-500";
+      case "swipe":
+        return "bg-purple-500";
+      case "premium-plus":
+        return "bg-amber-400";
+      case "pro":
+        return "bg-blue-600";
+      case "soft-ui":
+        return "bg-rose-400";
+      case "ultra-plus":
+        return "bg-violet-400";
+      case "premium":
+      default:
+        return "bg-emerald-500";
+    }
+  };
+
+  const getSearchInputClasses = () => {
+    const base = "h-12 w-full rounded-full border-2 pl-12 pr-4 text-sm font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-4";
+    switch (theme) {
+      case "paper":
+        return `${base} border-amber-300 bg-white focus:border-amber-600 focus:ring-amber-500/10 text-gray-950`;
+      case "paper-image":
+        return `${base} border-amber-200 bg-white focus:border-amber-500 focus:ring-amber-500/10 text-gray-950`;
+      case "swipe":
+        return `${base} border-purple-200 bg-white focus:border-purple-500 focus:ring-purple-500/10 text-gray-950`;
+      case "premium-plus":
+        return `${base} border-amber-500/30 bg-gray-800/50 focus:border-amber-400 focus:ring-amber-400/20 text-white placeholder:text-gray-400`;
+      case "pro":
+        return `${base} border-blue-200 bg-white focus:border-blue-600 focus:ring-blue-500/10 text-gray-950`;
+      case "soft-ui":
+        return `${base} border-rose-200/50 bg-white/80 backdrop-blur-sm focus:border-rose-400 focus:ring-rose-400/20 text-gray-950`;
+      case "ultra-plus":
+        return `${base} border-violet-400/30 bg-gray-800/50 focus:border-violet-400 focus:ring-violet-400/20 text-white placeholder:text-gray-400`;
+      case "premium":
+      default:
+        return `${base} border-gray-200 bg-gray-50 focus:border-emerald-500 focus:bg-white focus:ring-emerald-500/10 text-gray-950`;
+    }
+  };
+
+  const getStickyTabsClasses = () => {
+    switch (theme) {
+      case "paper":
+        return "bg-[#f5f1e8]/98 backdrop-blur-sm border-b-2 border-amber-400";
+      case "paper-image":
+        return "bg-gradient-to-br from-amber-50/95 to-orange-50/95 backdrop-blur border-b border-amber-200";
+      case "swipe":
+        return "bg-gradient-to-br from-purple-50/95 to-pink-50/95 backdrop-blur border-b border-purple-200";
+      case "premium-plus":
+        return "bg-gray-900/90 backdrop-blur border-b border-gray-700";
+      case "pro":
+        return "bg-gradient-to-br from-blue-50/95 to-indigo-50/95 backdrop-blur border-b border-blue-200";
+      case "soft-ui":
+        return "bg-gradient-to-br from-rose-50/95 to-pink-50/95 backdrop-blur border-b border-rose-200/50";
+      case "ultra-plus":
+        return "bg-violet-900/90 backdrop-blur border-b border-violet-700";
+      case "premium":
+      default:
+        return "bg-white/90 backdrop-blur border-b border-gray-100";
+    }
+  };
+
+  const getTextColor = () => {
+    if (theme === "premium-plus" || theme === "ultra-plus") {
+      return "text-white";
+    }
+    return "text-gray-950";
+  };
+
+  const getDescColor = () => {
+    if (theme === "premium-plus" || theme === "ultra-plus") {
+      return "text-gray-300";
+    }
+    return "text-gray-500";
+  };
+
   return (
-    <div className="min-h-screen bg-white text-black pb-24">
+    <div className={getThemeClasses()} style={
+      theme === "paper" 
+        ? { 
+            background: "#f5f1e8",
+            backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)"
+          }
+        : undefined
+    }>
       <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 pb-6 pt-4">
         {campaigns.length > 0 ? (
           <CampaignMarquee campaigns={campaigns} labels={S} />
@@ -984,9 +1902,21 @@ export function BoltMenuForSlugClient() {
           <div className="min-w-0">
             {restaurant ? (
               <>
-                <div className="text-xl font-extrabold text-gray-950">{restaurant.name}</div>
+                <div className={`text-xl font-extrabold ${
+                  theme === "paper"
+                    ? "text-amber-900"
+                    : theme === "premium-plus" || theme === "ultra-plus" 
+                    ? "text-white" 
+                    : "text-gray-950"
+                }`}>{restaurant.name}</div>
                 {restaurant.description ? (
-                  <div className="mt-1 text-sm text-gray-500">{restaurant.description}</div>
+                  <div className={`mt-1 text-sm ${
+                    theme === "paper"
+                      ? "text-amber-800"
+                      : theme === "premium-plus" || theme === "ultra-plus" 
+                      ? "text-gray-300" 
+                      : "text-gray-500"
+                  }`}>{restaurant.description}</div>
                 ) : null}
               </>
             ) : null}
@@ -1016,18 +1946,20 @@ export function BoltMenuForSlugClient() {
 
         {/* Search + add product */}
         <div className="relative">
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Search className={`pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 ${
+            theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-400"
+          }`} />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={S.searchPlaceholder}
-            className="h-12 w-full rounded-full border-2 border-gray-200 bg-gray-50 pl-12 pr-4 text-sm font-semibold text-gray-950 placeholder:text-gray-400 focus:outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
+            className={getSearchInputClasses()}
           />
         </div>
       </div>
 
       {/* Sticky tabs */}
-      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-100">
+      <div className={`sticky top-0 z-30 ${getStickyTabsClasses()}`}>
         <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 py-3">
           <div className="flex gap-5 overflow-x-auto whitespace-nowrap pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {tabs.map((t) => {
@@ -1039,14 +1971,16 @@ export function BoltMenuForSlugClient() {
                   onClick={() => scrollTo(t.name)}
                   className={[
                     "relative pb-2 text-sm font-semibold transition-colors",
-                    active ? "text-gray-950" : "text-gray-500 hover:text-gray-800",
+                    active 
+                      ? (theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950")
+                      : (theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-800"),
                   ].join(" ")}
                 >
                   {label}
                   <span
                     className={[
                       "absolute left-0 right-0 -bottom-[1px] h-[2px] rounded-full transition-opacity",
-                      active ? "bg-emerald-500 opacity-100" : "bg-transparent opacity-0",
+                      active ? `${getTabActiveClasses()} opacity-100` : "bg-transparent opacity-0",
                     ].join(" ")}
                   />
                 </button>
@@ -1057,90 +1991,8 @@ export function BoltMenuForSlugClient() {
       </div>
 
       <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4">
-        {/* Most Popular */}
-        <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
-          <div className="mt-6 flex items-end justify-between">
-            <h2 className="text-xl font-extrabold text-gray-950">{S.mostPopular}</h2>
-          </div>
-
-          <div
-            ref={popularScrollRef}
-            className="mt-4 -mx-4 flex gap-4 overflow-x-auto px-4 pb-2 snap-x snap-mandatory select-none cursor-grab active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            onMouseDown={(e) => {
-              const el = popularScrollRef.current;
-              if (!el) return;
-              popularDragRef.current.isDown = true;
-              popularDragRef.current.startX = e.pageX;
-              popularDragRef.current.scrollLeft = el.scrollLeft;
-            }}
-            onMouseLeave={() => {
-              popularDragRef.current.isDown = false;
-            }}
-            onMouseUp={() => {
-              popularDragRef.current.isDown = false;
-            }}
-            onMouseMove={(e) => {
-              const el = popularScrollRef.current;
-              if (!el) return;
-              if (!popularDragRef.current.isDown) return;
-              e.preventDefault();
-              const dx = e.pageX - popularDragRef.current.startX;
-              el.scrollLeft = popularDragRef.current.scrollLeft - dx;
-            }}
-          >
-            {popular.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSelected(item)}
-                className="snap-start shrink-0 w-[240px] md:w-[260px] rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden text-left"
-              >
-                <div className="relative h-40 w-full bg-gray-100">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute bottom-3 right-3 rounded-full bg-white/95 px-3 py-1 text-sm font-extrabold text-gray-950 shadow">
-                    {formatTry(item.priceCents)}
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="text-sm font-extrabold text-gray-950">{item.name}</div>
-                  <div className="mt-1 text-xs text-gray-500 line-clamp-1">
-                    {item.shortDescription}
-                  </div>
-                  <div className="mt-2 text-xs font-semibold text-gray-500">
-                    {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
-                  </div>
-                </div>
-              </button>
-            ))}
-            {popular.length === 0 ? (
-              <div className="px-1 py-8 text-sm text-gray-500">{S.noMatches}</div>
-            ) : null}
-          </div>
-        </section>
-
-        {/* Categories */}
-        <div className="mt-8 space-y-10">
-          {grouped.map((cat) => (
-            <section
-              key={cat.id}
-              id={tabId(cat.name)}
-              data-tab={cat.name}
-              className="scroll-mt-24"
-            >
-              <h3 className="text-lg font-extrabold text-gray-950">{cat.name}</h3>
-              <div className="mt-4 divide-y divide-gray-100 rounded-2xl border border-gray-100 bg-white">
-                {cat.items.map((item) => (
-                  <MenuRow key={item.id} item={item} onOpen={() => setSelected(item)} labels={S} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
+        {/* Render theme-specific layouts */}
+        {renderThemeLayout()}
       </div>
 
       {/* Floating mini cart bar */}
@@ -1154,7 +2006,7 @@ export function BoltMenuForSlugClient() {
             className="fixed inset-x-0 bottom-4 z-40 px-4"
           >
             <button
-              className="mx-auto flex w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] items-center justify-between rounded-full bg-emerald-500 px-5 py-4 text-white shadow-lg"
+              className={`mx-auto flex w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] items-center justify-between rounded-full px-5 py-4 text-white shadow-lg ${getButtonClasses()}`}
               aria-label={S.viewOrderAria}
               onClick={() => setCartOpen(true)}
             >
@@ -1170,6 +2022,7 @@ export function BoltMenuForSlugClient() {
         onClose={() => setSelected(null)}
         onAdd={(it, qty, note) => addLine(it, qty, note)}
         labels={S}
+        theme={theme}
       />
 
       <OrderSheet
@@ -1282,7 +2135,120 @@ export function BoltMenuForSlugClient() {
   );
 }
 
-function MenuRow({ item, onOpen, labels }: { item: BoltItem; onOpen: () => void; labels: Strings }) {
+function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; onOpen: () => void; labels: Strings; theme?: string }) {
+  const getRowClasses = () => {
+    switch (theme) {
+      case "paper":
+        // Kağıt: Köşesiz, sol border, minimal padding, hover efekti yok
+        return "bg-white rounded-none border-l-4 border-amber-600 shadow-none hover:shadow-md transition-shadow";
+      case "paper-image":
+        // Resimli Kağıt: Yuvarlak, hafif border
+        return "bg-white rounded-xl shadow-md border border-amber-200 hover:shadow-lg transition-shadow";
+      case "swipe":
+        // Swipe: Büyük köşeler, belirgin gölge, hover scale
+        return "bg-white rounded-3xl shadow-xl border-2 border-purple-200 hover:scale-[1.01] hover:shadow-2xl transition-all duration-300";
+      case "premium-plus":
+        // Premium Plus: Gradient, blur, lüks border
+        return "bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 hover:border-amber-400/60 transition-all";
+      case "pro":
+        // Pro: Sol border, minimal
+        return "bg-white rounded-lg shadow-sm border-l-4 border-blue-600 hover:shadow-md transition-shadow";
+      case "soft-ui":
+        // Soft UI: Yumuşak, büyük köşeler, blur
+        return "bg-white/90 backdrop-blur-md rounded-[2rem] shadow-lg border border-rose-200/60 hover:bg-white hover:shadow-xl transition-all";
+      case "ultra-plus":
+        // Ultra Plus: Koyu gradient, blur, lüks
+        return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 hover:border-violet-300/60 transition-all";
+      case "premium":
+      default:
+        // Premium: Standart, temiz
+        return "bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow";
+    }
+  };
+
+  const getRowPadding = () => {
+    switch (theme) {
+      case "paper":
+        return "p-3"; // Minimal padding
+      case "swipe":
+      case "premium-plus":
+      case "ultra-plus":
+        return "p-5"; // Daha fazla padding, lüks
+      case "soft-ui":
+        return "p-4"; // Orta padding
+      default:
+        return "p-4"; // Standart
+    }
+  };
+
+  const getImageSize = () => {
+    switch (theme) {
+      case "paper":
+        return "h-[70px] w-[80px]"; // Küçük, minimal
+      case "swipe":
+        return "h-[100px] w-[110px]"; // Büyük, swipe için
+      case "premium-plus":
+      case "ultra-plus":
+        return "h-[96px] w-[108px]"; // Lüks, büyük
+      default:
+        return "h-[86px] w-[98px]"; // Standart
+    }
+  };
+
+  const getImageRadius = () => {
+    switch (theme) {
+      case "paper":
+        return "rounded-none"; // Köşesiz
+      case "swipe":
+        return "rounded-3xl"; // Büyük köşeler
+      case "soft-ui":
+        return "rounded-[2rem]"; // Yumuşak köşeler
+      default:
+        return "rounded-2xl"; // Standart
+    }
+  };
+
+  const getButtonClasses = () => {
+    switch (theme) {
+      case "paper":
+        return "bg-amber-600 text-white shadow-md";
+      case "paper-image":
+        return "bg-amber-500 text-white shadow-md";
+      case "swipe":
+        return "bg-purple-500 text-white shadow-xl";
+      case "premium-plus":
+        return "bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-2xl";
+      case "pro":
+        return "bg-blue-600 text-white shadow-md";
+      case "soft-ui":
+        return "bg-rose-400 text-white shadow-lg";
+      case "ultra-plus":
+        return "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-2xl";
+      case "premium":
+      default:
+        return "bg-emerald-600 text-white shadow-lg";
+    }
+  };
+
+  const getTextColor = () => {
+    if (theme === "premium-plus" || theme === "ultra-plus") {
+      return "text-white";
+    }
+    return "text-gray-950";
+  };
+
+  const getDescColor = () => {
+    if (theme === "premium-plus" || theme === "ultra-plus") {
+      return "text-gray-300";
+    }
+    return "text-gray-500";
+  };
+
+  const imageSize = getImageSize();
+  const imageRadius = getImageRadius();
+  const rowPadding = getRowPadding();
+  const buttonClasses = getButtonClasses();
+
   return (
     <div
       role="button"
@@ -1291,28 +2257,44 @@ function MenuRow({ item, onOpen, labels }: { item: BoltItem; onOpen: () => void;
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") onOpen();
       }}
-      className="w-full text-left focus:outline-none"
+      className={`w-full text-left focus:outline-none ${getRowClasses()} ${
+        theme === "paper" ? "mb-0" : "mb-2"
+      }`}
     >
-      <div className="flex gap-4 p-4">
+      <div className={`flex gap-4 ${rowPadding}`}>
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-2">
-            <div className="text-sm font-extrabold text-gray-950">{item.name}</div>
+            <div className={`${
+              theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
+            } font-extrabold ${getTextColor()}`}>{item.name}</div>
             {item.isVegetarian ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700">
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                theme === "paper"
+                  ? "bg-amber-50 text-amber-700"
+                  : theme === "swipe"
+                  ? "bg-purple-50 text-purple-700"
+                  : theme === "premium-plus" || theme === "ultra-plus"
+                  ? "bg-amber-500/30 text-amber-200"
+                  : "bg-emerald-50 text-emerald-700"
+              }`}>
                 <Leaf className="h-3 w-3" />
                 {labels.vegBadge}
               </span>
             ) : null}
           </div>
-          <div className="mt-1 text-xs text-gray-500 line-clamp-2">{item.shortDescription}</div>
-          <div className="mt-2 text-sm font-extrabold text-gray-950">{formatTry(item.priceCents)}</div>
-          <div className="mt-1 text-xs font-semibold text-gray-500">
+          <div className={`mt-1 ${
+            theme === "swipe" ? "text-sm" : "text-xs"
+          } ${getDescColor()} line-clamp-2`}>{item.shortDescription}</div>
+          <div className={`mt-2 ${
+            theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
+          } font-extrabold ${getTextColor()}`}>{formatTry(item.priceCents)}</div>
+          <div className={`mt-1 text-xs font-semibold ${getDescColor()}`}>
             {labels.stockLabel}: {item.stock === null ? labels.stockUnlimited : item.stock}
           </div>
         </div>
 
-        <div className="relative h-[86px] w-[98px] shrink-0">
-          <div className="h-full w-full overflow-hidden rounded-2xl bg-gray-100">
+        <div className={`relative ${imageSize} shrink-0`}>
+          <div className={`h-full w-full overflow-hidden ${imageRadius} bg-gray-100`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
           </div>
@@ -1322,10 +2304,10 @@ function MenuRow({ item, onOpen, labels }: { item: BoltItem; onOpen: () => void;
               e.stopPropagation();
               onOpen();
             }}
-            className="absolute -bottom-2 -right-2 grid h-9 w-9 place-items-center rounded-full bg-white shadow-lg ring-1 ring-black/5"
+            className={`absolute -bottom-2 -right-2 grid h-9 w-9 place-items-center rounded-full ${buttonClasses} ring-1 ring-black/5 hover:scale-110 transition-transform`}
             aria-label={labels.addItemAria(item.name)}
           >
-            <Plus className="h-5 w-5 text-emerald-600" />
+            <Plus className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -1338,15 +2320,39 @@ function ProductSheet({
   onClose,
   onAdd,
   labels,
+  theme = "default",
 }: {
   item: BoltItem | null;
   onClose: () => void;
   onAdd: (item: BoltItem, qty: number, note?: string) => void;
   labels: Strings;
+  theme?: string;
 }) {
   const [qty, setQty] = useState(1);
   const [note, setNote] = useState("");
   const lastItemId = useRef<string | null>(null);
+
+  const getButtonClasses = () => {
+    switch (theme) {
+      case "paper":
+        return "bg-amber-600 hover:bg-amber-700 text-white";
+      case "paper-image":
+        return "bg-amber-500 hover:bg-amber-600 text-white";
+      case "swipe":
+        return "bg-purple-500 hover:bg-purple-600 text-white";
+      case "premium-plus":
+        return "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white";
+      case "pro":
+        return "bg-blue-600 hover:bg-blue-700 text-white";
+      case "soft-ui":
+        return "bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white";
+      case "ultra-plus":
+        return "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white";
+      case "premium":
+      default:
+        return "bg-emerald-600 hover:bg-emerald-700 text-white";
+    }
+  };
 
   useEffect(() => {
     if (!item) return;
@@ -1414,8 +2420,12 @@ function ProductSheet({
             <div className="max-h-[60vh] overflow-y-auto px-5 pb-28 pt-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="text-xl font-extrabold text-gray-950">{item.name}</div>
-                  <div className="mt-2 text-sm font-extrabold text-gray-950">
+                  <div className={`text-xl font-extrabold ${
+                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                  }`}>{item.name}</div>
+                  <div className={`mt-2 text-sm font-extrabold ${
+                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                  }`}>
                     {formatTry(item.priceCents)}
                   </div>
                 </div>
@@ -1427,35 +2437,97 @@ function ProductSheet({
                 ) : null}
               </div>
 
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">{item.description}</p>
+              <p className={`mt-3 text-sm leading-relaxed ${
+                theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-600"
+              }`}>{item.description}</p>
 
               <div className="mt-6">
-                <label className="text-sm font-bold text-gray-900">{labels.addNoteLabel}</label>
+                <label className={`text-sm font-bold ${
+                  theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
+                }`}>{labels.addNoteLabel}</label>
                 <textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder={labels.addNotePlaceholder}
-                  className="mt-2 w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                  className={`mt-2 w-full resize-none px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 ${
+                    theme === "paper"
+                      ? "rounded-none border border-amber-300 bg-white focus:border-amber-600 focus:ring-amber-500/10 text-gray-900"
+                      : theme === "paper-image"
+                      ? "rounded-xl border border-amber-200 bg-white focus:border-amber-500 focus:ring-amber-500/10 text-gray-900"
+                      : theme === "swipe"
+                      ? "rounded-2xl border border-purple-200 bg-white focus:border-purple-500 focus:ring-purple-500/10 text-gray-900"
+                      : theme === "premium-plus"
+                      ? "rounded-2xl border border-amber-500/30 bg-gray-800/50 focus:border-amber-400 focus:ring-amber-400/20 text-white"
+                      : theme === "pro"
+                      ? "rounded-lg border border-blue-200 bg-white focus:border-blue-600 focus:ring-blue-500/10 text-gray-900"
+                      : theme === "soft-ui"
+                      ? "rounded-3xl border border-rose-200/50 bg-white/80 backdrop-blur-sm focus:border-rose-400 focus:ring-rose-400/20 text-gray-900"
+                      : theme === "ultra-plus"
+                      ? "rounded-2xl border border-violet-400/30 bg-gray-800/50 focus:border-violet-400 focus:ring-violet-400/20 text-white"
+                      : "rounded-2xl border border-gray-200 bg-gray-50 focus:border-emerald-500 focus:ring-emerald-500/10 text-gray-900"
+                  }`}
                   rows={3}
                 />
               </div>
             </div>
 
             {/* Sticky bottom action bar */}
-            <div className="absolute inset-x-0 bottom-0 border-t border-gray-100 bg-white/95 backdrop-blur">
+            <div className={`absolute inset-x-0 bottom-0 border-t backdrop-blur ${
+              theme === "paper"
+                ? "border-amber-200 bg-white/95"
+                : theme === "paper-image"
+                ? "border-amber-200 bg-white/95"
+                : theme === "swipe"
+                ? "border-purple-200 bg-white/95"
+                : theme === "premium-plus"
+                ? "border-amber-500/30 bg-gray-800/95"
+                : theme === "pro"
+                ? "border-blue-200 bg-white/95"
+                : theme === "soft-ui"
+                ? "border-rose-200/50 bg-white/95 backdrop-blur-sm"
+                : theme === "ultra-plus"
+                ? "border-violet-400/30 bg-violet-900/95"
+                : "border-gray-100 bg-white/95"
+            }`}>
               <div className="flex items-center gap-3 px-5 py-4">
-                <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-2 py-2 shadow-sm">
+                <div className={`flex items-center gap-2 rounded-full border px-2 py-2 shadow-sm ${
+                  theme === "paper"
+                    ? "border-amber-200 bg-white"
+                    : theme === "paper-image"
+                    ? "border-amber-200 bg-white"
+                    : theme === "swipe"
+                    ? "border-purple-200 bg-white"
+                    : theme === "premium-plus"
+                    ? "border-amber-500/30 bg-gray-800/50"
+                    : theme === "pro"
+                    ? "border-blue-200 bg-white"
+                    : theme === "soft-ui"
+                    ? "border-rose-200/50 bg-white/80 backdrop-blur-sm"
+                    : theme === "ultra-plus"
+                    ? "border-violet-400/30 bg-gray-800/50"
+                    : "border-gray-200 bg-white"
+                }`}>
                   <button
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className="grid h-9 w-9 place-items-center rounded-full bg-gray-50 text-gray-900"
+                    className={`grid h-9 w-9 place-items-center rounded-full ${
+                      theme === "premium-plus" || theme === "ultra-plus"
+                        ? "bg-gray-700 text-white"
+                        : "bg-gray-50 text-gray-900"
+                    }`}
                     aria-label="Decrease quantity"
                   >
                     <span className="text-lg font-extrabold leading-none">-</span>
                   </button>
-                  <div className="w-8 text-center text-sm font-extrabold text-gray-950">{qty}</div>
+                  <div className={`w-8 text-center text-sm font-extrabold ${
+                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                  }`}>{qty}</div>
                   <button
                     onClick={() => setQty((q) => q + 1)}
-                    className="grid h-9 w-9 place-items-center rounded-full bg-gray-50 text-gray-900"
+                    className={`grid h-9 w-9 place-items-center rounded-full ${
+                      theme === "premium-plus" || theme === "ultra-plus"
+                        ? "bg-gray-700 text-white"
+                        : "bg-gray-50 text-gray-900"
+                    }`}
                     aria-label="Increase quantity"
                   >
                     <span className="text-lg font-extrabold leading-none">+</span>
@@ -1467,7 +2539,7 @@ function ProductSheet({
                     onAdd(item, qty, note);
                     onClose();
                   }}
-                  className="flex-1 rounded-full bg-emerald-500 px-5 py-4 text-sm font-extrabold text-white shadow-lg hover:bg-emerald-600"
+                  className={`flex-1 rounded-full px-5 py-4 text-sm font-extrabold text-white shadow-lg ${getButtonClasses()}`}
                 >
                   {labels.addToOrderWithPrice(formatTry(totalCents))}
                 </button>

@@ -103,6 +103,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Menu Packages Section */}
+      <section className="premium-section relative">
+        <div className="premium-container">
+          <div className="text-center mb-12 animate-premium-fade-in">
+            <h2 className="premium-heading-2 mb-6">Menü Paketleri</h2>
+            <p className="text-xl text-gray-600 font-medium mb-8">
+              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 8 farklı QR Menü tasarımı
+            </p>
+            <Link
+              href="/menu-packages"
+              className="premium-btn-primary inline-flex items-center gap-2 group"
+            >
+              Tüm Paketleri İncele
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
+          {/* Package Preview Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[
+              { 
+                name: "Premium Menü", 
+                theme: "premium", 
+                popular: false,
+                image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=400&q=80",
+                description: "Modern ve hızlı"
+              },
+              { 
+                name: "Kağıt Menü", 
+                theme: "paper", 
+                popular: false,
+                image: "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=400&q=80",
+                description: "Klasik ve profesyonel"
+              },
+              { 
+                name: "Modern Swipe", 
+                theme: "swipe", 
+                popular: false,
+                image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=400&q=80",
+                description: "Swipe navigasyon"
+              },
+              { 
+                name: "Premium+", 
+                theme: "premium-plus", 
+                popular: true,
+                image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80",
+                description: "Lüks tasarım"
+              },
+            ].map((pkg, index) => (
+              <Link
+                key={pkg.theme}
+                href={`/restaurant/register?theme=${pkg.theme}`}
+                className="premium-card p-6 premium-hover-lift group relative overflow-hidden animate-premium-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                {pkg.popular && (
+                  <div className="absolute top-3 right-3 z-10">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-green-500 to-blue-600 text-white text-xs font-bold rounded-full">
+                      <Sparkles className="w-3 h-3" />
+                      Popüler
+                    </span>
+                  </div>
+                )}
+                <div className="relative h-32 w-full mb-4 rounded-xl overflow-hidden bg-gray-100">
+                  <img
+                    src={pkg.image}
+                    alt={pkg.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                </div>
+                <h3 className="text-lg font-black text-gray-900 mb-2">{pkg.name}</h3>
+                <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
+                <div className="text-sm font-semibold text-green-600 group-hover:text-green-700 transition-colors">
+                  Seç →
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Premium Features Section */}
       <section className="premium-section relative">
         <div className="premium-container">
