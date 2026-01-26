@@ -29,7 +29,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  // Referans logoları
+  // Referans logoları (sadece ilk 4)
   const referenceLogos = [
     {
       type: "image",
@@ -45,26 +45,6 @@ export default function Home() {
       type: "image",
       url: "https://www.ritadanismanlik.com.tr/wp-content/uploads/2025/12/qtq_95-1-1.webp",
       alt: "RİTA Danışmanlık"
-    },
-    {
-      type: "text",
-      text: "Bayimiz Olun",
-      alt: "Bayimiz Olun"
-    },
-    {
-      type: "text",
-      text: "Bayimiz Olun",
-      alt: "Bayimiz Olun"
-    },
-    {
-      type: "text",
-      text: "Bayimiz Olun",
-      alt: "Bayimiz Olun"
-    },
-    {
-      type: "text",
-      text: "Bayimiz Olun",
-      alt: "Bayimiz Olun"
     },
     {
       type: "text",
@@ -185,67 +165,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Reference Logo Section - Scrolling Banner */}
-      <section className="py-16 bg-gray-900/50 border-y border-gray-800/50 overflow-hidden">
+      {/* Reference Logo Section - Fixed Center */}
+      <section className="py-16 bg-transparent overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-center text-2xl font-bold text-gray-300 mb-12">
             Dijital dönüşümünü bizimle yapan işletmeler
           </h2>
-          <div className="relative">
-            <div className="flex gap-8 animate-marquee whitespace-nowrap">
-              {/* İlk set */}
-              {referenceLogos.map((item, index) => (
-                <div
-                  key={`first-${index}`}
-                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group px-4"
-                >
-                  {item.type === "image" ? (
-                    <img
-                      src={item.url}
-                      alt={item.alt}
-                      className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full object-contain"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        if (target.parentElement) {
-                          target.parentElement.innerHTML = `<span class="text-gray-500 text-xs font-medium">${item.alt}</span>`;
-                        }
-                      }}
-                    />
-                  ) : (
-                    <span className="text-gray-700 text-sm font-semibold group-hover:text-[#FF6F00] transition-colors">
-                      {item.text}
-                    </span>
-                  )}
-                </div>
-              ))}
-              {/* İkinci set (sonsuz döngü için) */}
-              {referenceLogos.map((item, index) => (
-                <div
-                  key={`second-${index}`}
-                  className="flex-shrink-0 w-32 h-16 bg-white rounded-xl flex items-center justify-center border border-gray-700/50 hover:border-[#FF6F00]/50 transition-all group px-4"
-                >
-                  {item.type === "image" ? (
-                    <img
-                      src={item.url}
-                      alt={item.alt}
-                      className="h-10 w-auto opacity-60 group-hover:opacity-100 transition-opacity max-w-full object-contain"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        if (target.parentElement) {
-                          target.parentElement.innerHTML = `<span class="text-gray-500 text-xs font-medium">${item.alt}</span>`;
-                        }
-                      }}
-                    />
-                  ) : (
-                    <span className="text-gray-700 text-sm font-semibold group-hover:text-[#FF6F00] transition-colors">
-                      {item.text}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="flex items-center justify-center gap-8">
+            {referenceLogos.map((item, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 w-32 h-16 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/20 hover:border-[#FF6F00]/50 transition-all group px-4"
+              >
+                {item.type === "image" ? (
+                  <img
+                    src={item.url}
+                    alt={item.alt}
+                    className="h-10 w-auto opacity-80 group-hover:opacity-100 transition-opacity max-w-full object-contain"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      target.style.display = 'none';
+                      if (target.parentElement) {
+                        target.parentElement.innerHTML = `<span class="text-white text-xs font-medium">${item.alt}</span>`;
+                      }
+                    }}
+                  />
+                ) : (
+                  <span className="text-white text-sm font-semibold group-hover:text-[#FF6F00] transition-colors">
+                    {item.text}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </section>
