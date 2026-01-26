@@ -7,6 +7,10 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState(0);
+
+  // Tüm menü temaları
+  const themes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +19,15 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Tema değişimi için interval
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTheme((prev) => (prev + 1) % themes.length);
+    }, 5000); // 5 saniye
+
+    return () => clearInterval(interval);
+  }, [themes.length]);
 
   // Gerçek restoran logoları (placeholder yerine gerçek logo URL'leri)
   const restaurantLogos = [
@@ -121,10 +134,11 @@ export default function Home() {
                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-700 rounded-full"></div>
                   {/* iPad Screen */}
                   <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[1.5rem] overflow-hidden w-full h-full border border-gray-700 relative">
-                    {/* Gerçek Demo Menü - iframe - Tablet'e uygun */}
+                    {/* Gerçek Demo Menü - iframe - Tablet'e uygun - Tema değişimi */}
                     <iframe
-                      src="/menu/demo-restoran"
-                      className="absolute inset-0 border-0"
+                      key={themes[currentTheme]}
+                      src={`/menu/demo-restoran?theme=${themes[currentTheme]}`}
+                      className="absolute inset-0 border-0 transition-opacity duration-500"
                       style={{ 
                         width: '100%',
                         height: '100%',
