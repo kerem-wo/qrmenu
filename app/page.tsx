@@ -115,16 +115,16 @@ export default function Home() {
             <div className="relative lg:block hidden">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#FF6F00]/30 to-transparent rounded-3xl blur-3xl transform rotate-6 animate-pulse"></div>
-                <div className="relative bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl border border-gray-800">
-                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2rem] overflow-hidden aspect-[9/19] border border-gray-700">
+                <div className="relative bg-gray-900 rounded-[2.5rem] p-2.5 shadow-2xl border border-gray-800" style={{ width: '320px', height: '640px' }}>
+                  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2rem] overflow-hidden w-full h-full border border-gray-700 relative">
                     {/* Gerçek Demo Menü - iframe */}
                     <iframe
                       src="/menu/demo-restoran"
-                      className="w-full h-full border-0"
+                      className="absolute inset-0 border-0"
                       style={{ 
                         width: '100%',
                         height: '100%',
-                        transform: 'scale(0.8)',
+                        transform: 'scale(1)',
                         transformOrigin: 'top left',
                         pointerEvents: 'none'
                       }}

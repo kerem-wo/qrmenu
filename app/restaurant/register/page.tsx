@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Building2, Mail, Lock, User, FileText, Upload, X } from "lucide-react";
+import Image from "next/image";
 import toast from "react-hot-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DocumentUpload } from "@/components/DocumentUpload";
@@ -212,37 +213,70 @@ function RestaurantRegisterContent() {
   };
 
   return (
-    <div className="min-h-screen premium-bg-gradient flex items-center justify-center p-4 py-8">
-      <div className="w-full max-w-2xl animate-premium-scale-in">
-        <div className="premium-card p-10">
-          <div className="text-center mb-8">
-            <div className="relative inline-flex items-center justify-center mb-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-blue-600 rounded-3xl blur-xl opacity-30"></div>
-              <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl">
-                <Building2 className="w-10 h-10 text-white" />
-              </div>
+    <div className="min-h-screen flex">
+      {/* Sol Bölüm - Turuncu Kayıt Daveti */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#FF6F00] via-[#FF8F33] to-[#FF6F00] items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.1),transparent_50%)]"></div>
+        <div className="relative z-10 text-center max-w-md animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="relative inline-flex items-center justify-center mb-8">
+            <div className="absolute inset-0 bg-white/20 rounded-3xl blur-xl"></div>
+            <div className="relative w-24 h-24 bg-white/10 backdrop-blur-sm rounded-3xl flex items-center justify-center border border-white/20">
+              <Building2 className="w-12 h-12 text-white" />
             </div>
-            <h1 className="premium-heading-2 mb-3">Restoran Kaydı</h1>
-            <p className="text-gray-600 font-medium text-lg">
-              Restoranınızı kaydedin ve dijital menünüzü oluşturun
+          </div>
+          <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
+            Merhaba!
+          </h2>
+          <p className="text-xl text-white/90 mb-10 leading-relaxed">
+            Restoranınızı kaydedin ve dijital menünüzü oluşturun. Bizimle yolculuğa başlayın.
+          </p>
+          {selectedTheme !== "default" && (
+            <div className="mb-8 inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full">
+              <span className="text-sm font-semibold text-white">
+                Seçilen Tasarım: <span className="capitalize">{selectedTheme.replace("-", " ")}</span>
+              </span>
+            </div>
+          )}
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center gap-2 text-white/90 hover:text-white text-sm font-medium transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Zaten hesabınız var mı? Giriş Yap
+          </Link>
+        </div>
+      </div>
+
+      {/* Sağ Bölüm - Kayıt Formu */}
+      <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-4 md:p-8 lg:p-12 overflow-y-auto">
+        <div className="w-full max-w-2xl animate-fade-in">
+          <div className="mb-6">
+            <Link href="/" className="inline-flex items-center gap-3 mb-6">
+              <Image
+                src="/logo.png"
+                alt="Rivo QR"
+                width={40}
+                height={40}
+                className="h-10 w-auto"
+              />
+              <span className="text-xl font-bold text-gray-900">Rivo QR</span>
+            </Link>
+            <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-3">
+              Restoran Kaydı
+            </h1>
+            <p className="text-gray-600 text-lg">
+              Hesabınızı oluşturun ve dijital menünüze başlayın
             </p>
-            {selectedTheme !== "default" && (
-              <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full">
-                <span className="text-sm font-semibold text-green-700">
-                  Seçilen Tasarım: <span className="capitalize">{selectedTheme.replace("-", " ")}</span>
-                </span>
-              </div>
-            )}
           </div>
           <div>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Restoran Adı */}
               <div className="space-y-2">
-                <Label htmlFor="restaurantName" className="text-gray-700 font-bold">
+                <Label htmlFor="restaurantName" className="text-sm font-semibold text-gray-700">
                   Restoran Adı *
                 </Label>
                 <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="restaurantName"
                     type="text"
@@ -251,7 +285,7 @@ function RestaurantRegisterContent() {
                     onChange={(e) =>
                       setFormData({ ...formData, restaurantName: e.target.value })
                     }
-                    className="premium-input premium-input-with-icon"
+                    className="pl-12 h-12 rounded-xl border-2 border-gray-200 focus:border-[#FF6F00] focus:ring-4 focus:ring-[#FF6F00]/10 transition-all"
                     required
                   />
                 </div>
@@ -259,11 +293,11 @@ function RestaurantRegisterContent() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-700 font-bold">
+                <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
                   E-posta Adresi *
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="email"
                     type="email"
@@ -272,7 +306,7 @@ function RestaurantRegisterContent() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
-                    className="premium-input premium-input-with-icon"
+                    className="pl-12 h-12 rounded-xl border-2 border-gray-200 focus:border-[#FF6F00] focus:ring-4 focus:ring-[#FF6F00]/10 transition-all"
                     required
                   />
                 </div>
@@ -283,11 +317,11 @@ function RestaurantRegisterContent() {
 
               {/* Şifre */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-700 font-bold">
+                <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
                   Şifre *
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="password"
                     type="password"
@@ -296,7 +330,7 @@ function RestaurantRegisterContent() {
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
-                    className="premium-input premium-input-with-icon"
+                    className="pl-12 h-12 rounded-xl border-2 border-gray-200 focus:border-[#FF6F00] focus:ring-4 focus:ring-[#FF6F00]/10 transition-all"
                     required
                     minLength={6}
                   />
@@ -305,11 +339,11 @@ function RestaurantRegisterContent() {
 
               {/* Şifre Tekrar */}
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-gray-700 font-bold">
+                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-700">
                   Şifre Tekrar *
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <Input
                     id="confirmPassword"
                     type="password"
@@ -318,7 +352,7 @@ function RestaurantRegisterContent() {
                     onChange={(e) =>
                       setFormData({ ...formData, confirmPassword: e.target.value })
                     }
-                    className="premium-input premium-input-with-icon"
+                    className="pl-12 h-12 rounded-xl border-2 border-gray-200 focus:border-[#FF6F00] focus:ring-4 focus:ring-[#FF6F00]/10 transition-all"
                     required
                     minLength={6}
                   />
@@ -395,8 +429,8 @@ function RestaurantRegisterContent() {
               </div>
 
               {/* KVKK ve Onaylar */}
-              <div className="space-y-4 pt-4 border-t border-slate-200">
-                <h3 className="text-lg font-semibold text-slate-900">Yasal Onaylar *</h3>
+              <div className="space-y-4 pt-4 border-t border-gray-200">
+                <h3 className="text-xl font-bold text-gray-900">Yasal Onaylar *</h3>
                 
                 {/* KVKK Onayı */}
                 <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
@@ -456,19 +490,19 @@ function RestaurantRegisterContent() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="premium-btn-primary w-full"
+                className="w-full h-12 bg-[#FF6F00] text-white rounded-xl font-semibold hover:bg-[#E55F00] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 disabled={loading}
               >
                 {loading ? "Kaydediliyor..." : "Restoran Kaydet"}
               </Button>
 
               {/* Login Link */}
-              <div className="text-center pt-4 border-t border-slate-200">
+              <div className="text-center pt-4 border-t border-gray-200">
                 <p className="text-sm text-gray-600 font-medium">
                   Zaten hesabınız var mı?{" "}
                   <Link
                     href="/admin/login"
-                    className="text-slate-900 font-medium hover:underline"
+                    className="text-[#FF6F00] hover:text-[#E55F00] font-semibold transition-colors"
                   >
                     Giriş Yap
                   </Link>
@@ -476,17 +510,6 @@ function RestaurantRegisterContent() {
               </div>
             </form>
           </div>
-        </div>
-
-        {/* Back to Home */}
-        <div className="mt-6 text-center">
-          <Link
-            href="/"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 font-semibold transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Ana Sayfaya Dön
-          </Link>
         </div>
       </div>
     </div>
