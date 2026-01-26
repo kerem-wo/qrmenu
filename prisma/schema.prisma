@@ -43,6 +43,7 @@ model Restaurant {
   categories  Category[]
   orders      Order[]
   campaigns   Campaign[]
+  tableRequests TableRequest[]
   admin       Admin?
   translations RestaurantTranslation[]
 }
@@ -182,6 +183,17 @@ model ProductVariant {
   orderItemVariants OrderItemVariant[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model TableRequest {
+  id           String   @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  type         String   // "waiter" (garson çağır) veya "bill" (hesap iste)
+  tableNumber  String?  // Masa numarası (varsa)
+  isRead       Boolean  @default(false) // Okundu mu?
+  createdAt    DateTime @default(now())
+  readAt       DateTime? // Okunma tarihi
 }
 
 model Order {

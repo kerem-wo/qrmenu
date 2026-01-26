@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Globe, Leaf, Minus, Plus, Search, X } from "lucide-react";
+import { Globe, Leaf, Minus, Plus, Search, X, Bell, Receipt } from "lucide-react";
 import toast from "react-hot-toast";
 
 type ApiCampaign = {
@@ -731,9 +731,69 @@ export function BoltMenuForSlugClient() {
   const [discountTry, setDiscountTry] = useState(0);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [isRequestingWaiter, setIsRequestingWaiter] = useState(false);
+  const [isRequestingBill, setIsRequestingBill] = useState(false);
 
   const S = STRINGS[lang];
   const enableTakeaway = restaurant?.enableTakeaway ?? true;
+
+  const handleRequestWaiter = async () => {
+    if (!restaurant?.id) {
+      toast.error("Restoran bilgisi bulunamadı");
+      return;
+    }
+    setIsRequestingWaiter(true);
+    try {
+      const res = await fetch("/api/table-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: restaurant.id,
+          type: "waiter",
+          tableNumber: orderForm.tableNumber || null,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Garson çağrıldı!");
+      } else {
+        toast.error("Garson çağrılırken bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error requesting waiter:", error);
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsRequestingWaiter(false);
+    }
+  };
+
+  const handleRequestBill = async () => {
+    if (!restaurant?.id) {
+      toast.error("Restoran bilgisi bulunamadı");
+      return;
+    }
+    setIsRequestingBill(true);
+    try {
+      const res = await fetch("/api/table-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          restaurantId: restaurant.id,
+          type: "bill",
+          tableNumber: orderForm.tableNumber || null,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Hesap istendi!");
+      } else {
+        toast.error("Hesap istenirken bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error requesting bill:", error);
+      toast.error("Bir hata oluştu");
+    } finally {
+      setIsRequestingBill(false);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -1993,6 +2053,36 @@ export function BoltMenuForSlugClient() {
       <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4">
         {/* Render theme-specific layouts */}
         {renderThemeLayout()}
+      </div>
+
+      {/* Floating action buttons - Garson Çağır & Hesap İste */}
+      <div className="fixed right-4 top-20 z-40 flex flex-col gap-3">
+        <button
+          onClick={handleRequestWaiter}
+          disabled={isRequestingWaiter}
+          className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
+            theme === "premium-plus" || theme === "ultra-plus"
+              ? "bg-amber-500 hover:bg-amber-600"
+              : "bg-blue-500 hover:bg-blue-600"
+          }`}
+          title="Garson Çağır"
+        >
+          <Bell className="w-5 h-5" />
+          <span className="text-sm font-bold hidden sm:inline">Garson Çağır</span>
+        </button>
+        <button
+          onClick={handleRequestBill}
+          disabled={isRequestingBill}
+          className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
+            theme === "premium-plus" || theme === "ultra-plus"
+              ? "bg-amber-500 hover:bg-amber-600"
+              : "bg-green-500 hover:bg-green-600"
+          }`}
+          title="Hesap İste"
+        >
+          <Receipt className="w-5 h-5" />
+          <span className="text-sm font-bold hidden sm:inline">Hesap İste</span>
+        </button>
       </div>
 
       {/* Floating mini cart bar */}

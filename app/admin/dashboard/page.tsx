@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Package, ShoppingCart, Users, Settings, ExternalLink, Copy, QrCode, TrendingUp } from "lucide-react";
+import { Plus, Package, ShoppingCart, Users, Settings, ExternalLink, Copy, QrCode, TrendingUp, Bell, Receipt, X } from "lucide-react";
 import { checkAuth, clearSessionFromStorage } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 
@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     orders: 0,
     categories: 0,
   });
+  const [tableRequests, setTableRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -59,6 +60,13 @@ export default function AdminDashboard() {
         const orders = await ordersRes.json();
         setStats((prev) => ({ ...prev, orders: orders.length }));
       }
+
+      // Load table requests
+      const requestsRes = await fetch("/api/table-requests");
+      if (requestsRes.ok) {
+        const requests = await requestsRes.json();
+        setTableRequests(requests);
+      }
     } catch (error) {
       console.error("Error loading dashboard:", error);
       toast.error("Veriler yüklenirken bir hata oluştu");
@@ -66,6 +74,51 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
+  const markRequestAsRead = async (requestId: string) => {
+    try {
+      const res = await fetch(`/api/table-requests/${requestId}`, {
+        method: "PATCH",
+      });
+      if (res.ok) {
+        setTableRequests((prev) => prev.filter((r) => r.id !== requestId));
+        toast.success("İstek okundu olarak işaretlendi");
+      }
+    } catch (error) {
+      console.error("Error marking request as read:", error);
+      toast.error("Bir hata oluştu");
+    }
+  };
+
+  useEffect(() => {
+    // Poll for new table requests every 5 seconds
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/table-requests");
+        if (res.ok) {
+          const requests = await res.json();
+          const newRequests = requests.filter(
+            (r: any) => !tableRequests.find((tr) => tr.id === r.id)
+          );
+          if (newRequests.length > 0) {
+            setTableRequests((prev) => [...newRequests, ...prev]);
+            newRequests.forEach((req: any) => {
+              toast.success(
+                req.type === "waiter"
+                  ? "Yeni garson çağrısı!"
+                  : "Yeni hesap isteği!",
+                { duration: 5000 }
+              );
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error polling table requests:", error);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [tableRequests]);
 
   const handleLogout = async () => {
     try {
@@ -114,6 +167,48 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="premium-container py-10">
+        {/* Table Requests Alerts */}
+        {tableRequests.length > 0 && (
+          <div className="mb-6 space-y-3">
+            {tableRequests.map((request) => (
+              <div
+                key={request.id}
+                className="premium-card p-5 border-l-4 border-orange-500 bg-orange-50 animate-premium-fade-in"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-3 flex-1">
+                    {request.type === "waiter" ? (
+                      <Bell className="w-6 h-6 text-orange-600 mt-1" />
+                    ) : (
+                      <Receipt className="w-6 h-6 text-orange-600 mt-1" />
+                    )}
+                    <div className="flex-1">
+                      <h3 className="font-bold text-gray-900 mb-1">
+                        {request.type === "waiter" ? "Garson Çağrısı" : "Hesap İsteği"}
+                      </h3>
+                      {request.tableNumber && (
+                        <p className="text-sm text-gray-600 mb-2">
+                          Masa: {request.tableNumber}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500">
+                        {new Date(request.createdAt).toLocaleString("tr-TR")}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => markRequestAsRead(request.id)}
+                    className="ml-4 p-2 hover:bg-orange-100 rounded-full transition-colors"
+                    title="Okundu olarak işaretle"
+                  >
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Premium Stats Cards */}
         <div className="premium-grid premium-grid-3 mb-10">
           <div className="premium-card p-8 premium-hover-lift animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
