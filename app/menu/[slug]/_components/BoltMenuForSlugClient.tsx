@@ -737,7 +737,6 @@ export function BoltMenuForSlugClient() {
   const [requestType, setRequestType] = useState<"waiter" | "bill" | null>(null);
   const [requestTableNumber, setRequestTableNumber] = useState("");
   const [requestNote, setRequestNote] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const S = STRINGS[lang];
   const enableTakeaway = restaurant?.enableTakeaway ?? true;
@@ -1988,24 +1987,55 @@ export function BoltMenuForSlugClient() {
             ) : null}
           </div>
 
-          <div className="shrink-0">
-            <label className="sr-only" htmlFor="menu-language">
-              {S.language}
-            </label>
-            <div className="relative">
-              <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-              <select
-                id="menu-language"
-                value={lang}
-                onChange={(e) => setLang(e.target.value as Lang)}
-                className="h-10 rounded-full border border-gray-200 bg-white pl-9 pr-4 text-sm font-semibold text-gray-900 shadow-sm focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+          <div className="shrink-0 flex items-center gap-2">
+            {/* Mobile: Garson Çağır & Hesap İste Butonları */}
+            <div className="md:hidden flex items-center gap-2">
+              <button
+                onClick={() => openRequestModal("waiter")}
+                disabled={isRequestingWaiter}
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
+                  theme === "premium-plus" || theme === "ultra-plus"
+                    ? "bg-amber-500 hover:bg-amber-600"
+                    : "bg-blue-500 hover:bg-blue-600"
+                }`}
+                title="Garson Çağır"
               >
-                {LANG_OPTIONS.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
+                <Bell className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => openRequestModal("bill")}
+                disabled={isRequestingBill}
+                className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
+                  theme === "premium-plus" || theme === "ultra-plus"
+                    ? "bg-amber-500 hover:bg-amber-600"
+                    : "bg-green-500 hover:bg-green-600"
+                }`}
+                title="Hesap İste"
+              >
+                <Receipt className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Language Selector */}
+            <div>
+              <label className="sr-only" htmlFor="menu-language">
+                {S.language}
+              </label>
+              <div className="relative">
+                <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <select
+                  id="menu-language"
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value as Lang)}
+                  className="h-10 rounded-full border border-gray-200 bg-white pl-9 pr-4 text-sm font-semibold text-gray-900 shadow-sm focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                >
+                  {LANG_OPTIONS.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -2061,62 +2091,6 @@ export function BoltMenuForSlugClient() {
         {renderThemeLayout()}
       </div>
 
-      {/* Mobile Hamburger Menu Button */}
-      <div className="md:hidden fixed right-4 top-20 z-40">
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className={`flex items-center justify-center w-14 h-14 rounded-full text-white shadow-lg transition-all ${
-            theme === "premium-plus" || theme === "ultra-plus"
-              ? "bg-amber-500 hover:bg-amber-600"
-              : "bg-gray-800 hover:bg-gray-900"
-          }`}
-          title="Menü"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
-      </div>
-
-      {/* Mobile Menu Overlay & Dropdown */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileMenuOpen(false)}
-              className="md:hidden fixed inset-0 z-30 bg-black/20"
-            />
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="md:hidden fixed right-4 top-32 z-40 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden min-w-[200px]"
-            >
-              <button
-                onClick={() => {
-                  openRequestModal("waiter");
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
-              >
-                <Bell className="w-5 h-5 text-blue-500" />
-                <span className="text-sm font-bold text-gray-900">Garson Çağır</span>
-              </button>
-              <button
-                onClick={() => {
-                  openRequestModal("bill");
-                  setMobileMenuOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left border-t border-gray-100"
-              >
-                <Receipt className="w-5 h-5 text-green-500" />
-                <span className="text-sm font-bold text-gray-900">Hesap İste</span>
-              </button>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
       {/* Desktop Floating action buttons - Garson Çağır & Hesap İste */}
       <div className="hidden md:flex fixed right-4 top-20 z-40 flex-col gap-3">
