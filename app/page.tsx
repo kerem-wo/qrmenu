@@ -5,12 +5,12 @@ import Image from "next/image";
 import { QrCode, Smartphone, Zap, Globe, ArrowRight, Check, Menu, Phone, Cloud, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 
+// Tüm menü temaları
+const themes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
+
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [currentTheme, setCurrentTheme] = useState(0);
-
-  // Tüm menü temaları
-  const themes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,7 +27,7 @@ export default function Home() {
     }, 5000); // 5 saniye
 
     return () => clearInterval(interval);
-  }, [themes.length]);
+  }, []);
 
   // Gerçek restoran logoları (placeholder yerine gerçek logo URL'leri)
   const restaurantLogos = [
