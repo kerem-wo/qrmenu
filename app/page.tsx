@@ -1,23 +1,23 @@
 import Link from "next/link";
-import { QrCode, Smartphone, Clock, TrendingUp, Sparkles, Zap, Shield, ArrowRight } from "lucide-react";
+import Image from "next/image";
+import { QrCode, Smartphone, Clock, TrendingUp, Sparkles, Zap, Shield, ArrowRight, Star, CheckCircle, MessageSquare } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      {/* Premium Header */}
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex items-center justify-between py-5">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg premium-shadow-md">
-                  <QrCode className="w-7 h-7 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-premium-glow"></div>
-              </div>
-              <div>
-                <span className="text-2xl font-black text-gray-900 tracking-tight">Rivo QR</span>
-              </div>
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo.png"
+                alt="Rivo QR"
+                width={40}
+                height={40}
+                className="h-10 w-auto"
+              />
+              <span className="text-xl font-black text-gray-900">Rivo QR</span>
             </div>
             <div className="flex items-center gap-6">
               <Link
@@ -28,7 +28,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/admin/login"
-                className="premium-btn-secondary text-sm px-6 py-2.5"
+                className="bg-[#FF6F00] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#E55F00] transition-colors text-sm"
               >
                 Giriş Yap
               </Link>
@@ -37,65 +37,186 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Premium Hero Section */}
-      <section className="premium-section relative">
-        <div className="premium-container">
-          <div className="max-w-5xl mx-auto text-center animate-premium-fade-in">
-            {/* Premium Badge */}
-            <div className="inline-flex items-center gap-2 premium-badge mb-8 animate-premium-scale-in">
-              <Sparkles className="w-4 h-4" />
-              <span>2026 Premium Paket</span>
-            </div>
-            
-            {/* Main Heading */}
-            <h1 className="premium-heading-1 mb-8 animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
-              Dijital Menü Çözümü
+      {/* Hero Section */}
+      <section className="relative py-20 md:py-32 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
+              Restoranlarda Yeni Dönem:
               <br />
-              <span className="premium-text-gradient">Geleceğin Teknolojisi</span>
+              <span className="text-[#FF6F00]">QR ile Hızlı ve Kolay</span>
             </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed font-medium animate-premium-fade-in" style={{ animationDelay: '0.2s' }}>
-              Restoranınız için <span className="font-bold text-gray-900">modern, hızlı ve kullanıcı dostu</span> QR kod menü sistemi. 
-              Müşterileriniz telefonlarıyla menünüze <span className="font-bold text-green-600">anında erişsin</span>.
+            <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-3xl mx-auto leading-relaxed font-medium">
+              T.C. Ticaret Bakanlığı Yönetmeliği'ne uygun, modern ve kolay kullanımlı QR Menü programı ile menülerinizi hızla dijitale taşıyın!
             </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-premium-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href="/restaurant/register"
-                className="premium-btn-primary inline-flex items-center gap-2 group"
+                className="bg-[#FF6F00] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#E55F00] transition-colors inline-flex items-center gap-2 shadow-lg"
               >
-                Ücretsiz Başla
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                Hemen Başla
+                <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
-                href="/admin/login"
-                className="premium-btn-secondary inline-flex items-center"
+                href="/menu-packages"
+                className="bg-white text-[#FF6F00] border-2 border-[#FF6F00] px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#FF6F00] hover:text-white transition-colors inline-flex items-center gap-2"
               >
-                Giriş Yap
+                Neden Gerekli?
               </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Products Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+              Dijital çözümlerle işinizi kolaylaştıracak
+              <br />
+              <span className="text-[#FF6F00]">yenilikçi yazılımlar!</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Hızlı erişim, müşteri memnuniyeti ve profesyonellik için modern araçlarımızı keşfedin.
+              <br />
+              İşte sizin için sunduklarımız:
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* QR Menü Yazılımı */}
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-[#FF6F00] hover:shadow-xl transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <QrCode className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 mb-4">QR Menü Yazılımı</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Modern restoranlar ve kafeler için dijital menü çözümü! QR kod ile menünüzü hızlı ve kolay bir şekilde müşterilerinize sunun. Basılı menülere olan ihtiyacı ortadan kaldırarak hem maliyetlerinizi azaltın hem de güncellemeleri anında yapma özgürlüğü kazanın.
+              </p>
               <Link
-                href="/menu/demo-restoran"
-                className="premium-btn-secondary inline-flex items-center gap-2 group"
+                href="/menu-packages"
+                className="text-[#FF6F00] font-bold inline-flex items-center gap-2 hover:gap-3 transition-all"
               >
-                Demo Menü
-                <Zap className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                İncele
+                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
 
-            {/* Trust Indicators */}
-            <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-sm text-gray-500 animate-premium-fade-in" style={{ animationDelay: '0.4s' }}>
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-green-600" />
-                <span className="font-semibold">Güvenli</span>
+            {/* QR Menu & Yorum Tasarımları */}
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 hover:border-[#FF6F00] hover:shadow-xl transition-all group">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <MessageSquare className="w-8 h-8 text-white" />
               </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-blue-600" />
-                <span className="font-semibold">Hızlı Kurulum</span>
+              <h3 className="text-2xl font-black text-gray-900 mb-4">QR Menu & Yorum Tasarımları</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                Müşterilerinizin deneyimlerini kolayca paylaşmasını sağlayın! QR kod ile doğrudan yorum sayfasına yönlendirme yaparak işletmeniz hakkında geri bildirim almayı hızlandırın. Bu çözümle müşteri memnuniyetini artırabilir ve dijital itibarınızı güçlendirebilirsiniz.
+              </p>
+              <Link
+                href="/menu-packages"
+                className="text-[#FF6F00] font-bold inline-flex items-center gap-2 hover:gap-3 transition-all"
+              >
+                İncele
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+              Mutlu Kullanıcılar
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Yenilikçi yazılımlarımızla kullanıcılarımızın işlerini
+              <br />
+              nasıl kolaylaştırdığını görmek için gerçek yorumlara göz atın.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Testimonial 1 */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-[#FF6F00] text-[#FF6F00]" />
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
-                <span className="font-semibold">Premium Tasarım</span>
+              <p className="text-gray-700 mb-6 leading-relaxed italic">
+                "QR Menü yazılımı restoranımıza çok yakıştı. Menüdeki değişiklikleri anında yapabiliyoruz ve müşterilerimiz de menüye hızlıca erişebiliyor. Hem zamandan hem de maliyetten tasarruf ettik."
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-full flex items-center justify-center text-white font-bold">
+                  SS
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900">Soner S.</p>
+                  <p className="text-sm text-gray-600">Yiyin & İçin Espiye</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-5 h-5 fill-[#FF6F00] text-[#FF6F00]" />
+                ))}
+              </div>
+              <p className="text-gray-700 mb-6 leading-relaxed italic">
+                "Google yorum sayımızı arttırmak için talep ettik. Müşterilerimiz masa üzerinde ki pleksilerden qr okutuarak direkt Google işletme hesabımıza yorum bırakabiliyorlar. Biz çok sevdik."
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-full flex items-center justify-center text-white font-bold">
+                  SB
+                </div>
+                <div>
+                  <p className="font-bold text-gray-900">Saime B.</p>
+                  <p className="text-sm text-gray-600">Denizim Beach Club</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+            {/* 99+ Mutlu Müşteri */}
+            <div className="text-center">
+              <div className="text-6xl font-black text-[#FF6F00] mb-4">99+</div>
+              <h3 className="text-2xl font-black text-gray-900 mb-6">Mutlu Müşteri</h3>
+              <div className="space-y-3 text-left max-w-sm mx-auto">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-[#FF6F00] mt-0.5 flex-shrink-0" />
+                  <p className="text-gray-600">Gizli maliyet yok, sürpriz yok.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-[#FF6F00] mt-0.5 flex-shrink-0" />
+                  <p className="text-gray-600">Güvenli ödeme.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* 100% Müşteri Memnuniyeti */}
+            <div className="text-center">
+              <div className="text-6xl font-black text-[#FF6F00] mb-4">100%</div>
+              <h3 className="text-2xl font-black text-gray-900 mb-6">Müşteri Memnuniyeti</h3>
+              <div className="space-y-3 text-left max-w-sm mx-auto">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-[#FF6F00] mt-0.5 flex-shrink-0" />
+                  <p className="text-gray-600">Anında İade.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-[#FF6F00] mt-0.5 flex-shrink-0" />
+                  <p className="text-gray-600">1 yıl ücretsiz destek.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -103,19 +224,19 @@ export default function Home() {
       </section>
 
       {/* Menu Packages Section */}
-      <section className="premium-section relative">
-        <div className="premium-container">
-          <div className="text-center mb-12 animate-premium-fade-in">
-            <h2 className="premium-heading-2 mb-6">Menü Paketleri</h2>
-            <p className="text-xl text-gray-600 font-medium mb-8">
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Menü Paketleri</h2>
+            <p className="text-xl text-gray-600 font-medium mb-8 max-w-3xl mx-auto">
               T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 8 farklı Rivo QR tasarımı
             </p>
             <Link
               href="/menu-packages"
-              className="premium-btn-primary inline-flex items-center gap-2 group"
+              className="bg-[#FF6F00] text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-[#E55F00] transition-colors inline-flex items-center gap-2 shadow-lg"
             >
               Tüm Paketleri İncele
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
 
@@ -154,12 +275,11 @@ export default function Home() {
               <Link
                 key={pkg.theme}
                 href={`/restaurant/register?theme=${pkg.theme}`}
-                className="premium-card p-6 premium-hover-lift group relative overflow-hidden animate-premium-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                className="bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-[#FF6F00] hover:shadow-xl transition-all group relative overflow-hidden"
               >
                 {pkg.popular && (
                   <div className="absolute top-3 right-3 z-10">
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-green-500 to-blue-600 text-white text-xs font-bold rounded-full">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-[#FF6F00] text-white text-xs font-bold rounded-full">
                       <Sparkles className="w-3 h-3" />
                       Popüler
                     </span>
@@ -174,7 +294,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-black text-gray-900 mb-2">{pkg.name}</h3>
                 <p className="text-sm text-gray-600 mb-4">{pkg.description}</p>
-                <div className="text-sm font-semibold text-green-600 group-hover:text-green-700 transition-colors">
+                <div className="text-sm font-semibold text-[#FF6F00] group-hover:text-[#E55F00] transition-colors">
                   Seç →
                 </div>
               </Link>
@@ -183,50 +303,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Premium Features Section */}
-      <section className="premium-section relative">
-        <div className="premium-container">
-          <div className="text-center mb-20 animate-premium-fade-in">
-            <h2 className="premium-heading-2 mb-6">Neden Rivo QR?</h2>
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">Neden Rivo QR?</h2>
             <p className="text-xl text-gray-600 font-medium">Modern restoranların tercihi</p>
           </div>
 
-          <div className="premium-grid premium-grid-3">
-            <div className="premium-card p-10 text-center premium-hover-lift group animate-premium-fade-in" style={{ animationDelay: '0.1s' }}>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-10 text-center hover:border-[#FF6F00] hover:shadow-xl transition-all group">
               <div className="relative inline-flex items-center justify-center mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-blue-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <div className="absolute inset-0 bg-[#FF6F00]/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative w-20 h-20 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-3xl flex items-center justify-center shadow-xl">
                   <Smartphone className="w-10 h-10 text-white" />
                 </div>
               </div>
-              <h3 className="premium-heading-3 mb-4">Mobil Uyumlu</h3>
+              <h3 className="text-2xl font-black text-gray-900 mb-4">Mobil Uyumlu</h3>
               <p className="text-gray-600 leading-relaxed">
                 Tüm cihazlarda mükemmel görünüm. Müşterileriniz telefonlarıyla kolayca sipariş verebilir.
               </p>
             </div>
 
-            <div className="premium-card p-10 text-center premium-hover-lift group animate-premium-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-10 text-center hover:border-[#FF6F00] hover:shadow-xl transition-all group">
               <div className="relative inline-flex items-center justify-center mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-400 to-purple-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <div className="absolute inset-0 bg-[#FF6F00]/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative w-20 h-20 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-3xl flex items-center justify-center shadow-xl">
                   <Clock className="w-10 h-10 text-white" />
                 </div>
               </div>
-              <h3 className="premium-heading-3 mb-4">Hızlı Kurulum</h3>
+              <h3 className="text-2xl font-black text-gray-900 mb-4">Hızlı Kurulum</h3>
               <p className="text-gray-600 leading-relaxed">
                 Dakikalar içinde menünüzü oluşturun ve QR kodunuzu alın. 
                 Teknik bilgi gerektirmez.
               </p>
             </div>
 
-            <div className="premium-card p-10 text-center premium-hover-lift group animate-premium-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-10 text-center hover:border-[#FF6F00] hover:shadow-xl transition-all group">
               <div className="relative inline-flex items-center justify-center mb-8">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-green-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                <div className="relative w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-3xl flex items-center justify-center shadow-xl">
+                <div className="absolute inset-0 bg-[#FF6F00]/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                <div className="relative w-20 h-20 bg-gradient-to-br from-[#FF6F00] to-[#E55F00] rounded-3xl flex items-center justify-center shadow-xl">
                   <TrendingUp className="w-10 h-10 text-white" />
                 </div>
               </div>
-              <h3 className="premium-heading-3 mb-4">Kolay Yönetim</h3>
+              <h3 className="text-2xl font-black text-gray-900 mb-4">Kolay Yönetim</h3>
               <p className="text-gray-600 leading-relaxed">
                 Ürünlerinizi kolayca ekleyin, düzenleyin veya kaldırın. 
                 Anlık güncellemeler müşterilerinize anında yansır.
@@ -236,41 +356,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Premium CTA Section */}
-      <section className="premium-section relative">
-        <div className="premium-container">
-          <div className="max-w-4xl mx-auto">
-            <div className="premium-card p-12 md:p-16 text-center relative overflow-hidden">
-              {/* Background Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"></div>
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent)]"></div>
-              
-              <div className="relative z-10 animate-premium-fade-in">
-                <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Hemen Başlayın</h2>
-                <p className="text-xl text-gray-300 mb-10 font-medium max-w-2xl mx-auto">
-                  Restoranınız için dijital menü oluşturun ve müşterilerinize <span className="text-green-400 font-bold">modern bir deneyim</span> sunun.
-                </p>
-                <Link
-                  href="/restaurant/register"
-                  className="premium-btn-primary inline-flex items-center gap-3 group text-lg px-10 py-5"
-                >
-                  Ücretsiz Başla
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                </Link>
-              </div>
-            </div>
-          </div>
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,111,0,0.1),transparent)]"></div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Hemen Başlayın</h2>
+          <p className="text-xl text-gray-300 mb-10 font-medium max-w-2xl mx-auto">
+            Restoranınız için dijital menü oluşturun ve müşterilerinize <span className="text-[#FF6F00] font-bold">modern bir deneyim</span> sunun.
+          </p>
+          <Link
+            href="/restaurant/register"
+            className="bg-[#FF6F00] text-white px-10 py-5 rounded-lg font-bold text-lg hover:bg-[#E55F00] transition-colors inline-flex items-center gap-3 shadow-lg"
+          >
+            Ücretsiz Başla
+            <ArrowRight className="w-6 h-6" />
+          </Link>
         </div>
       </section>
 
-      {/* Premium Footer */}
-      <footer className="border-t border-gray-200 py-12 premium-glass">
-        <div className="premium-container">
+      {/* Footer */}
+      <footer className="border-t border-gray-200 py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
-                <QrCode className="w-5 h-5 text-white" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Rivo QR"
+                width={32}
+                height={32}
+                className="h-8 w-auto"
+              />
               <span className="text-lg font-black text-gray-900">Rivo QR</span>
             </div>
             <p className="text-gray-600 font-medium">
@@ -282,7 +397,7 @@ export default function Home() {
                 href="https://softwareoffuture.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-700 underline font-semibold"
+                className="text-[#FF6F00] hover:text-[#E55F00] underline font-semibold"
               >
                 Software Of Future
               </a>

@@ -9,9 +9,12 @@ export const metadata: Metadata = {
   title: "Rivo QR - Restoran Menü Sistemi",
   description: "Modern QR kod menü sistemi ile restoranınızı dijitalleştirin",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: [
+      { url: "/logo.png", sizes: "any" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/logo.png",
   },
 };
 

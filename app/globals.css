@@ -46,7 +46,7 @@
   .bg-pattern {
     background-image: 
       radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
+      radial-gradient(at 100% 100%, rgba(255, 111, 0, 0.05) 0px, transparent 50%);
   }
 
   /* Smooth Animations */
@@ -818,8 +818,8 @@
     --premium-accent: #3b82f6;
     --premium-accent-dark: #2563eb;
     
-    --premium-gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --premium-gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --premium-gradient-1: linear-gradient(135deg, #FF6F00 0%, #E55F00 100%);
+    --premium-gradient-2: linear-gradient(135deg, #FF6F00 0%, #FF8F33 100%);
     --premium-gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     --premium-gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     --premium-gradient-dark: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -842,7 +842,7 @@
     background: 
       radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 40% 20%, rgba(139, 92, 246, 0.02) 0%, transparent 50%);
+      radial-gradient(circle at 40% 20%, rgba(255, 111, 0, 0.02) 0%, transparent 50%);
     pointer-events: none;
   }
 
