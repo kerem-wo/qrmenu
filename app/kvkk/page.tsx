@@ -17,7 +17,7 @@ export default function KVKKPage() {
                 kişisel verilerinizin işlenmesi hakkında sizleri bilgilendirmek amacıyla hazırlanmıştır.
               </p>
               <p>
-                Veri Sorumlusu: QR Menü Platformu
+                Veri Sorumlusu: Rivo QR Platformu
               </p>
             </section>
 

@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
                 1. Gizlilik Politikası Hakkında
               </h2>
               <p>
-                Bu Gizlilik Politikası, QR Menü Platformu ("Platform", "Biz", "Bizim") tarafından 
+                Bu Gizlilik Politikası, Rivo QR Platformu ("Platform", "Biz", "Bizim") tarafından 
                 sunulan hizmetler kapsamında toplanan, kullanılan ve korunan kişisel bilgileriniz 
                 hakkında sizleri bilgilendirmek amacıyla hazırlanmıştır.
               </p>

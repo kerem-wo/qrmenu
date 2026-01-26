@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "QR Menü - Restoran Menü Sistemi",
+  title: "Rivo QR - Restoran Menü Sistemi",
   description: "Modern QR kod menü sistemi ile restoranınızı dijitalleştirin",
   icons: {
     icon: "/icon.svg",

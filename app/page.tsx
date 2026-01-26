@@ -16,8 +16,7 @@ export default function Home() {
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-premium-glow"></div>
               </div>
               <div>
-                <span className="text-2xl font-black text-gray-900 tracking-tight">QR Menü</span>
-                <p className="text-xs text-gray-500 font-medium">Premium</p>
+                <span className="text-2xl font-black text-gray-900 tracking-tight">Rivo QR</span>
               </div>
             </div>
             <div className="flex items-center gap-6">
@@ -109,7 +108,7 @@ export default function Home() {
           <div className="text-center mb-12 animate-premium-fade-in">
             <h2 className="premium-heading-2 mb-6">Menü Paketleri</h2>
             <p className="text-xl text-gray-600 font-medium mb-8">
-              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 8 farklı QR Menü tasarımı
+              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 8 farklı Rivo QR tasarımı
             </p>
             <Link
               href="/menu-packages"
@@ -188,7 +187,7 @@ export default function Home() {
       <section className="premium-section relative">
         <div className="premium-container">
           <div className="text-center mb-20 animate-premium-fade-in">
-            <h2 className="premium-heading-2 mb-6">Neden QR Menü?</h2>
+            <h2 className="premium-heading-2 mb-6">Neden Rivo QR?</h2>
             <p className="text-xl text-gray-600 font-medium">Modern restoranların tercihi</p>
           </div>
 
@@ -272,9 +271,22 @@ export default function Home() {
               <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-blue-600 rounded-xl flex items-center justify-center">
                 <QrCode className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-black text-gray-900">QR Menü Premium</span>
+              <span className="text-lg font-black text-gray-900">Rivo QR</span>
             </div>
-            <p className="text-gray-600 font-medium">© 2026 QR Menü Sistemi. Tüm hakları saklıdır.</p>
+            <p className="text-gray-600 font-medium">
+              © 2026 Rivo QR. Tüm hakları saklıdır.
+            </p>
+            <p className="text-gray-600 font-medium mt-2">
+              Developed By{" "}
+              <a
+                href="https://softwareoffuture.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700 underline font-semibold"
+              >
+                Software Of Future
+              </a>
+            </p>
           </div>
         </div>
       </footer>
