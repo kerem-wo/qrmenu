@@ -4,6 +4,7 @@ import { setAdminSession } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 import { rateLimit, getClientIP, logSecurityEvent, sanitizeInput } from "@/lib/security";
 import { NextRequest } from "next/server";
@@ -113,13 +114,14 @@ export async function POST(request: NextRequest) {
     // Set session cookie on response
     try {
       await setAdminSession(session, response);
-      console.log(`Admin session cookie set - NODE_ENV: ${process.env.NODE_ENV}, URL: ${request.url}`);
+      console.log(`Admin session cookie set - NODE_ENV: ${process.env.NODE_ENV}, VERCEL: ${process.env.VERCEL}, URL: ${request.url}`);
     } catch (sessionError: any) {
       console.error("Session cookie error:", sessionError?.message || sessionError);
+      console.error("Session error stack:", sessionError?.stack);
       // In production, cookie setting failure is critical
-      if (process.env.NODE_ENV === "production") {
+      if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
         return NextResponse.json(
-          { error: "Session oluşturulamadı. Lütfen tekrar deneyin." },
+          { error: "Session oluşturulamadı. Lütfen tekrar deneyin.", details: process.env.NODE_ENV === "development" ? sessionError?.message : undefined },
           { status: 500 }
         );
       }
