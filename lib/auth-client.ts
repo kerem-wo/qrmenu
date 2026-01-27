@@ -30,7 +30,9 @@ export function clearSessionFromStorage() {
 
 export async function checkAuth(): Promise<AdminSession | null> {
   try {
-    const res = await fetch("/api/admin/me");
+    const res = await fetch("/api/admin/me", {
+      credentials: 'include',
+    });
     if (res.ok) {
       const session = await res.json();
       setSessionInStorage(session);

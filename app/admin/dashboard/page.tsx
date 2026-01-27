@@ -33,7 +33,9 @@ export default function AdminDashboard() {
       }
 
       // Load restaurant info
-      const restaurantRes = await fetch("/api/admin/restaurant");
+      const restaurantRes = await fetch("/api/admin/restaurant", {
+        credentials: 'include',
+      });
       if (restaurantRes.ok) {
         const restaurantData = await restaurantRes.json();
         setRestaurant(restaurantData);
@@ -41,9 +43,9 @@ export default function AdminDashboard() {
 
       // Load stats
       const [productsRes, categoriesRes, ordersRes] = await Promise.all([
-        fetch("/api/admin/products"),
-        fetch("/api/admin/categories"),
-        fetch("/api/admin/orders"),
+        fetch("/api/admin/products", { credentials: 'include' }),
+        fetch("/api/admin/categories", { credentials: 'include' }),
+        fetch("/api/admin/orders", { credentials: 'include' }),
       ]);
 
       if (productsRes.ok) {
@@ -62,7 +64,9 @@ export default function AdminDashboard() {
       }
 
       // Load table requests
-      const requestsRes = await fetch("/api/table-requests");
+      const requestsRes = await fetch("/api/table-requests", {
+        credentials: 'include',
+      });
       if (requestsRes.ok) {
         const requests = await requestsRes.json();
         setTableRequests(requests);
@@ -122,7 +126,10 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/admin/logout", { method: "POST" });
+      await fetch("/api/admin/logout", { 
+        method: "POST",
+        credentials: 'include',
+      });
       clearSessionFromStorage();
       router.push("/admin/login");
     } catch (error) {

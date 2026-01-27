@@ -103,13 +103,22 @@ export async function POST(request: NextRequest) {
       restaurantId: admin.restaurantId,
     };
 
-    // Try to set session cookie, but don't fail if it doesn't work
-    // Client-side localStorage will handle it
+    // Set session cookie
     try {
       await setAdminSession(session);
+      if (process.env.NODE_ENV === "production") {
+        console.log("Admin session cookie set successfully");
+      }
     } catch (sessionError: any) {
-      console.error("Session cookie error (non-fatal):", sessionError?.message || sessionError);
-      // Continue anyway - client will use localStorage
+      console.error("Session cookie error:", sessionError?.message || sessionError);
+      // In production, cookie setting failure is critical
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          { error: "Session oluşturulamadı. Lütfen tekrar deneyin." },
+          { status: 500 }
+        );
+      }
+      // In development, continue anyway - client will use localStorage
     }
 
     // Log successful login
