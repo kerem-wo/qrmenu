@@ -1,20 +1,23 @@
 import crypto from 'crypto';
 
 // Encryption key - MUST be set in environment variables
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
+// Check at runtime, not at module load time (for build compatibility)
+function getEncryptionKey(): string {
+  const key = process.env.ENCRYPTION_KEY;
+  if (!key) {
+    throw new Error('ENCRYPTION_KEY environment variable is required for file encryption');
+  }
+  if (key.length < 32) {
+    throw new Error('ENCRYPTION_KEY must be at least 32 characters long for AES-256 encryption');
+  }
+  return key;
+}
+
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // 16 bytes for AES
 const SALT_LENGTH = 64; // 64 bytes for salt
 const TAG_LENGTH = 16; // 16 bytes for GCM tag
 const KEY_LENGTH = 32; // 32 bytes for AES-256
-
-if (!ENCRYPTION_KEY) {
-  throw new Error('ENCRYPTION_KEY environment variable is required for file encryption');
-}
-
-if (ENCRYPTION_KEY.length < 32) {
-  throw new Error('ENCRYPTION_KEY must be at least 32 characters long for AES-256 encryption');
-}
 
 // Derive encryption key from environment variable
 function deriveKey(password: string, salt: Buffer): Buffer {
@@ -34,7 +37,8 @@ export function encryptData(data: string | Buffer): string {
     const iv = crypto.randomBytes(IV_LENGTH);
     
     // Derive key from password and salt
-    const key = deriveKey(ENCRYPTION_KEY!, salt);
+    const encryptionKey = getKey();
+    const key = deriveKey(encryptionKey, salt);
     
     // Create cipher
     const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
@@ -77,7 +81,8 @@ export function decryptData(encryptedData: string): Buffer {
     const encrypted = combined.slice(offset);
     
     // Derive key
-    const key = deriveKey(ENCRYPTION_KEY!, salt);
+    const encryptionKey = getKey();
+    const key = deriveKey(encryptionKey, salt);
     
     // Create decipher
     const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
