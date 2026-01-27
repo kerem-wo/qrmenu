@@ -73,6 +73,31 @@ export default function ProductsPage() {
     }
   }, []);
 
+  const handleToggleAvailability = useCallback(async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          isAvailable: !currentStatus,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`Ürün ${!currentStatus ? "aktif" : "pasif"} edildi`);
+        setProducts((prevProducts) =>
+          prevProducts.map((p) => (p.id === id ? { ...p, isAvailable: !currentStatus } : p))
+        );
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Ürün durumu güncellenirken bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error toggling product availability:", error);
+      toast.error("Bir hata oluştu");
+    }
+  }, []);
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>;
   }
