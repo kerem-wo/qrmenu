@@ -11,6 +11,7 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:migrate": "prisma migrate deploy",
+    "restore-admin": "tsx scripts/restore-admin.ts",
     "generate-secret": "node generate-secret.js",
     "setup-env": "node setup-env.js"
   },
