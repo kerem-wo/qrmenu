@@ -61,7 +61,7 @@ export function getPayTRConfig(): PayTRConfig {
     merchantId,
     merchantKey,
     merchantSalt,
-    testMode: false, // Test modu kaldırıldı, her zaman production modu
+    testMode: process.env.NODE_ENV === "development", // Localhost'ta test modu aktif, production'da kapalı
   };
 }
 
