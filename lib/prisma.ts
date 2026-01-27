@@ -1,3 +1,4 @@
+import 'server-only'
 import { PrismaClient } from '@prisma/client'
 
 const globalForPrisma = globalThis as unknown as {
@@ -16,7 +17,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient(prismaClientOpt
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // Gracefully disconnect on process termination (serverless-friendly)
-if (typeof process !== 'undefined') {
+if (typeof process !== 'undefined' && typeof process.on === 'function') {
   const disconnect = async () => {
     try {
       await prisma.$disconnect()
@@ -24,9 +25,9 @@ if (typeof process !== 'undefined') {
       console.error('Error disconnecting Prisma:', error)
     }
   }
-  
+
   // Handle different termination signals
-  process.once('beforeExit', disconnect)
-  process.once('SIGINT', disconnect)
-  process.once('SIGTERM', disconnect)
+  process.on('beforeExit', disconnect)
+  process.on('SIGINT', disconnect)
+  process.on('SIGTERM', disconnect)
 }
