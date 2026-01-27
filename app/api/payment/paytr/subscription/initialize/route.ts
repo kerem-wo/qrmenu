@@ -107,6 +107,34 @@ export async function POST(request: Request) {
       },
     });
 
+    // MOCK MODE: API bilgileri yoksa mock token döndür
+    if (!config) {
+      const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // Payment kaydını mock token ile güncelle
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { 
+          paytrToken: mockToken,
+          metadata: {
+            ...(payment.metadata as object || {}),
+            mockMode: true,
+            themeName: theme.name,
+            themeDisplayName: theme.displayName,
+            packageType: packageType,
+          },
+        },
+      });
+
+      return NextResponse.json({
+        paymentId: payment.id,
+        token: mockToken,
+        iframeUrl: "mock", // Frontend'de mock iframe gösterecek
+        mockMode: true,
+        message: "Mock mode aktif - PayTR API bilgileri yapılandırılmamış",
+      });
+    }
+
     try {
       // PayTR token al
       const tokenResult = await getPayTRToken({

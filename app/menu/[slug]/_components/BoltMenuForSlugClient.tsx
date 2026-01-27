@@ -705,11 +705,32 @@ export function BoltMenuForSlugClient() {
   const router = useRouter();
 
   const [lang, setLang] = useState<Lang>("tr");
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const orderNumber = searchParams.get("orderNumber");
 
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
   
   // Get theme from URL param (for preview) - URL param has priority, then restaurant data
   const theme = searchParams.get("theme") || restaurant?.theme || "default";
+  
+  // Check for payment success
+  useEffect(() => {
+    if (searchParams.get("payment") === "success") {
+      setShowPaymentSuccess(true);
+      // Remove payment parameter from URL
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("payment");
+      if (orderNumber) {
+        newUrl.searchParams.delete("orderNumber");
+      }
+      window.history.replaceState({}, "", newUrl.toString());
+      
+      // Hide message after 5 seconds
+      setTimeout(() => {
+        setShowPaymentSuccess(false);
+      }, 5000);
+    }
+  }, [searchParams, orderNumber]);
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1951,6 +1972,22 @@ export function BoltMenuForSlugClient() {
   };
 
   return (
+    <>
+      {showPaymentSuccess && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 shadow-lg">
+            <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+              <p className="text-green-800 font-semibold">Ödeme Başarılı!</p>
+              <p className="text-green-700 text-sm">
+                {orderNumber ? `Sipariş #${orderNumber} ödendi.` : "Ödemeniz başarıyla tamamlandı."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     <div className={getThemeClasses()} style={
       theme === "paper" 
         ? { 
@@ -2373,6 +2410,7 @@ export function BoltMenuForSlugClient() {
         }}
       />
     </div>
+    </>
   );
 }
 

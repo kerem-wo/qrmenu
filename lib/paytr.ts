@@ -47,14 +47,16 @@ export interface PayTRCallbackData {
 
 /**
  * Get PayTR configuration from environment variables
+ * Returns null if API keys are not configured (for mock mode)
  */
-export function getPayTRConfig(): PayTRConfig {
+export function getPayTRConfig(): PayTRConfig | null {
   const merchantId = process.env.PAYTR_MERCHANT_ID;
   const merchantKey = process.env.PAYTR_MERCHANT_KEY;
   const merchantSalt = process.env.PAYTR_MERCHANT_SALT;
 
+  // API bilgileri yoksa null döndür (mock mode için)
   if (!merchantId || !merchantKey || !merchantSalt) {
-    throw new Error("PayTR API anahtarları yapılandırılmamış");
+    return null;
   }
 
   return {
@@ -63,6 +65,13 @@ export function getPayTRConfig(): PayTRConfig {
     merchantSalt,
     testMode: process.env.NODE_ENV !== "production",
   };
+}
+
+/**
+ * Check if PayTR is configured (for mock mode detection)
+ */
+export function isPayTRConfigured(): boolean {
+  return getPayTRConfig() !== null;
 }
 
 /**

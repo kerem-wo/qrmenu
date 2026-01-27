@@ -1,20 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, CheckCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function AdminLogin() {
+export const dynamic = 'force-dynamic';
+
+function AdminLoginContent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const paymentSuccess = searchParams?.get("payment") === "success";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,6 +67,18 @@ export default function AdminLogin() {
   };
 
   return (
+    <>
+      {paymentSuccess && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md mx-4">
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 shadow-lg">
+            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <div>
+              <p className="text-green-800 font-semibold">Ödeme Başarılı!</p>
+              <p className="text-green-700 text-sm">Hesabınız aktif edildi. Giriş yapabilirsiniz.</p>
+            </div>
+          </div>
+        </div>
+      )}
     <div className="min-h-screen flex">
       {/* Sol Bölüm - Giriş Yap */}
       <div className="w-full lg:w-1/2 bg-white flex items-center justify-center p-4 md:p-8 lg:p-12">
@@ -213,5 +229,21 @@ export default function AdminLogin() {
         </div>
       </div>
     </div>
+    </>
+  );
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-[#FF6F00] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Yükleniyor...</p>
+        </div>
+      </div>
+    }>
+      <AdminLoginContent />
+    </Suspense>
   );
 }

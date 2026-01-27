@@ -26,8 +26,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hash doğrulama
-    if (!verifyPayTRCallback(callbackData)) {
+    // Hash doğrulama (mock mode için atla)
+    const isMockMode = callbackData.hash?.startsWith("mock_hash_");
+    if (!isMockMode && !verifyPayTRCallback(callbackData)) {
       console.error("PayTR callback hash verification failed");
       return NextResponse.json(
         { error: "Hash doğrulama başarısız" },
@@ -35,15 +36,103 @@ export async function POST(request: Request) {
       );
     }
 
-    // Payment kaydını bul
-    const payment = await prisma.payment.findFirst({
-      where: { paytrMerchantOid: callbackData.merchant_oid },
-      include: {
-        order: true,
-        restaurant: true,
-        packageTheme: true,
-      },
-    });
+    // Payment kaydını bul (mock mode için farklı arama)
+    let payment;
+    if (isMockMode) {
+      // Mock mode: merchant_oid formatı farklı olabilir, en son pending payment'i bul
+      // merchant_oid formatı: "order_{orderId}_..." veya "sub_{restaurantId}_..."
+      const merchantOidParts = callbackData.merchant_oid.split("_");
+      const searchId = merchantOidParts.length > 1 ? merchantOidParts[1] : null;
+      
+      // Mock mode: Önce merchant_oid ile dene, sonra fallback
+      payment = await prisma.payment.findFirst({
+        where: { 
+          paytrMerchantOid: callbackData.merchant_oid,
+          status: "pending",
+        },
+        include: {
+          order: {
+            include: {
+              restaurant: {
+                select: {
+                  slug: true,
+                },
+              },
+            },
+          },
+          restaurant: true,
+          packageTheme: true,
+        },
+      });
+
+      // Eğer bulunamazsa, merchant_oid'in başlangıcına göre ara
+      if (!payment) {
+        if (merchantOidParts[0] === "order" && searchId) {
+          // Sipariş ödemesi için orderId ile ara
+          payment = await prisma.payment.findFirst({
+            where: { 
+              status: "pending",
+              orderId: searchId,
+              paytrToken: { contains: "mock_token" },
+            },
+            include: {
+              order: {
+                include: {
+                  restaurant: {
+                    select: {
+                      slug: true,
+                    },
+                  },
+                },
+              },
+              restaurant: true,
+              packageTheme: true,
+            },
+            orderBy: { createdAt: "desc" },
+          });
+        } else if (merchantOidParts[0] === "sub" && searchId) {
+          // Bayilik ödemesi için restaurantId ile ara
+          payment = await prisma.payment.findFirst({
+            where: { 
+              status: "pending",
+              restaurantId: searchId,
+              paytrToken: { contains: "mock_token" },
+            },
+            include: {
+              order: {
+                include: {
+                  restaurant: {
+                    select: {
+                      slug: true,
+                    },
+                  },
+                },
+              },
+              restaurant: true,
+              packageTheme: true,
+            },
+            orderBy: { createdAt: "desc" },
+          });
+        }
+      }
+    } else {
+      payment = await prisma.payment.findFirst({
+        where: { paytrMerchantOid: callbackData.merchant_oid },
+        include: {
+          order: {
+            include: {
+              restaurant: {
+                select: {
+                  slug: true,
+                },
+              },
+            },
+          },
+          restaurant: true,
+          packageTheme: true,
+        },
+      });
+    }
 
     if (!payment) {
       console.error("Payment not found for merchant_oid:", callbackData.merchant_oid);
@@ -72,7 +161,7 @@ export async function POST(request: Request) {
       // Ödeme tipine göre işlem yap
       if (payment.type === "order" && payment.orderId) {
         // Sipariş ödemesi
-        await prisma.order.update({
+        const updatedOrder = await prisma.order.update({
           where: { id: payment.orderId },
           data: {
             paymentStatus: "paid",
@@ -80,9 +169,9 @@ export async function POST(request: Request) {
           },
         });
 
-        // Başarılı ödeme sayfasına yönlendir
+        // Sipariş takip sayfasına yönlendir
         return NextResponse.redirect(
-          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/order/${payment.order?.orderNumber}?payment=success`
+          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/order/${updatedOrder.orderNumber}?payment=success`
         );
       } else if (payment.type === "subscription" && payment.restaurantId) {
         // Bayilik ödemesi
@@ -108,9 +197,9 @@ export async function POST(request: Request) {
           },
         });
 
-        // Başarılı ödeme sayfasına yönlendir
+        // Admin login sayfasına yönlendir
         return NextResponse.redirect(
-          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/restaurant/register/success?payment=success&restaurantId=${payment.restaurantId}`
+          `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/admin/login?payment=success&restaurantId=${payment.restaurantId}`
         );
       } else {
         // Bilinmeyen ödeme tipi
