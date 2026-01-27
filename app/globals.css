@@ -606,12 +606,19 @@
   }
 
   .animate-marquee {
-    animation: logo-marquee 30s linear infinite;
+    animation: logo-marquee 20s linear infinite;
     will-change: transform;
   }
 
   .animate-marquee:hover {
     animation-play-state: paused;
+  }
+
+  /* Mobile logo carousel optimization */
+  @media (max-width: 768px) {
+    .animate-marquee {
+      animation-duration: 15s;
+    }
   }
 
   /* Fade In Animation */
