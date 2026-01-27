@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // Set session cookie on response
     try {
-      await setAdminSession(session);
+      await setAdminSession(session, response);
       console.log(`Admin session cookie set - NODE_ENV: ${process.env.NODE_ENV}, URL: ${request.url}`);
     } catch (sessionError: any) {
       console.error("Session cookie error:", sessionError?.message || sessionError);

@@ -97,10 +97,8 @@ export async function getAdminSession(): Promise<AdminSession | null> {
   }
 }
 
-export async function setAdminSession(session: AdminSession) {
+export async function setAdminSession(session: AdminSession, response?: any) {
   try {
-    const cookieStore = cookies();
-    
     // Sign session with secret to prevent tampering
     const crypto = await import('crypto');
     const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
@@ -112,20 +110,31 @@ export async function setAdminSession(session: AdminSession) {
     
     const isProduction = process.env.NODE_ENV === "production";
     
-    cookieStore.set("admin_session", signedSession, {
-      httpOnly: true,
-      secure: isProduction, // HTTPS only in production
-      sameSite: isProduction ? "lax" : "strict", // Lax in production for better compatibility
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
+    // If response is provided (NextResponse from route handler), use it
+    if (response && response.cookies) {
+      response.cookies.set("admin_session", signedSession, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "lax" : "strict",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+    } else {
+      // Otherwise use cookies() directly (for server components)
+      const cookieStore = cookies();
+      cookieStore.set("admin_session", signedSession, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "lax" : "strict",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+    }
     
     // Log to help debug
     console.log(`Admin session cookie set - Production: ${isProduction}, Secure: ${isProduction}, SameSite: ${isProduction ? "lax" : "strict"}`);
   } catch (error: any) {
     console.error("Error setting admin session cookie:", error?.message || error);
-    // Don't throw - let caller decide what to do
-    // In production, this might fail due to cookie settings
     throw error;
   }
 }

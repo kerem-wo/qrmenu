@@ -94,10 +94,8 @@ export async function getPlatformAdminSession(): Promise<PlatformAdminSession | 
   }
 }
 
-export async function setPlatformAdminSession(session: PlatformAdminSession) {
+export async function setPlatformAdminSession(session: PlatformAdminSession, response?: Response) {
   try {
-    const cookieStore = cookies();
-    
     // Sign session with secret to prevent tampering
     const crypto = await import('crypto');
     const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
@@ -109,13 +107,26 @@ export async function setPlatformAdminSession(session: PlatformAdminSession) {
     
     const isProduction = process.env.NODE_ENV === "production";
     
-    cookieStore.set("platform_admin_session", signedSession, {
-      httpOnly: true,
-      secure: isProduction, // HTTPS only in production
-      sameSite: isProduction ? "lax" : "strict", // Lax in production for better compatibility
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-      path: "/",
-    });
+    // If response is provided, use it (for route handlers)
+    if (response && 'cookies' in response) {
+      (response as any).cookies.set("platform_admin_session", signedSession, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "lax" : "strict",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+    } else {
+      // Otherwise use cookies() directly (for server components)
+      const cookieStore = cookies();
+      cookieStore.set("platform_admin_session", signedSession, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? "lax" : "strict",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        path: "/",
+      });
+    }
     
     // Log to help debug
     console.log(`Platform admin session cookie set - Production: ${isProduction}, Secure: ${isProduction}, SameSite: ${isProduction ? "lax" : "strict"}`);
