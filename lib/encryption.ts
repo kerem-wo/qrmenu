@@ -123,6 +123,27 @@ export function encryptDataUrl(dataUrl: string): string {
 }
 
 /**
+ * Detect MIME type from file buffer using magic bytes
+ */
+function detectMimeType(buffer: Buffer): string {
+  // Magic bytes for common file types
+  if (buffer.length >= 3 && buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF) {
+    return 'image/jpeg';
+  }
+  if (buffer.length >= 8 && 
+      buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47 &&
+      buffer[4] === 0x0D && buffer[5] === 0x0A && buffer[6] === 0x1A && buffer[7] === 0x0A) {
+    return 'image/png';
+  }
+  if (buffer.length >= 4 && 
+      buffer[0] === 0x25 && buffer[1] === 0x50 && buffer[2] === 0x44 && buffer[3] === 0x46) {
+    return 'application/pdf'; // %PDF
+  }
+  // Default to octet-stream if type cannot be determined
+  return 'application/octet-stream';
+}
+
+/**
  * Decrypts encrypted data URL
  */
 export function decryptDataUrl(encryptedDataUrl: string): string {
@@ -134,10 +155,11 @@ export function decryptDataUrl(encryptedDataUrl: string): string {
   const encryptedData = encryptedDataUrl.replace('encrypted:', '');
   const decrypted = decryptData(encryptedData);
   
-  // Reconstruct data URL (we need to preserve the original mime type)
-  // For now, we'll use a generic approach - in production, store mime type separately
+  // Detect MIME type from magic bytes
+  const mimeType = detectMimeType(decrypted);
   const base64 = decrypted.toString('base64');
-  return `data:application/octet-stream;base64,${base64}`;
+  
+  return `data:${mimeType};base64,${base64}`;
 }
 
 /**

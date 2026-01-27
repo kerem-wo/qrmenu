@@ -178,8 +178,23 @@ export default function RestaurantDetailPage() {
     if (!url) return;
     
     if (url.startsWith('data:')) {
+      // Fix MIME type for PDFs if it's octet-stream
+      let downloadUrl = url;
+      if (url.startsWith('data:application/octet-stream;base64,')) {
+        // Try to detect if it's a PDF by checking first bytes
+        const base64Data = url.split(',')[1];
+        try {
+          const binaryString = atob(base64Data.substring(0, 100)); // Check first 100 chars
+          if (binaryString.startsWith('%PDF')) {
+            downloadUrl = url.replace('data:application/octet-stream;base64,', 'data:application/pdf;base64,');
+          }
+        } catch (e) {
+          // If detection fails, use original URL
+        }
+      }
+      
       const link = document.createElement('a');
-      link.href = url;
+      link.href = downloadUrl;
       link.download = filename;
       document.body.appendChild(link);
       link.click();
@@ -196,7 +211,7 @@ export default function RestaurantDetailPage() {
       const newWindow = window.open();
       if (newWindow) {
         const isImage = url.startsWith('data:image/');
-        const isPdf = url.startsWith('data:application/pdf');
+        const isPdf = url.startsWith('data:application/pdf') || url.startsWith('data:application/octet-stream');
         
         if (isImage) {
           newWindow.document.write(`
@@ -208,11 +223,25 @@ export default function RestaurantDetailPage() {
             </html>
           `);
         } else if (isPdf) {
+          // For PDF, try to detect if it's actually a PDF by checking the data URL
+          // If it's octet-stream but might be PDF, try to render as PDF
+          const pdfUrl = url.replace('data:application/octet-stream;base64,', 'data:application/pdf;base64,');
           newWindow.document.write(`
             <html>
               <head><title>Belge Önizleme</title></head>
               <body style="margin:0;padding:0;height:100vh;overflow:hidden;">
-                <iframe src="${url}" style="width:100%;height:100vh;border:none;"></iframe>
+                <iframe src="${pdfUrl}" style="width:100%;height:100vh;border:none;"></iframe>
+              </body>
+            </html>
+          `);
+        } else {
+          // Fallback: try to open as PDF
+          const pdfUrl = url.replace('data:application/octet-stream;base64,', 'data:application/pdf;base64,');
+          newWindow.document.write(`
+            <html>
+              <head><title>Belge Önizleme</title></head>
+              <body style="margin:0;padding:0;height:100vh;overflow:hidden;">
+                <iframe src="${pdfUrl}" style="width:100%;height:100vh;border:none;"></iframe>
               </body>
             </html>
           `);

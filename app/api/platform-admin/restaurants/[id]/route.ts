@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPlatformAdminSession } from "@/lib/platform-auth";
 import { decryptDataUrl } from "@/lib/encryption";
-import { getClientIP, logSecurityEvent, requireHTTPS } from "@/lib/security";
+import { getClientIP, logSecurityEvent } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
 
@@ -11,14 +11,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // HTTPS Check
-    if (!requireHTTPS(request)) {
-      return NextResponse.json(
-        { error: "HTTPS required" },
-        { status: 403 }
-      );
-    }
-
     const session = await getPlatformAdminSession();
     if (!session) {
       await logSecurityEvent({
