@@ -2,20 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { setPlatformAdminSession } from "@/lib/platform-auth";
 import bcrypt from "bcryptjs";
-import { rateLimit, getClientIP, logSecurityEvent, requireHTTPS, sanitizeInput } from "@/lib/security";
+import { rateLimit, getClientIP, logSecurityEvent, sanitizeInput } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    // HTTPS Check
-    if (!requireHTTPS(request)) {
-      return NextResponse.json(
-        { error: "HTTPS required" },
-        { status: 403 }
-      );
-    }
-
     // Rate Limiting (stricter for platform admin)
     const clientIP = getClientIP(request);
     const rateLimitKey = `platform-login:${clientIP}`;

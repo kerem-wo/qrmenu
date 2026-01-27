@@ -5,19 +5,11 @@ import bcrypt from "bcryptjs";
 
 export const dynamic = 'force-dynamic';
 
-import { rateLimit, getClientIP, logSecurityEvent, requireHTTPS, sanitizeInput } from "@/lib/security";
+import { rateLimit, getClientIP, logSecurityEvent, sanitizeInput } from "@/lib/security";
 import { NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // HTTPS Check
-    if (!requireHTTPS(request)) {
-      return NextResponse.json(
-        { error: "HTTPS required" },
-        { status: 403 }
-      );
-    }
-
     // Rate Limiting
     const clientIP = getClientIP(request);
     const rateLimitKey = `login:${clientIP}`;

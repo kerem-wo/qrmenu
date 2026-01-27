@@ -106,10 +106,12 @@ export function validateFileType(buffer: Buffer, allowedTypes: string[]): boolea
  * Check if request is from HTTPS (production)
  */
 export function requireHTTPS(request: NextRequest): boolean {
+  // In development, allow HTTP (return false = HTTPS not required)
   if (process.env.NODE_ENV === 'development') {
-    return true; // Allow HTTP in development
+    return false; // Allow HTTP in development
   }
 
+  // In production, check if HTTPS is being used
   const protocol = request.headers.get('x-forwarded-proto') || 
                    (request.url.startsWith('https://') ? 'https' : 'http');
   
