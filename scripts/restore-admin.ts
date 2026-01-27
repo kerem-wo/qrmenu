@@ -38,11 +38,11 @@ async function restoreAdmin() {
       
       if (productCount > 0) {
         console.log(`\n✅ Restaurant already has ${productCount} products.`);
-        return;
+      } else {
+        // Restore products for existing restaurant
+        console.log("\n📦 Restoring products and categories for existing restaurant...");
       }
       
-      // Restore products for existing restaurant
-      console.log("\n📦 Restoring products and categories for existing restaurant...");
       restaurant = { id: existingAdmin.restaurantId, slug: existingAdmin.restaurant?.slug || "", admin: null };
       admin = existingAdmin;
     } else {
@@ -156,11 +156,8 @@ async function restoreAdmin() {
     
     if (existingCategories.length > 0) {
       console.log(`⚠️  Restaurant already has ${existingCategories.length} categories. Skipping product restoration.`);
-      console.log(`\nYou can now login at: /admin/login`);
-      return;
-    }
-    
-    // Create categories
+    } else {
+      // Create categories
     const startersCategory = await prisma.category.create({
       data: {
         name: 'Aperatifler',
@@ -514,9 +511,122 @@ async function restoreAdmin() {
         categoryId: drinkCategory.id,
       },
     });
+    } // End of else block for product restoration
 
-    console.log(`✅ Restored ${await prisma.category.count({ where: { restaurantId: restaurant.id } })} categories`);
-    console.log(`✅ Restored ${await prisma.product.count({ where: { category: { restaurantId: restaurant.id } } })} products`);
+    const categoryCount = await prisma.category.count({ where: { restaurantId: restaurant.id } });
+    const productCount = await prisma.product.count({ where: { category: { restaurantId: restaurant.id } } });
+    
+    if (categoryCount > 0 || productCount > 0) {
+      console.log(`✅ Restaurant has ${categoryCount} categories and ${productCount} products`);
+    }
+    
+    // Ensure demo-restoran exists for landing page preview
+    console.log(`\n📋 Checking demo-restoran for landing page...`);
+    const demoRestaurant = await prisma.restaurant.findUnique({
+      where: { slug: 'demo-restoran' },
+      include: { admin: true },
+    });
+    
+    if (!demoRestaurant) {
+      console.log("⚠️  demo-restoran not found. Creating...");
+      // Find an existing restaurant to copy products from, or use the restored restaurant
+      const sourceRestaurant = restaurant;
+      
+      // Create demo restaurant
+      const newDemoRestaurant = await prisma.restaurant.create({
+        data: {
+          name: 'Demo Restoran',
+          slug: 'demo-restoran',
+          description: 'Lezzetli yemekler için doğru adres',
+          theme: 'default',
+          status: 'approved',
+        },
+        include: { admin: true },
+      });
+      
+      // Copy categories and products from source restaurant
+      const sourceCategories = await prisma.category.findMany({
+        where: { restaurantId: sourceRestaurant.id },
+        include: { products: true },
+      });
+      
+      for (const sourceCat of sourceCategories) {
+        const newCat = await prisma.category.create({
+          data: {
+            name: sourceCat.name,
+            description: sourceCat.description,
+            image: sourceCat.image,
+            order: sourceCat.order,
+            restaurantId: newDemoRestaurant.id,
+          },
+        });
+        
+        for (const sourceProduct of sourceCat.products) {
+          await prisma.product.create({
+            data: {
+              name: sourceProduct.name,
+              description: sourceProduct.description,
+              price: sourceProduct.price,
+              image: sourceProduct.image,
+              isAvailable: sourceProduct.isAvailable,
+              stock: sourceProduct.stock,
+              prepMinMinutes: sourceProduct.prepMinMinutes,
+              prepMaxMinutes: sourceProduct.prepMaxMinutes,
+              order: sourceProduct.order,
+              categoryId: newCat.id,
+            },
+          });
+        }
+      }
+      
+      console.log(`✅ Created demo-restoran with ${sourceCategories.length} categories`);
+      console.log(`✅ Copied ${sourceCategories.reduce((sum, cat) => sum + cat.products.length, 0)} products`);
+    } else {
+      const demoCategoryCount = await prisma.category.count({ where: { restaurantId: demoRestaurant.id } });
+      const demoProductCount = await prisma.product.count({ where: { category: { restaurantId: demoRestaurant.id } } });
+      console.log(`✅ demo-restoran already exists (${demoRestaurant.id})`);
+      console.log(`   Has ${demoCategoryCount} categories and ${demoProductCount} products`);
+      
+      // If demo restaurant has no products, copy from source
+      if (demoProductCount === 0 && productCount > 0) {
+        console.log("⚠️  demo-restoran has no products. Copying from restored restaurant...");
+        const sourceCategories = await prisma.category.findMany({
+          where: { restaurantId: restaurant.id },
+          include: { products: true },
+        });
+        
+        for (const sourceCat of sourceCategories) {
+          const newCat = await prisma.category.create({
+            data: {
+              name: sourceCat.name,
+              description: sourceCat.description,
+              image: sourceCat.image,
+              order: sourceCat.order,
+              restaurantId: demoRestaurant.id,
+            },
+          });
+          
+          for (const sourceProduct of sourceCat.products) {
+            await prisma.product.create({
+              data: {
+                name: sourceProduct.name,
+                description: sourceProduct.description,
+                price: sourceProduct.price,
+                image: sourceProduct.image,
+                isAvailable: sourceProduct.isAvailable,
+                stock: sourceProduct.stock,
+                prepMinMinutes: sourceProduct.prepMinMinutes,
+                prepMaxMinutes: sourceProduct.prepMaxMinutes,
+                order: sourceProduct.order,
+                categoryId: newCat.id,
+              },
+            });
+          }
+        }
+        console.log(`✅ Copied ${sourceCategories.length} categories and ${sourceCategories.reduce((sum, cat) => sum + cat.products.length, 0)} products to demo-restoran`);
+      }
+    }
+    
     console.log(`\nYou can now login at: /admin/login`);
     
   } catch (error: any) {
