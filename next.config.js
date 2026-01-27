@@ -27,13 +27,6 @@ const nextConfig = {
   },
   // Explicitly set output directory (Next.js default is .next)
   distDir: '.next',
-  // Increase API body size limit (Vercel default is 4.5MB)
-  api: {
-    bodyParser: {
-      sizeLimit: '4.5mb',
-    },
-    responseLimit: '4.5mb',
-  },
 }
 
 module.exports = nextConfig

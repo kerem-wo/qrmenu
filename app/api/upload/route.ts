@@ -15,22 +15,7 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(request: NextRequest) {
   try {
-    // 1. HTTPS Check
-    if (!requireHTTPS(request)) {
-      await logSecurityEvent({
-        action: 'HTTP_REQUEST_BLOCKED',
-        userType: 'anonymous',
-        ip: getClientIP(request),
-        userAgent: request.headers.get('user-agent') || 'unknown',
-        timestamp: new Date(),
-      });
-      return NextResponse.json(
-        { error: "HTTPS required for file uploads" },
-        { status: 403 }
-      );
-    }
-
-    // 2. Authentication Check
+    // 1. Authentication Check
     const session = await getAdminSession();
     if (!session) {
       await logSecurityEvent({
