@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Clock, CheckCircle, ChefHat, XCircle } from "lucide-react";
+import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2 } from "lucide-react";
 
 interface OrderItem {
   id: string;
@@ -22,6 +22,8 @@ interface Order {
   customerPhone: string | null;
   status: string;
   total: number;
+  paymentStatus?: string;
+  paymentMethod?: string | null;
   items: OrderItem[];
   createdAt: string;
   updatedAt: string;
@@ -277,10 +279,14 @@ const STRINGS: Record<Lang, Strings> = {
 
 export default function OrderTrackingPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const orderNumber = params?.orderNumber as string;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [lang, setLang] = useState<Lang>("tr");
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const S = STRINGS[lang];
   const locale = LOCALE[lang];
@@ -346,6 +352,22 @@ export default function OrderTrackingPage() {
   }, [S]);
 
   useEffect(() => {
+    // URL parametrelerini kontrol et
+    const payment = searchParams?.get("payment");
+    const warning = searchParams?.get("warning");
+    const error = searchParams?.get("error");
+    
+    if (payment === "success") {
+      setPaymentSuccess(true);
+      if (warning) {
+        setPaymentError("Ödeme başarılı ancak sipariş durumu güncellenirken bir uyarı oluştu");
+      }
+    } else if (error) {
+      setPaymentError(decodeURIComponent(error));
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (orderNumber) {
       fetchOrder();
       // Her 5 saniyede bir güncelle
@@ -369,6 +391,55 @@ export default function OrderTrackingPage() {
       console.error("Error fetching order:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    if (!order || processingPayment) return;
+
+    setProcessingPayment(true);
+
+    try {
+      // Ödeme başlat
+      const res = await fetch("/api/payment/iyzico/initialize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          amount: order.total,
+          customerName: order.customerName || "Müşteri",
+          customerPhone: order.customerPhone || "",
+          customerEmail: "",
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Ödeme başlatılamadı");
+      }
+
+      const data = await res.json();
+
+      if (data.paymentPageUrl) {
+        // İyzico ödeme sayfasına yönlendir
+        window.location.href = data.paymentPageUrl;
+      } else if (data.checkoutFormContent) {
+        // Checkout form içeriğini göster
+        const newWindow = window.open("", "_blank");
+        if (newWindow) {
+          newWindow.document.write(data.checkoutFormContent);
+          newWindow.document.close();
+        }
+      } else {
+        throw new Error("Ödeme sayfası bilgisi alınamadı");
+      }
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      alert(error.message || "Ödeme başlatılırken bir hata oluştu");
+      setProcessingPayment(false);
     }
   };
 
@@ -527,12 +598,101 @@ export default function OrderTrackingPage() {
 
             {/* Toplam */}
             <div className="border-t border-gray-200 pt-6">
-              <div className="flex justify-between items-center gap-4">
+              <div className="flex justify-between items-center gap-4 mb-4">
                 <span className="text-lg sm:text-xl font-bold text-gray-900">{S.total}:</span>
                 <span className="text-2xl sm:text-3xl font-black text-gray-900 whitespace-nowrap">
                   {order.total.toFixed(2)} ₺
                 </span>
               </div>
+
+            {/* Ödeme Başarı Mesajı */}
+            {paymentSuccess && order.paymentStatus === "paid" && (
+              <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-4 animate-premium-fade-in">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <p className="text-sm text-green-900 font-semibold">
+                    {lang === "tr" ? "Ödeme başarıyla tamamlandı!" : lang === "en" ? "Payment completed successfully!" : "Zahlung erfolgreich abgeschlossen!"}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Ödeme Hata Mesajı */}
+            {paymentError && (
+              <div className="bg-red-50 p-4 rounded-xl border border-red-200 mb-4 animate-premium-fade-in">
+                <div className="flex items-center gap-2">
+                  <XCircle className="w-5 h-5 text-red-600" />
+                  <p className="text-sm text-red-900 font-semibold">{paymentError}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Ödeme Durumu */}
+            {order.paymentStatus === "paid" ? (
+                <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <p className="text-sm text-green-900 font-semibold">
+                      {lang === "tr" ? "Ödeme Tamamlandı" : lang === "en" ? "Payment Completed" : "Zahlung abgeschlossen"}
+                    </p>
+                  </div>
+                  {order.paymentMethod && (
+                    <p className="text-xs text-green-700 mt-1">
+                      {lang === "tr" ? `Ödeme Yöntemi: ${order.paymentMethod === "online" ? "Online Ödeme" : order.paymentMethod}` : 
+                       lang === "en" ? `Payment Method: ${order.paymentMethod}` : 
+                       `Zahlungsmethode: ${order.paymentMethod}`}
+                    </p>
+                  )}
+                </div>
+              ) : order.paymentStatus === "pending" ? (
+                <div className="mb-4">
+                  <button
+                    onClick={handlePayment}
+                    disabled={processingPayment}
+                    className="w-full bg-[#FF6F00] hover:bg-[#FF8F33] text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-[#FF6F00]/20 hover:shadow-xl hover:shadow-[#FF6F00]/30 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                  >
+                    {processingPayment ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>{lang === "tr" ? "Ödeme sayfası açılıyor..." : lang === "en" ? "Opening payment page..." : "Zahlungsseite wird geöffnet..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="w-5 h-5" />
+                        <span>{lang === "tr" ? "Ödeme Yap" : lang === "en" ? "Pay Now" : "Jetzt bezahlen"}</span>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    {lang === "tr" ? "Güvenli ödeme sayfasına yönlendirileceksiniz" : 
+                     lang === "en" ? "You will be redirected to a secure payment page" : 
+                     "Sie werden zu einer sicheren Zahlungsseite weitergeleitet"}
+                  </p>
+                </div>
+              ) : order.paymentStatus === "failed" ? (
+                <div className="bg-red-50 p-4 rounded-xl border border-red-200 mb-4">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="w-5 h-5 text-red-600" />
+                    <p className="text-sm text-red-900 font-semibold">
+                      {lang === "tr" ? "Ödeme Başarısız" : lang === "en" ? "Payment Failed" : "Zahlung fehlgeschlagen"}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handlePayment}
+                    disabled={processingPayment}
+                    className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {processingPayment ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>{lang === "tr" ? "Yeniden deneniyor..." : lang === "en" ? "Retrying..." : "Wird erneut versucht..."}</span>
+                      </>
+                    ) : (
+                      <span>{lang === "tr" ? "Tekrar Dene" : lang === "en" ? "Try Again" : "Erneut versuchen"}</span>
+                    )}
+                  </button>
+                </div>
+              ) : null}
             </div>
 
             {/* Durum Açıklaması */}

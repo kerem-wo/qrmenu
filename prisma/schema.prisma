@@ -11,41 +11,50 @@ datasource db {
 }
 
 model Restaurant {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  logo        String?
-  theme       String   @default("default")
-  language    String   @default("tr") // tr, en, de, vb.
+  id             String  @id @default(cuid())
+  name           String
+  slug           String  @unique
+  description    String?
+  logo           String?
+  theme          String  @default("default")
+  language       String  @default("tr") // tr, en, de, vb.
   enableTakeaway Boolean @default(true) // Gel Al seçeneği
-  
+
+  // Bayilik Paket Bilgileri
+  packageType      String? // "monthly" | "yearly"
+  packageThemeId   String? // Seçilen tema ID
+  packageStartDate DateTime? // Paket başlangıç tarihi
+  packageEndDate   DateTime? // Paket bitiş tarihi
+  packageStatus    String    @default("inactive") // inactive, active, expired
+
   // KVKK ve Onaylar
-  kvkkConsent          Boolean   @default(false) // KVKK Aydınlatma Metni onayı
-  privacyConsent       Boolean   @default(false) // Gizlilik Politikası onayı
-  marketingSmsConsent  Boolean   @default(false) // SMS ile ticari pazarlama bildirimi onayı
-  
+  kvkkConsent         Boolean @default(false) // KVKK Aydınlatma Metni onayı
+  privacyConsent      Boolean @default(false) // Gizlilik Politikası onayı
+  marketingSmsConsent Boolean @default(false) // SMS ile ticari pazarlama bildirimi onayı
+
   // Resmi Belgeler
-  taxDocument          String?   // Vergi Levhası (base64 veya URL)
-  businessLicense      String?   // İşletme Ruhsatı
-  tradeRegistry        String?   // Ticaret Sicil Belgesi
-  identityDocument     String?   // Kimlik Belgesi (Yetkili Kişi)
-  
+  taxDocument      String? // Vergi Levhası (base64 veya URL)
+  businessLicense  String? // İşletme Ruhsatı
+  tradeRegistry    String? // Ticaret Sicil Belgesi
+  identityDocument String? // Kimlik Belgesi (Yetkili Kişi)
+
   // Platform Admin Onay Durumu
-  status               String   @default("pending") // pending, approved, rejected
-  rejectionReason      String?  // Red nedeni
-  reviewedAt           DateTime? // İncelenme tarihi
-  reviewedBy           String?  // İnceleyen platform admin ID
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
-  categories  Category[]
-  orders      Order[]
-  campaigns   Campaign[]
+  status          String    @default("pending") // pending, approved, rejected
+  rejectionReason String? // Red nedeni
+  reviewedAt      DateTime? // İncelenme tarihi
+  reviewedBy      String? // İnceleyen platform admin ID
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  categories    Category[]
+  orders        Order[]
+  campaigns     Campaign[]
   tableRequests TableRequest[]
-  admin       Admin?
-  translations RestaurantTranslation[]
+  admin         Admin?
+  translations  RestaurantTranslation[]
+  payments      Payment[]
+  packageTheme  Theme?                  @relation(fields: [packageThemeId], references: [id])
 }
 
 model PlatformAdmin {
@@ -58,185 +67,268 @@ model PlatformAdmin {
 }
 
 model Customer {
-  id          String   @id @default(cuid())
-  name        String
-  email       String?  @unique
-  phone       String?  @unique
-  password    String?  // Opsiyonel şifre
-  favorites   String[] // Favori ürün ID'leri
+  id           String   @id @default(cuid())
+  name         String
+  email        String?  @unique
+  phone        String?  @unique
+  password     String? // Opsiyonel şifre
+  favorites    String[] // Favori ürün ID'leri
   restaurantId String? // Hangi restorana ait (opsiyonel)
-  orders      Order[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  orders       Order[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Campaign {
-  id          String   @id @default(cuid())
-  name        String
-  code        String   @unique // Kupon kodu
-  type        String   // "percentage" veya "fixed"
-  value       Float    // İndirim değeri
-  minAmount   Float?   // Minimum sipariş tutarı
-  maxDiscount Float?   // Maksimum indirim tutarı
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean  @default(true)
-  usageLimit  Int?     // Kullanım limiti
-  usedCount   Int      @default(0)
+  id           String     @id @default(cuid())
+  name         String
+  code         String     @unique // Kupon kodu
+  type         String // "percentage" veya "fixed"
+  value        Float // İndirim değeri
+  minAmount    Float? // Minimum sipariş tutarı
+  maxDiscount  Float? // Maksimum indirim tutarı
+  startDate    DateTime
+  endDate      DateTime
+  isActive     Boolean    @default(true)
+  usageLimit   Int? // Kullanım limiti
+  usedCount    Int        @default(0)
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Admin {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  password          String
-  resetToken        String?  @unique
-  resetTokenExpiry  DateTime?
-  restaurantId     String   @unique
+  id               String     @id @default(cuid())
+  email            String     @unique
+  password         String
+  resetToken       String?    @unique
+  resetTokenExpiry DateTime?
+  restaurantId     String     @unique
   restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
 
 model Category {
-  id           String   @id @default(cuid())
+  id           String                @id @default(cuid())
   name         String
   description  String?
   image        String?
-  order        Int      @default(0)
+  order        Int                   @default(0)
   restaurantId String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant   Restaurant            @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   products     Product[]
   translations CategoryTranslation[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  image       String?
-  isAvailable Boolean  @default(true)
-  stock       Int?     // Stok miktarı (null = sınırsız)
-  prepMinMinutes Int   @default(5)  // Tahmini hazırlama süresi (min, dakika)
-  prepMaxMinutes Int   @default(10) // Tahmini hazırlama süresi (max, dakika)
-  order       Int      @default(0)
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  variants    ProductVariant[]
-  orderItems  OrderItem[]
-  translations ProductTranslation[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String               @id @default(cuid())
+  name           String
+  description    String?
+  price          Float
+  image          String?
+  isAvailable    Boolean              @default(true)
+  stock          Int? // Stok miktarı (null = sınırsız)
+  prepMinMinutes Int                  @default(5) // Tahmini hazırlama süresi (min, dakika)
+  prepMaxMinutes Int                  @default(10) // Tahmini hazırlama süresi (max, dakika)
+  order          Int                  @default(0)
+  categoryId     String
+  category       Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  variants       ProductVariant[]
+  orderItems     OrderItem[]
+  translations   ProductTranslation[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 }
 
 model RestaurantTranslation {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  language     String   // tr, en, de, ru, ar, fr, es...
+  language     String // tr, en, de, ru, ar, fr, es...
   name         String
   description  String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@unique([restaurantId, language])
 }
 
 model CategoryTranslation {
-  id         String   @id @default(cuid())
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  language   String   // tr, en, de, ru, ar, fr, es...
-  name       String
+  id          String   @id @default(cuid())
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  language    String // tr, en, de, ru, ar, fr, es...
+  name        String
   description String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([categoryId, language])
 }
 
 model ProductTranslation {
-  id         String   @id @default(cuid())
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  language   String   // tr, en, de, ru, ar, fr, es...
-  name       String
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  language    String // tr, en, de, ru, ar, fr, es...
+  name        String
   description String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([productId, language])
 }
 
 model ProductVariant {
-  id          String   @id @default(cuid())
-  name        String   // Örn: "Küçük", "Büyük", "Ekstra Peynir"
-  price       Float    // Ek fiyat (varsayılan fiyata eklenecek)
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id                String             @id @default(cuid())
+  name              String // Örn: "Küçük", "Büyük", "Ekstra Peynir"
+  price             Float // Ek fiyat (varsayılan fiyata eklenecek)
+  productId         String
+  product           Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
   orderItemVariants OrderItemVariant[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 model TableRequest {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  type         String   // "waiter" (garson çağır) veya "bill" (hesap iste)
-  tableNumber  String?  // Masa numarası (varsa)
-  note         String?  // Müşteri notu
-  isRead       Boolean  @default(false) // Okundu mu?
-  createdAt    DateTime @default(now())
+  type         String // "waiter" (garson çağır) veya "bill" (hesap iste)
+  tableNumber  String? // Masa numarası (varsa)
+  note         String? // Müşteri notu
+  isRead       Boolean    @default(false) // Okundu mu?
+  createdAt    DateTime   @default(now())
   readAt       DateTime? // Okunma tarihi
 }
 
 model Order {
-  id           String   @id @default(cuid())
-  orderNumber  String   @unique // Takip için benzersiz numara
-  orderType    String   @default("restaurant") // restaurant | takeaway
-  tableNumber  String?
-  customerName String?
+  id            String      @id @default(cuid())
+  orderNumber   String      @unique // Takip için benzersiz numara
+  orderType     String      @default("restaurant") // restaurant | takeaway
+  tableNumber   String?
+  customerName  String?
   customerPhone String?
-  customerId   String?  // Müşteri hesabı varsa
-  customer     Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  status       String   @default("pending") // pending, confirmed, preparing, ready, completed, cancelled
-  total        Float
-  discount     Float    @default(0) // İndirim miktarı
-  couponCode  String?  // Kullanılan kupon kodu
-  paymentStatus String @default("pending") // pending, paid, failed, refunded
+  customerId    String? // Müşteri hesabı varsa
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  status        String      @default("pending") // pending, confirmed, preparing, ready, completed, cancelled
+  total         Float
+  discount      Float       @default(0) // İndirim miktarı
+  couponCode    String? // Kullanılan kupon kodu
+  paymentStatus String      @default("pending") // pending, paid, failed, refunded
   paymentMethod String? // cash, card, online
-  restaurantId String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  items        OrderItem[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  restaurantId  String
+  restaurant    Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+  payments      Payment[] // Ödeme kayıtları
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
+  id        String             @id @default(cuid())
   quantity  Int
   price     Float
   orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order     Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product            @relation(fields: [productId], references: [id])
   variants  OrderItemVariant[]
-  notes     String?  // Özel notlar
-  createdAt DateTime @default(now())
+  notes     String? // Özel notlar
+  createdAt DateTime           @default(now())
 }
 
 model OrderItemVariant {
-  id        String   @id @default(cuid())
+  id          String         @id @default(cuid())
   orderItemId String
-  orderItem OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  variantId String
-  variant   ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  orderItem   OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  variantId   String
+  variant     ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+}
+
+// Ödeme Kayıtları
+model Payment {
+  id            String  @id @default(cuid())
+  type          String // "order" | "subscription" (sipariş veya bayilik)
+  amount        Float
+  currency      String  @default("TRY")
+  status        String  @default("pending") // pending, paid, failed, refunded
+  paymentMethod String? // online, cash, card
+
+  // İyzico Bilgileri
+  iyzicoPaymentId      String? // İyzico payment ID
+  iyzicoConversationId String? // İyzico conversation ID
+  iyzicoToken          String? // İyzico checkout form token
+
+  // İlişkiler
+  orderId      String? // Sipariş ödemesi ise
+  order        Order?      @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  restaurantId String? // Bayilik ödemesi ise
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+
+  // Paket Bilgileri (Bayilik için)
+  packageType    String? // "monthly" | "yearly"
+  packageThemeId String? // Seçilen tema ID
+  packageTheme   Theme?  @relation(fields: [packageThemeId], references: [id])
+
+  // Müşteri Bilgileri
+  customerName  String?
+  customerEmail String?
+  customerPhone String?
+
+  // Metadata
+  metadata Json? // Ek bilgiler (JSON)
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([restaurantId])
+  @@index([status])
+  @@index([iyzicoPaymentId])
+}
+
+// Tema ve Paket Yönetimi
+model Theme {
+  id          String  @id @default(cuid())
+  name        String  @unique // "default", "premium", "pro", vb.
+  displayName String // Görünen ad: "Tema A", "Tema B", vb.
+  description String?
+  isActive    Boolean @default(true)
+
+  // Fiyatlandırma
+  monthlyPrice   Float @default(0) // Aylık fiyat
+  yearlyPrice    Float @default(0) // Yıllık fiyat
+  yearlyDiscount Float @default(0) // Yıllık indirim yüzdesi
+
+  // Özellikler
+  features String[] // Özellik listesi (JSON array)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurants Restaurant[]
+  payments    Payment[]
+
+  @@index([isActive])
+}
+
+// Paket Fiyatları (Genel ayarlar)
+model PackagePricing {
+  id              String  @id @default(cuid())
+  name            String  @unique // "monthly", "yearly"
+  displayName     String // "Aylık Paket", "Yıllık Paket"
+  basePrice       Float   @default(0) // Temel fiyat
+  discountPercent Float   @default(0) // İndirim yüzdesi (yıllık için)
+  isActive        Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
 }

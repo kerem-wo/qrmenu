@@ -233,7 +233,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Restoran kaydı başarıyla oluşturuldu. Hesabınız platform yöneticileri tarafından incelendikten sonra aktif hale gelecektir.",
+      message: "Restoran kaydı başarıyla oluşturuldu. Tema ve paket seçimi için yönlendiriliyorsunuz...",
       restaurant: {
         id: result.restaurant.id,
         name: result.restaurant.name,
@@ -241,6 +241,7 @@ export async function POST(request: NextRequest) {
         status: result.restaurant.status,
       },
       admin: result.admin,
+      restaurantId: result.restaurant.id, // Tema/paket seçimi için
     });
   } catch (error: any) {
     console.error("Restaurant registration error:", error);

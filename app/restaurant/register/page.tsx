@@ -194,13 +194,19 @@ function RestaurantRegisterContent() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(data.message || "Restoran kaydı başarıyla oluşturuldu! Hesabınız incelendikten sonra aktif olacaktır.");
+        toast.success(data.message || "Restoran kaydı başarıyla oluşturuldu!");
         
-        // Platform admin onayı bekleniyor, otomatik login yapma
-        // Kullanıcıyı login sayfasına yönlendir
-        setTimeout(() => {
-          router.push("/admin/login");
-        }, 3000);
+        // Tema ve paket seçimi sayfasına yönlendir
+        if (data.restaurantId) {
+          setTimeout(() => {
+            router.push(`/restaurant/register/package?restaurantId=${data.restaurantId}`);
+          }, 1000);
+        } else {
+          // Fallback: login sayfasına yönlendir
+          setTimeout(() => {
+            router.push("/admin/login");
+          }, 3000);
+        }
       } else {
         toast.error(data.error || "Kayıt sırasında bir hata oluştu");
       }

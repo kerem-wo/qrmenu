@@ -449,9 +449,84 @@ async function main() {
     },
   });
 
+  // Create Themes
+  const themes = [
+    {
+      name: "default",
+      displayName: "Tema A - Standart",
+      description: "Temel ve kullanışlı tasarım",
+      monthlyPrice: 99.00,
+      yearlyPrice: 990.00,
+      yearlyDiscount: 17, // %17 indirim
+      features: ["Temel menü görünümü", "QR kod desteği", "Mobil uyumlu"],
+    },
+    {
+      name: "premium",
+      displayName: "Tema B - Premium",
+      description: "Gelişmiş özellikler ve modern tasarım",
+      monthlyPrice: 199.00,
+      yearlyPrice: 1990.00,
+      yearlyDiscount: 17,
+      features: ["Premium tasarım", "Gelişmiş animasyonlar", "Özel renk şemaları", "Sosyal medya entegrasyonu"],
+    },
+    {
+      name: "pro",
+      displayName: "Tema C - Pro",
+      description: "En gelişmiş özellikler ve profesyonel tasarım",
+      monthlyPrice: 299.00,
+      yearlyPrice: 2990.00,
+      yearlyDiscount: 17,
+      features: ["Pro tasarım", "Tüm premium özellikler", "Özel logo desteği", "Öncelikli destek", "Gelişmiş analitik"],
+    },
+  ];
+
+  for (const theme of themes) {
+    await prisma.theme.upsert({
+      where: { name: theme.name },
+      update: theme,
+      create: theme,
+    });
+  }
+
+  // Create Package Pricing
+  await prisma.packagePricing.upsert({
+    where: { name: "monthly" },
+    update: {
+      displayName: "Aylık Paket",
+      basePrice: 0, // Tema fiyatına göre belirlenir
+      discountPercent: 0,
+      isActive: true,
+    },
+    create: {
+      name: "monthly",
+      displayName: "Aylık Paket",
+      basePrice: 0,
+      discountPercent: 0,
+      isActive: true,
+    },
+  });
+
+  await prisma.packagePricing.upsert({
+    where: { name: "yearly" },
+    update: {
+      displayName: "Yıllık Paket",
+      basePrice: 0, // Tema fiyatına göre belirlenir
+      discountPercent: 17, // %17 indirim
+      isActive: true,
+    },
+    create: {
+      name: "yearly",
+      displayName: "Yıllık Paket",
+      basePrice: 0,
+      discountPercent: 17,
+      isActive: true,
+    },
+  });
+
   console.log('Seed data created successfully!');
   console.log(`Platform Admin: ${platformAdminEmail} / (password from env)`);
   console.log(`Demo Admin: ${demoAdminEmail} / (password from env)`);
+  console.log('Themes and packages initialized!');
 }
 
 main()

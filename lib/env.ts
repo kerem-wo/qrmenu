@@ -24,6 +24,11 @@ const envSchema = z.object({
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   
+  // İyzico (optional - only needed if using payment)
+  IYZICO_API_KEY: z.string().optional(),
+  IYZICO_SECRET_KEY: z.string().optional(),
+  NEXT_PUBLIC_BASE_URL: z.string().url().optional(),
+  
   // Socket.io (optional)
   NEXT_PUBLIC_SOCKET_URL: z.string().url().optional().or(z.literal("")),
 });
