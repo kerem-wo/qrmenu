@@ -166,11 +166,19 @@ export async function POST(request: NextRequest) {
       const validThemes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
       const selectedTheme = theme && validThemes.includes(theme) ? theme : "default";
 
-      // Encrypt documents before storage
-      const encryptedTaxDocument = taxDocument ? encryptDataUrl(taxDocument) : null;
-      const encryptedBusinessLicense = businessLicense ? encryptDataUrl(businessLicense) : null;
-      const encryptedTradeRegistry = tradeRegistry ? encryptDataUrl(tradeRegistry) : null;
-      const encryptedIdentityDocument = identityDocument ? encryptDataUrl(identityDocument) : null;
+      // Encrypt documents before storage (only if not already encrypted)
+      const encryptedTaxDocument = taxDocument 
+        ? (taxDocument.startsWith('encrypted:') ? taxDocument : encryptDataUrl(taxDocument))
+        : null;
+      const encryptedBusinessLicense = businessLicense 
+        ? (businessLicense.startsWith('encrypted:') ? businessLicense : encryptDataUrl(businessLicense))
+        : null;
+      const encryptedTradeRegistry = tradeRegistry 
+        ? (tradeRegistry.startsWith('encrypted:') ? tradeRegistry : encryptDataUrl(tradeRegistry))
+        : null;
+      const encryptedIdentityDocument = identityDocument 
+        ? (identityDocument.startsWith('encrypted:') ? identityDocument : encryptDataUrl(identityDocument))
+        : null;
 
       // Restaurant oluştur (status: pending - platform admin onayı bekliyor)
       const restaurant = await tx.restaurant.create({
