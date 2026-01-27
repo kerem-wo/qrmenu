@@ -292,6 +292,9 @@ export default function OrderTrackingPage() {
   const [processingPayment, setProcessingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [showMockPayment, setShowMockPayment] = useState(false);
+  const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
+  const [mockAmount, setMockAmount] = useState<number>(0);
 
   const S = STRINGS[lang];
   const locale = LOCALE[lang];
@@ -400,101 +403,52 @@ export default function OrderTrackingPage() {
   };
 
   const showMockPaymentForm = (paymentId: string, amount: number) => {
-    // Mock ödeme formu modal oluştur - React component kullanarak
-    const modal = document.createElement("div");
-    modal.id = "mock-payment-modal";
-    modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto";
-    
-    // React root container
-    const root = document.createElement("div");
-    root.className = "w-full max-w-2xl";
-    modal.appendChild(root);
-    document.body.appendChild(modal);
+    setMockPaymentId(paymentId);
+    setMockAmount(amount);
+    setShowMockPayment(true);
+  };
 
-    // React'i import et ve render et
-    import("react").then((React) => {
-      import("react-dom/client").then((ReactDOM) => {
-        const handleSubmit = async (data: {
-          cardNumber: string;
-          cardName: string;
-          expiry: string;
-          cvv: string;
-        }) => {
-          try {
-            // Mock callback'i simüle et
-            const paymentRes = await fetch(`/api/payment/paytr/mock-info?paymentId=${paymentId}`);
-            const paymentInfo = await paymentRes.json();
-            const merchantOid = paymentInfo.merchantOid || `order_${paymentId}_${Date.now()}`;
-            
-            const callbackRes = await fetch("/api/payment/paytr/callback", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: new URLSearchParams({
-                merchant_oid: merchantOid,
-                status: "success",
-                total_amount: amount.toFixed(2),
-                hash: "mock_hash_" + Date.now(),
-              }),
-            });
+  const handleMockPaymentSubmit = async (data: {
+    cardNumber: string;
+    cardName: string;
+    expiry: string;
+    cvv: string;
+  }) => {
+    if (!mockPaymentId) return;
 
-            if (callbackRes.ok) {
-              modal.remove();
-              window.location.reload();
-            } else {
-              throw new Error("Mock ödeme başarısız");
-            }
-          } catch (error) {
-            console.error("Mock payment error:", error);
-            alert("Mock ödeme simülasyonu başarısız. Lütfen tekrar deneyin.");
-          }
-        };
-
-        const handleCancel = () => {
-          modal.remove();
-        };
-
-        const container = ReactDOM.createRoot(root);
-        container.render(
-          React.default.createElement(
-            "div",
-            { className: "bg-white rounded-2xl p-6 md:p-8 relative shadow-2xl" },
-            React.default.createElement(
-              "button",
-              {
-                onClick: handleCancel,
-                className: "absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 transition-colors",
-              },
-              React.default.createElement(
-                "svg",
-                { className: "w-6 h-6", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24" },
-                React.default.createElement("path", {
-                  strokeLinecap: "round",
-                  strokeLinejoin: "round",
-                  strokeWidth: "2",
-                  d: "M6 18L18 6M6 6l12 12",
-                })
-              )
-            ),
-            React.default.createElement(
-              "div",
-              { className: "mb-6" },
-              React.default.createElement(
-                "div",
-                { className: "bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-4" },
-                React.default.createElement("p", { className: "font-semibold" }, "🧪 Mock Test Modu (Localhost)"),
-                React.default.createElement("p", { className: "text-sm mt-1" }, "PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.")
-              ),
-              React.default.createElement("h3", { className: "text-2xl font-bold text-gray-900 mb-2" }, "Ödeme Bilgileri")
-            ),
-            React.default.createElement(PremiumCreditCard, {
-              onSubmit: handleSubmit,
-              onCancel: handleCancel,
-              amount: amount,
-            })
-          )
-        );
+    try {
+      // Mock callback'i simüle et
+      const paymentRes = await fetch(`/api/payment/paytr/mock-info?paymentId=${mockPaymentId}`);
+      const paymentInfo = await paymentRes.json();
+      const merchantOid = paymentInfo.merchantOid || `order_${mockPaymentId}_${Date.now()}`;
+      
+      const callbackRes = await fetch("/api/payment/paytr/callback", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          merchant_oid: merchantOid,
+          status: "success",
+          total_amount: mockAmount.toFixed(2),
+          hash: "mock_hash_" + Date.now(),
+        }),
       });
-    });
+
+      if (callbackRes.ok) {
+        setShowMockPayment(false);
+        window.location.reload();
+      } else {
+        throw new Error("Mock ödeme başarısız");
+      }
+    } catch (error) {
+      console.error("Mock payment error:", error);
+      alert("Mock ödeme simülasyonu başarısız. Lütfen tekrar deneyin.");
+    }
+  };
+
+  const handleMockPaymentCancel = () => {
+    setShowMockPayment(false);
+    setMockPaymentId(null);
+    setMockAmount(0);
   };
 
   const showPayTRIframe = (token: string, iframeUrl: string) => {
@@ -929,6 +883,34 @@ export default function OrderTrackingPage() {
           </div>
         </div>
       </div>
+
+      {/* Mock Payment Modal */}
+      {showMockPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 md:p-8 relative shadow-2xl w-full max-w-2xl my-auto">
+            <button
+              onClick={handleMockPaymentCancel}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <div className="mb-6">
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-4">
+                <p className="font-semibold">🧪 Mock Test Modu (Localhost)</p>
+                <p className="text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Ödeme Bilgileri</h3>
+            </div>
+            <PremiumCreditCard
+              onSubmit={handleMockPaymentSubmit}
+              onCancel={handleMockPaymentCancel}
+              amount={mockAmount}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
