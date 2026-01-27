@@ -719,31 +719,6 @@ export function BoltMenuForSlugClient() {
     };
   }, []);
 
-  // Scroll to products section when loaded in iframe (for landing page preview)
-  useEffect(() => {
-    // Check if we're in an iframe
-    const isInIframe = window.self !== window.top;
-    
-    if (isInIframe && items.length > 0) {
-      // Wait for content to render, then scroll to products
-      setTimeout(() => {
-        const popularSection = document.querySelector('[data-tab="Most Popular"]') || 
-                               document.querySelector('section[id*="Most Popular"]') ||
-                               document.querySelector('section[id*="most-popular"]');
-        if (popularSection) {
-          popularSection.scrollIntoView({ behavior: 'auto', block: 'start' });
-        } else {
-          // If "Most Popular" not found, scroll to first category section
-          const firstCategorySection = document.querySelector('section[data-tab]') ||
-                                       document.querySelector('section[id*="category"]');
-          if (firstCategorySection) {
-            firstCategorySection.scrollIntoView({ behavior: 'auto', block: 'start' });
-          }
-        }
-      }, 500); // Wait 500ms for content to render
-    }
-  }, [items]);
-
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
   
   // Get theme from URL param (for preview) - URL param has priority, then restaurant data
@@ -970,6 +945,31 @@ export function BoltMenuForSlugClient() {
         item: byId.get(l.item.id) ?? l.item,
       }))
     );
+  }, [items]);
+
+  // Scroll to products section when loaded in iframe (for landing page preview)
+  useEffect(() => {
+    // Check if we're in an iframe
+    const isInIframe = window.self !== window.top;
+    
+    if (isInIframe && items.length > 0) {
+      // Wait for content to render, then scroll to products
+      setTimeout(() => {
+        const popularSection = document.querySelector('[data-tab="Most Popular"]') || 
+                               document.querySelector('section[id*="Most Popular"]') ||
+                               document.querySelector('section[id*="most-popular"]');
+        if (popularSection) {
+          popularSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+        } else {
+          // If "Most Popular" not found, scroll to first category section
+          const firstCategorySection = document.querySelector('section[data-tab]') ||
+                                       document.querySelector('section[id*="category"]');
+          if (firstCategorySection) {
+            firstCategorySection.scrollIntoView({ behavior: 'auto', block: 'start' });
+          }
+        }
+      }, 500); // Wait 500ms for content to render
+    }
   }, [items]);
 
   const filteredItems = useMemo(() => {
