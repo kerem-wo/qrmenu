@@ -86,12 +86,7 @@ export async function POST(request: NextRequest) {
       name: admin.name,
     };
 
-    // Set session cookie
-    let response = NextResponse.json({
-      success: true,
-      admin: session,
-    });
-    
+    // Set session cookie FIRST, then create response
     try {
       await setPlatformAdminSession(session);
       console.log(`Platform admin session cookie set - NODE_ENV: ${process.env.NODE_ENV}, URL: ${request.url}`);
@@ -118,7 +113,11 @@ export async function POST(request: NextRequest) {
       timestamp: new Date(),
     });
 
-    return response;
+    // Create response AFTER cookie is set
+    return NextResponse.json({
+      success: true,
+      admin: session,
+    });
   } catch (error: any) {
     console.error("Platform admin login error:", error);
     return NextResponse.json(

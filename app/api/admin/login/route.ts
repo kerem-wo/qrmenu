@@ -103,12 +103,7 @@ export async function POST(request: NextRequest) {
       restaurantId: admin.restaurantId,
     };
 
-    // Set session cookie
-    let response = NextResponse.json({
-      success: true,
-      admin: session,
-    });
-    
+    // Set session cookie FIRST, then create response
     try {
       await setAdminSession(session);
       console.log(`Admin session cookie set - NODE_ENV: ${process.env.NODE_ENV}, URL: ${request.url}`);
@@ -135,7 +130,11 @@ export async function POST(request: NextRequest) {
       timestamp: new Date(),
     });
 
-    return response;
+    // Create response AFTER cookie is set
+    return NextResponse.json({
+      success: true,
+      admin: session,
+    });
   } catch (error: any) {
     console.error("Login error:", error);
     console.error("Error details:", {
