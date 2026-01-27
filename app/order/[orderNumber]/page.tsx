@@ -897,8 +897,8 @@ export default function OrderTrackingPage() {
 
       {/* Mock Payment Modal */}
       {showMockPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl p-6 md:p-8 relative shadow-2xl w-full max-w-2xl my-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto" onClick={handleMockPaymentCancel}>
+          <div className="bg-white rounded-2xl p-6 md:p-8 relative shadow-2xl w-full max-w-2xl my-auto" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={handleMockPaymentCancel}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 transition-colors"
