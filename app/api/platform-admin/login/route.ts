@@ -1,14 +1,41 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { setPlatformAdminSession } from "@/lib/platform-auth";
 import bcrypt from "bcryptjs";
+import { rateLimit, getClientIP, logSecurityEvent, requireHTTPS, sanitizeInput } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // HTTPS Check
+    if (!requireHTTPS(request)) {
+      return NextResponse.json(
+        { error: "HTTPS required" },
+        { status: 403 }
+      );
+    }
+
+    // Rate Limiting (stricter for platform admin)
+    const clientIP = getClientIP(request);
+    const rateLimitKey = `platform-login:${clientIP}`;
+    if (!rateLimit(rateLimitKey, 3, 60000)) { // 3 attempts per minute
+      await logSecurityEvent({
+        action: 'PLATFORM_ADMIN_LOGIN_RATE_LIMIT_EXCEEDED',
+        userType: 'anonymous',
+        ip: clientIP,
+        userAgent: request.headers.get('user-agent') || 'unknown',
+        timestamp: new Date(),
+      });
+      return NextResponse.json(
+        { error: "Too many login attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { email, password } = await request.json();
 
+    // Input validation
     if (!email || !password) {
       return NextResponse.json(
         { error: "E-posta ve şifre gereklidir" },
