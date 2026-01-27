@@ -5,6 +5,7 @@ import { decryptDataUrl } from "@/lib/encryption";
 import { getClientIP, logSecurityEvent, requireHTTPS } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 /**
  * SECURE DOCUMENT ACCESS ENDPOINT

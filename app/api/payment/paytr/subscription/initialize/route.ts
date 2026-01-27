@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPayTRConfig, getPayTRToken, createUserBasket } from "@/lib/paytr";
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request: Request) {
   try {
     const { restaurantId, themeId, packageType, customerName, customerPhone, customerEmail } = await request.json();

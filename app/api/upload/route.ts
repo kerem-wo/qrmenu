@@ -4,6 +4,7 @@ import { validateFileType, rateLimit, getClientIP, logSecurityEvent } from "@/li
 import { getAdminSession } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 /**
  * SECURE FILE UPLOAD ENDPOINT

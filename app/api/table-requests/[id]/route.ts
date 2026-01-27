@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const runtime = 'nodejs';
 
 // PATCH: İsteği okundu olarak işaretle
 export async function PATCH(

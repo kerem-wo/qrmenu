@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getPlatformAdminSession } from "@/lib/platform-auth";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(
   request: Request,

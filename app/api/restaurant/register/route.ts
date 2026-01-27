@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { rateLimit, getClientIP, logSecurityEvent, sanitizeInput } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Slug oluşturma fonksiyonu (Türkçe karakterleri düzeltir)
 function generateSlug(name: string): string {

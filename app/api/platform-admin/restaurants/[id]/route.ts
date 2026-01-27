@@ -5,6 +5,7 @@ import { decryptDataUrl } from "@/lib/encryption";
 import { getClientIP, logSecurityEvent } from "@/lib/security";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(
   request: NextRequest,

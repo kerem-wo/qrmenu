@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { sendEmail, generatePasswordResetEmail } from "@/lib/email";
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Simple token generator without crypto dependency issues
 function generateResetToken(): string {
