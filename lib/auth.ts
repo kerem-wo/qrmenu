@@ -108,16 +108,18 @@ export async function setAdminSession(session: AdminSession, response?: any) {
       .digest('hex');
     const signedSession = `${sessionData}.${signature}`;
     
-    const isProduction = process.env.NODE_ENV === "production";
+    // Check if we're in production (Vercel sets VERCEL=1)
+    const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
     
     // If response is provided (NextResponse from route handler), use it
     if (response && response.cookies) {
       response.cookies.set("admin_session", signedSession, {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? "lax" : "strict",
+        secure: isProduction, // HTTPS only in production
+        sameSite: isProduction ? "lax" : "strict", // Lax for better compatibility in production
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: "/",
+        // Don't set domain - let browser use default (current domain)
       });
     } else {
       // Otherwise use cookies() directly (for server components)
