@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     await logSecurityEvent({
       action: 'FILE_UPLOADED',
       userId: session?.id || 'anonymous',
-      userType: session ? 'admin' : (isRegistrationPage ? 'registration' : 'anonymous'),
+      userType: session ? 'admin' : 'anonymous', // Registration sayfasından gelen istekler de anonymous olarak loglanır
       ip: clientIP,
       userAgent: request.headers.get('user-agent') || 'unknown',
       details: {
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
         fileType: file.type,
         fileSize: file.size,
         fileHash: fileHash,
-        isRegistration: isRegistrationPage,
+        isRegistration: isRegistrationPage, // Registration bilgisi details içinde saklanıyor
       },
       timestamp: new Date(),
     });
