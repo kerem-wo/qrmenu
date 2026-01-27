@@ -394,6 +394,70 @@ export default function OrderTrackingPage() {
     }
   };
 
+  const showPayTRIframe = (token: string, iframeUrl: string) => {
+    // PayTR iframe modal oluştur
+    const modal = document.createElement("div");
+    modal.id = "paytr-modal";
+    modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50";
+    modal.innerHTML = `
+      <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative">
+        <button onclick="document.getElementById('paytr-modal').remove()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+        <h3 class="text-xl font-bold mb-4">Ödeme</h3>
+        <iframe 
+          name="paytriframe" 
+          id="paytriframe" 
+          width="100%" 
+          height="600" 
+          scrolling="no" 
+          style="border: none;"
+          allowtransparency="true"
+        ></iframe>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    // PayTR iframe formu oluştur ve submit et
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = iframeUrl;
+    form.target = "paytriframe";
+    form.style.display = "none";
+    
+    const tokenInput = document.createElement("input");
+    tokenInput.type = "hidden";
+    tokenInput.name = "token";
+    tokenInput.value = token;
+    form.appendChild(tokenInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+    
+    // Form submit sonrası formu kaldır
+    setTimeout(() => {
+      document.body.removeChild(form);
+    }, 1000);
+
+    // PayTR callback sonrası sayfa yenileme için kontrol (5 saniye sonra başla)
+    setTimeout(() => {
+      const checkInterval = setInterval(() => {
+        // URL parametrelerini kontrol et (callback sayfadan geldiyse)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("payment") === "success") {
+          clearInterval(checkInterval);
+          modal.remove();
+          window.location.reload();
+        }
+      }, 2000);
+
+      // 5 dakika sonra interval'i temizle
+      setTimeout(() => clearInterval(checkInterval), 300000);
+    }, 5000);
+  };
+
   const handlePayment = async () => {
     if (!order || processingPayment) return;
 
@@ -401,7 +465,7 @@ export default function OrderTrackingPage() {
 
     try {
       // Ödeme başlat
-      const res = await fetch("/api/payment/iyzico/initialize", {
+      const res = await fetch("/api/payment/paytr/initialize", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -423,16 +487,9 @@ export default function OrderTrackingPage() {
 
       const data = await res.json();
 
-      if (data.paymentPageUrl) {
-        // İyzico ödeme sayfasına yönlendir
-        window.location.href = data.paymentPageUrl;
-      } else if (data.checkoutFormContent) {
-        // Checkout form içeriğini göster
-        const newWindow = window.open("", "_blank");
-        if (newWindow) {
-          newWindow.document.write(data.checkoutFormContent);
-          newWindow.document.close();
-        }
+      if (data.token && data.iframeUrl) {
+        // PayTR iframe'i göster
+        showPayTRIframe(data.token, data.iframeUrl);
       } else {
         throw new Error("Ödeme sayfası bilgisi alınamadı");
       }

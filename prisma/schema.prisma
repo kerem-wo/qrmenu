@@ -260,10 +260,10 @@ model Payment {
   status        String  @default("pending") // pending, paid, failed, refunded
   paymentMethod String? // online, cash, card
 
-  // İyzico Bilgileri
-  iyzicoPaymentId      String? // İyzico payment ID
-  iyzicoConversationId String? // İyzico conversation ID
-  iyzicoToken          String? // İyzico checkout form token
+  // PayTR Bilgileri
+  paytrMerchantOid String? // PayTR merchant order ID (unique)
+  paytrPaymentId   String? // PayTR payment ID
+  paytrToken       String? // PayTR iframe token
 
   // İlişkiler
   orderId      String? // Sipariş ödemesi ise
@@ -290,7 +290,8 @@ model Payment {
   @@index([orderId])
   @@index([restaurantId])
   @@index([status])
-  @@index([iyzicoPaymentId])
+  @@index([paytrMerchantOid])
+  @@index([paytrPaymentId])
 }
 
 // Tema ve Paket Yönetimi
