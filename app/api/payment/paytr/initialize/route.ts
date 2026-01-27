@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     }
 
     // PayTR yapılandırması
-    const config = getPayTRConfig(); // API bilgileri yoksa hata fırlatır
+    const config = getPayTRConfig(); // Localhost'ta null dönebilir (mock mode)
 
     // Müşteri IP adresini al
     const forwarded = request.headers.get("x-forwarded-for");
@@ -85,6 +85,32 @@ export async function POST(request: Request) {
         },
       },
     });
+
+    // MOCK MODE: Localhost'ta API bilgileri yoksa mock token döndür
+    if (!config) {
+      const mockToken = `mock_token_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
+      // Payment kaydını mock token ile güncelle
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { 
+          paytrToken: mockToken,
+          metadata: {
+            ...(payment.metadata as object || {}),
+            mockMode: true,
+            orderNumber: orderNumber,
+          },
+        },
+      });
+
+      return NextResponse.json({
+        paymentId: payment.id,
+        token: mockToken,
+        iframeUrl: "mock", // Frontend'de mock iframe gösterecek
+        mockMode: true,
+        message: "Mock mode aktif - PayTR API bilgileri yapılandırılmamış (localhost)",
+      });
+    }
 
     try {
       // PayTR token al

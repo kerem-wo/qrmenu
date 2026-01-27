@@ -47,14 +47,23 @@ export interface PayTRCallbackData {
 
 /**
  * Get PayTR configuration from environment variables
+ * Returns null if API keys are not configured (only allowed in development/localhost)
  */
-export function getPayTRConfig(): PayTRConfig {
+export function getPayTRConfig(): PayTRConfig | null {
   const merchantId = process.env.PAYTR_MERCHANT_ID;
   const merchantKey = process.env.PAYTR_MERCHANT_KEY;
   const merchantSalt = process.env.PAYTR_MERCHANT_SALT;
 
+  // Production'da API anahtarları zorunlu
+  if (process.env.NODE_ENV === "production") {
+    if (!merchantId || !merchantKey || !merchantSalt) {
+      throw new Error("PayTR API anahtarları yapılandırılmamış");
+    }
+  }
+
+  // Localhost'ta API anahtarları yoksa null döndür (mock mode için)
   if (!merchantId || !merchantKey || !merchantSalt) {
-    throw new Error("PayTR API anahtarları yapılandırılmamış");
+    return null;
   }
 
   return {
@@ -63,6 +72,13 @@ export function getPayTRConfig(): PayTRConfig {
     merchantSalt,
     testMode: process.env.NODE_ENV === "development", // Localhost'ta test modu aktif, production'da kapalı
   };
+}
+
+/**
+ * Check if PayTR is configured (for mock mode detection)
+ */
+export function isPayTRConfigured(): boolean {
+  return getPayTRConfig() !== null;
 }
 
 /**
@@ -83,6 +99,10 @@ export function generatePayTRHash(params: {
 }): string {
   const config = getPayTRConfig();
   
+  if (!config) {
+    throw new Error("PayTR API anahtarları yapılandırılmamış");
+  }
+  
   // PayTR hash string: merchant_salt + parametreler (belirli sırada)
   const hashString = `${config.merchantSalt}${params.merchant_id}${params.user_ip}${params.merchant_oid}${params.email}${params.payment_amount}${params.user_basket}${params.no_installment}${params.max_installment}${params.currency}${params.test_mode}`;
   
@@ -101,6 +121,11 @@ export function generatePayTRHash(params: {
 export function verifyPayTRCallback(data: PayTRCallbackData): boolean {
   try {
     const config = getPayTRConfig();
+    
+    if (!config) {
+      console.error("PayTR API anahtarları yapılandırılmamış");
+      return false;
+    }
     
     // PayTR callback hash: merchant_salt + merchant_oid + status + total_amount
     // Status değerini küçük harfe çevir (PayTR dokümantasyonuna göre)
@@ -136,6 +161,10 @@ export function createUserBasket(items: Array<{ name: string; price: number; qua
  */
 export async function getPayTRToken(requestData: Omit<PayTRTokenRequest, "hash">): Promise<{ token: string }> {
   const config = getPayTRConfig();
+  
+  if (!config) {
+    throw new Error("PayTR API anahtarları yapılandırılmamış");
+  }
   
   // Generate hash (PayTR iFrame API hash formatı)
   const hash = generatePayTRHash({
