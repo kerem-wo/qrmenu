@@ -239,17 +239,19 @@ export default function NewCampaignPage() {
                 />
               </div>
 
-              <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg">
-                <input
-                  type="checkbox"
-                  id="isActive"
-                  checked={formData.isActive}
-                  onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                />
-                <Label htmlFor="isActive" className="cursor-pointer text-sm font-medium text-slate-700">
-                  Aktif (müşteriler görebilir)
-                </Label>
+              <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-slate-300 shadow-sm">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                    className="w-5 h-5 rounded border-slate-300 text-green-600 focus:ring-green-500 focus:ring-2 cursor-pointer"
+                  />
+                  <Label htmlFor="isActive" className="cursor-pointer text-sm font-medium text-slate-700">
+                    {formData.isActive ? "Aktif" : "Pasif"} (müşteriler görebilir)
+                  </Label>
+                </div>
               </div>
 
               <div className="flex gap-4 pt-4">

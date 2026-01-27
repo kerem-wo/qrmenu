@@ -64,7 +64,11 @@
     background-position: right 0.75rem center;
     background-size: 1.25em 1.25em;
     padding-right: 2.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
     cursor: pointer;
+    display: flex;
+    align-items: center;
   }
   
   select:focus {

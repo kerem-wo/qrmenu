@@ -238,7 +238,8 @@ export default function SettingsPage() {
                 id="language"
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                className="premium-input h-11"
+                className="premium-input h-11 flex items-center py-0"
+                style={{ lineHeight: '2.75rem' }}
               >
                 <option value="tr">Türkçe</option>
                 <option value="en">English</option>
@@ -259,7 +260,8 @@ export default function SettingsPage() {
                 id="theme"
                 value={formData.theme}
                 onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                className="premium-input h-11"
+                className="premium-input h-11 flex items-center py-0"
+                style={{ lineHeight: '2.75rem' }}
               >
                 <option value="premium">Premium Menü</option>
                 <option value="paper">Kağıt Menü</option>
@@ -292,19 +294,24 @@ export default function SettingsPage() {
                 </p>
               </div>
 
-              <label className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                <div>
+              <label className="mt-3 flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer hover:bg-gray-100 transition-colors">
+                <div className="flex-1">
                   <div className="text-sm font-bold text-gray-900">Gel Al</div>
                   <div className="text-xs text-gray-600 font-medium">
                     Açık olursa müşteri “Gel Al” seçebilir. Kapalı olursa bu seçenek gösterilmez.
                   </div>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={Boolean(formData.enableTakeaway)}
-                  onChange={(e) => setFormData((s) => ({ ...s, enableTakeaway: e.target.checked }))}
-                  className="h-5 w-5 rounded border-gray-300"
-                />
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-300 shadow-sm">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(formData.enableTakeaway)}
+                    onChange={(e) => setFormData((s) => ({ ...s, enableTakeaway: e.target.checked }))}
+                    className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 focus:ring-2 cursor-pointer"
+                  />
+                  <span className="text-xs font-medium text-gray-700">
+                    {formData.enableTakeaway ? "Aktif" : "Pasif"}
+                  </span>
+                </div>
               </label>
             </div>
 
