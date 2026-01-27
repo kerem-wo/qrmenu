@@ -167,16 +167,17 @@ export async function POST(request: NextRequest) {
       const selectedTheme = theme && validThemes.includes(theme) ? theme : "default";
 
       // Encrypt documents before storage (only if not already encrypted)
-      const encryptedTaxDocument = taxDocument 
+      // Check for empty strings and null values
+      const encryptedTaxDocument = taxDocument && taxDocument.trim() && taxDocument !== 'null'
         ? (taxDocument.startsWith('encrypted:') ? taxDocument : encryptDataUrl(taxDocument))
         : null;
-      const encryptedBusinessLicense = businessLicense 
+      const encryptedBusinessLicense = businessLicense && businessLicense.trim() && businessLicense !== 'null'
         ? (businessLicense.startsWith('encrypted:') ? businessLicense : encryptDataUrl(businessLicense))
         : null;
-      const encryptedTradeRegistry = tradeRegistry 
+      const encryptedTradeRegistry = tradeRegistry && tradeRegistry.trim() && tradeRegistry !== 'null'
         ? (tradeRegistry.startsWith('encrypted:') ? tradeRegistry : encryptDataUrl(tradeRegistry))
         : null;
-      const encryptedIdentityDocument = identityDocument 
+      const encryptedIdentityDocument = identityDocument && identityDocument.trim() && identityDocument !== 'null'
         ? (identityDocument.startsWith('encrypted:') ? identityDocument : encryptDataUrl(identityDocument))
         : null;
 
