@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2 } from "lucide-react";
+import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2, ArrowLeft, Wallet } from "lucide-react";
+import Link from "next/link";
 
 interface OrderItem {
   id: string;
@@ -27,6 +28,9 @@ interface Order {
   items: OrderItem[];
   createdAt: string;
   updatedAt: string;
+  restaurant?: {
+    slug: string;
+  };
   queue?: {
     ahead: number;
     etaMinMinutes: number;
@@ -536,6 +540,18 @@ export default function OrderTrackingPage() {
     <div className="min-h-screen premium-bg-gradient py-6 sm:py-8 px-4">
       <div className="premium-container max-w-2xl mx-auto">
         <div className="premium-card p-6 sm:p-8 md:p-10 animate-premium-fade-in">
+          {/* Menüye Geri Dön Butonu */}
+          {order.restaurant?.slug && (
+            <div className="mb-4">
+              <Link
+                href={`/menu/${order.restaurant.slug}`}
+                className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-semibold transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>{lang === "tr" ? "Menüye Geri Dön" : lang === "en" ? "Back to Menu" : "Zurück zum Menü"}</span>
+              </Link>
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6 sm:mb-8">
             <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight mb-2">
@@ -702,7 +718,7 @@ export default function OrderTrackingPage() {
                   )}
                 </div>
               ) : order.paymentStatus === "pending" ? (
-                <div className="mb-4">
+                <div className="mb-4 space-y-3">
                   <button
                     onClick={handlePayment}
                     disabled={processingPayment}
@@ -717,6 +733,23 @@ export default function OrderTrackingPage() {
                       <>
                         <CreditCard className="w-5 h-5" />
                         <span>{lang === "tr" ? "Ödeme Yap" : lang === "en" ? "Pay Now" : "Jetzt bezahlen"}</span>
+                      </>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleCashPayment}
+                    disabled={processingPayment}
+                    className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-gray-600/20 hover:shadow-xl hover:shadow-gray-600/30 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                  >
+                    {processingPayment ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>{lang === "tr" ? "İşleniyor..." : lang === "en" ? "Processing..." : "Wird verarbeitet..."}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Wallet className="w-5 h-5" />
+                        <span>{lang === "tr" ? "Kasada Ödeme Yapacağım" : lang === "en" ? "Pay at Cashier" : "An der Kasse bezahlen"}</span>
                       </>
                     )}
                   </button>

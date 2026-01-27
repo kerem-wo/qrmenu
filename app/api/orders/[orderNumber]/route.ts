@@ -23,6 +23,7 @@ export async function GET(
         restaurant: {
           select: {
             language: true,
+            slug: true,
           },
         },
         items: {

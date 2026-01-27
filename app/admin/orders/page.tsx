@@ -27,6 +27,8 @@ interface Order {
   customerPhone: string | null;
   status: string;
   total: number;
+  paymentStatus?: string;
+  paymentMethod?: string | null;
   items: OrderItem[];
   createdAt: string;
 }
@@ -351,6 +353,38 @@ export default function OrdersPage() {
                         <span className="text-2xl font-black text-gray-900">
                           {order.total.toFixed(2)} ₺
                         </span>
+                      </div>
+
+                      {/* Payment Status */}
+                      <div className="border-t border-gray-200 pt-4 mb-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-gray-600">Ödeme Durumu:</span>
+                          <div className="flex items-center gap-2">
+                            {order.paymentStatus === "paid" ? (
+                              <>
+                                <CheckCircle className="w-4 h-4 text-green-600" />
+                                <span className="text-sm font-semibold text-green-700">
+                                  Ödendi
+                                  {order.paymentMethod && (
+                                    <span className="ml-1 text-xs">
+                                      ({order.paymentMethod === "online" ? "Online" : order.paymentMethod === "cash" ? "Nakit" : order.paymentMethod})
+                                    </span>
+                                  )}
+                                </span>
+                              </>
+                            ) : order.paymentStatus === "failed" ? (
+                              <>
+                                <XCircle className="w-4 h-4 text-red-600" />
+                                <span className="text-sm font-semibold text-red-700">Ödeme Başarısız</span>
+                              </>
+                            ) : (
+                              <>
+                                <Clock className="w-4 h-4 text-yellow-600" />
+                                <span className="text-sm font-semibold text-yellow-700">Ödeme Bekleniyor</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Status Actions */}
