@@ -167,19 +167,27 @@ export async function POST(request: NextRequest) {
       const selectedTheme = theme && validThemes.includes(theme) ? theme : "default";
 
       // Encrypt documents before storage (only if not already encrypted)
-      // Check for empty strings and null values
-      const encryptedTaxDocument = taxDocument && taxDocument.trim() && taxDocument !== 'null'
-        ? (taxDocument.startsWith('encrypted:') ? taxDocument : encryptDataUrl(taxDocument))
-        : null;
-      const encryptedBusinessLicense = businessLicense && businessLicense.trim() && businessLicense !== 'null'
-        ? (businessLicense.startsWith('encrypted:') ? businessLicense : encryptDataUrl(businessLicense))
-        : null;
-      const encryptedTradeRegistry = tradeRegistry && tradeRegistry.trim() && tradeRegistry !== 'null'
-        ? (tradeRegistry.startsWith('encrypted:') ? tradeRegistry : encryptDataUrl(tradeRegistry))
-        : null;
-      const encryptedIdentityDocument = identityDocument && identityDocument.trim() && identityDocument !== 'null'
-        ? (identityDocument.startsWith('encrypted:') ? identityDocument : encryptDataUrl(identityDocument))
-        : null;
+      // Helper function to safely encrypt documents
+      const safeEncryptDocument = (doc: string | null | undefined): string | null => {
+        if (!doc || typeof doc !== 'string' || !doc.trim() || doc === 'null') {
+          return null;
+        }
+        if (doc.startsWith('encrypted:')) {
+          return doc;
+        }
+        try {
+          return encryptDataUrl(doc);
+        } catch (error) {
+          console.error('Error encrypting document:', error);
+          // Return null if encryption fails (invalid format)
+          return null;
+        }
+      };
+
+      const encryptedTaxDocument = safeEncryptDocument(taxDocument);
+      const encryptedBusinessLicense = safeEncryptDocument(businessLicense);
+      const encryptedTradeRegistry = safeEncryptDocument(tradeRegistry);
+      const encryptedIdentityDocument = safeEncryptDocument(identityDocument);
 
       // Restaurant oluştur (status: pending - platform admin onayı bekliyor)
       const restaurant = await tx.restaurant.create({
