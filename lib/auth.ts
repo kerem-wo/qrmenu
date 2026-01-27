@@ -25,9 +25,27 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     // Verify signature
     const crypto = await import('crypto');
     const secret = process.env.SESSION_SECRET || process.env.ENCRYPTION_KEY || 'default-secret-change-in-production';
-    const [sessionData, signature] = sessionCookie.value.split('.');
     
-    if (!signature) {
+    // Split cookie value - last part is signature, everything before is sessionData
+    const lastDotIndex = sessionCookie.value.lastIndexOf('.');
+    if (lastDotIndex === -1) {
+      // No signature found, try legacy format
+      try {
+        const session = JSON.parse(sessionCookie.value) as AdminSession;
+        const admin = await prisma.admin.findUnique({
+          where: { id: session.id },
+          select: { id: true },
+        });
+        return admin ? session : null;
+      } catch {
+        return null;
+      }
+    }
+    
+    const sessionData = sessionCookie.value.substring(0, lastDotIndex);
+    const signature = sessionCookie.value.substring(lastDotIndex + 1).trim();
+    
+    if (!signature || !sessionData) {
       // Legacy session format (backward compatibility)
       try {
         const session = JSON.parse(sessionCookie.value) as AdminSession;
@@ -45,6 +63,12 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     const expectedSignature = crypto.createHmac('sha256', secret)
       .update(sessionData)
       .digest('hex');
+    
+    // Check signature length first (timingSafeEqual requires same length)
+    if (signature.length !== expectedSignature.length) {
+      console.error(`Session signature length mismatch - received: ${signature.length}, expected: ${expectedSignature.length}`);
+      return null;
+    }
     
     if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
       console.error("Session signature verification failed - possible tampering");
