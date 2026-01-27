@@ -12,12 +12,15 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     const cookieStore = cookies();
     const sessionCookie = cookieStore.get("admin_session");
     
+    console.log('getAdminSession - Cookie found:', !!sessionCookie);
     if (!sessionCookie) {
-      if (process.env.NODE_ENV === "development") {
-        console.log("No admin_session cookie found");
-      }
+      // Log all cookies for debugging
+      const allCookies = cookieStore.getAll();
+      console.log('getAdminSession - All cookies:', allCookies.map(c => c.name).join(', '));
       return null;
     }
+    
+    console.log('getAdminSession - Cookie value length:', sessionCookie.value.length);
     
     // Verify signature
     const crypto = await import('crypto');

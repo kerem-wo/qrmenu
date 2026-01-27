@@ -12,9 +12,15 @@ export async function getPlatformAdminSession(): Promise<PlatformAdminSession | 
     const cookieStore = cookies();
     const sessionCookie = cookieStore.get("platform_admin_session");
     
+    console.log('getPlatformAdminSession - Cookie found:', !!sessionCookie);
     if (!sessionCookie) {
+      // Log all cookies for debugging
+      const allCookies = cookieStore.getAll();
+      console.log('getPlatformAdminSession - All cookies:', allCookies.map(c => c.name).join(', '));
       return null;
     }
+    
+    console.log('getPlatformAdminSession - Cookie value length:', sessionCookie.value.length);
     
     // Verify signature
     const crypto = await import('crypto');

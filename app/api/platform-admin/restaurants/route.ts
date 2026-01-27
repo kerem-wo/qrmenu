@@ -4,12 +4,21 @@ import { getPlatformAdminSession } from "@/lib/platform-auth";
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    // Debug: Log all cookies
+    const cookieHeader = request.headers.get('cookie');
+    console.log('Platform admin restaurants API - Cookies received:', cookieHeader ? 'Yes' : 'No');
+    if (cookieHeader) {
+      console.log('Cookie header:', cookieHeader.substring(0, 200)); // First 200 chars
+    }
+    
     const session = await getPlatformAdminSession();
+    console.log('Platform admin session:', session ? `Found (${session.email})` : 'Not found');
+    
     if (!session) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: "Unauthorized", debug: { cookiesReceived: !!cookieHeader } },
         { status: 401 }
       );
     }
