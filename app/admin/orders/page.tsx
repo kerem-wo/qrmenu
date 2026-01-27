@@ -377,6 +377,11 @@ export default function OrdersPage() {
                                 <XCircle className="w-4 h-4 text-red-600" />
                                 <span className="text-sm font-semibold text-red-700">Ödeme Başarısız</span>
                               </>
+                            ) : order.paymentMethod === "cash_at_counter" ? (
+                              <>
+                                <Clock className="w-4 h-4 text-blue-600" />
+                                <span className="text-sm font-semibold text-blue-700">Kasada Ödenecek</span>
+                              </>
                             ) : (
                               <>
                                 <Clock className="w-4 h-4 text-yellow-600" />

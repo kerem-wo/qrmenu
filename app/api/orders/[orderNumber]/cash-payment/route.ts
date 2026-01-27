@@ -19,8 +19,8 @@ export async function POST(
     const order = await prisma.order.update({
       where: { orderNumber },
       data: {
-        paymentStatus: "paid",
-        paymentMethod: "cash",
+        paymentStatus: "pending", // Ödeme henüz yapılmadı, kasada yapılacak
+        paymentMethod: "cash_at_counter", // Kasada ödenecek
       },
     });
 
