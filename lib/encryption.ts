@@ -19,6 +19,11 @@ const SALT_LENGTH = 64; // 64 bytes for salt
 const TAG_LENGTH = 16; // 16 bytes for GCM tag
 const KEY_LENGTH = 32; // 32 bytes for AES-256
 
+// Get encryption key (validated at runtime)
+function getKey(): string {
+  return getEncryptionKey();
+}
+
 // Derive encryption key from environment variable
 function deriveKey(password: string, salt: Buffer): Buffer {
   return crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha512');
