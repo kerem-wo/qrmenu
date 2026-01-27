@@ -417,6 +417,34 @@ function PackageSelectionContent() {
           </Button>
         </div>
       </div>
+
+      {/* Mock Payment Modal */}
+      {showMockPayment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 md:p-8 relative shadow-2xl w-full max-w-2xl my-auto">
+            <button
+              onClick={handleMockPaymentCancel}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+            <div className="mb-6">
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-4">
+                <p className="font-semibold">🧪 Mock Test Modu (Localhost)</p>
+                <p className="text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Ödeme Bilgileri</h3>
+            </div>
+            <PremiumCreditCard
+              onSubmit={handleMockPaymentSubmit}
+              onCancel={handleMockPaymentCancel}
+              amount={mockAmount}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
