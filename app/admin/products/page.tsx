@@ -161,31 +161,29 @@ export default function ProductsPage() {
                     </p>
                   )}
                   <div className="pt-4 border-t border-gray-100">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <span className="text-xl sm:text-2xl font-black text-gray-900 whitespace-nowrap">
-                      {product.price.toFixed(2)} ₺
-                    </span>
-                    <div className="flex flex-wrap gap-2 sm:justify-end">
-                      <Button variant="outline" asChild className="premium-btn-secondary px-3 py-2 text-sm font-bold whitespace-nowrap">
-                        <Link href={`/admin/products/${product.id}/edit`} aria-label="Ürünü düzenle">
-                          <span className="inline-flex items-center gap-2">
-                            <Edit className="w-4 h-4" />
-                            <span className="hidden md:inline">Düzenle</span>
+                    <div className="flex flex-col gap-3">
+                      <span className="text-xl sm:text-2xl font-black text-gray-900 break-words">
+                        {product.price.toFixed(2)} ₺
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" asChild className="premium-btn-secondary px-4 py-2 text-sm font-bold flex-1 sm:flex-none min-w-0">
+                          <Link href={`/admin/products/${product.id}/edit`} className="flex items-center justify-center gap-2 w-full">
+                            <Edit className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Düzenle</span>
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleDelete(product.id)}
+                          className="premium-btn-secondary px-4 py-2 text-sm font-bold flex-1 sm:flex-none min-w-0 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                          aria-label="Ürünü sil"
+                        >
+                          <span className="flex items-center justify-center gap-2 w-full">
+                            <Trash2 className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Sil</span>
                           </span>
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleDelete(product.id)}
-                        className="premium-btn-secondary px-3 py-2 text-sm font-bold whitespace-nowrap hover:bg-red-50 hover:border-red-300 hover:text-red-600"
-                        aria-label="Ürünü sil"
-                      >
-                        <span className="inline-flex items-center gap-2">
-                          <Trash2 className="w-4 h-4" />
-                          <span className="hidden md:inline">Sil</span>
-                        </span>
-                      </Button>
-                    </div>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>

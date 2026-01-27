@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2, ArrowLeft, Wallet } from "lucide-react";
@@ -295,15 +295,14 @@ export default function OrderTrackingPage() {
   const [showMockPayment, setShowMockPayment] = useState(false);
   const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
   const [mockAmount, setMockAmount] = useState<number>(0);
+  const paymentFormRef = useRef<HTMLDivElement>(null);
 
-  // Scroll lock/unlock for modal
+  // Scroll to payment form when opened
   useEffect(() => {
-    if (showMockPayment) {
-      const originalStyle = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalStyle;
-      };
+    if (showMockPayment && paymentFormRef.current) {
+      setTimeout(() => {
+        paymentFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
     }
   }, [showMockPayment]);
 
@@ -893,26 +892,27 @@ export default function OrderTrackingPage() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Mock Payment Modal */}
-      {showMockPayment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto" onClick={handleMockPaymentCancel}>
-          <div className="bg-white rounded-2xl p-6 md:p-8 relative shadow-2xl w-full max-w-2xl my-auto" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={handleMockPaymentCancel}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10 transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
+        {/* Mock Payment Form - Inline (not modal) */}
+        {showMockPayment && (
+          <div ref={paymentFormRef} className="premium-card p-6 sm:p-8 md:p-10 mt-8 animate-premium-fade-in">
             <div className="mb-6">
-              <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-                <p className="font-semibold">🧪 Mock Test Modu (Localhost)</p>
-                <p className="text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold text-gray-900">Ödeme Bilgileri</h3>
+                <button
+                  onClick={handleMockPaymentCancel}
+                  className="text-gray-500 hover:text-gray-700 transition-colors p-2 hover:bg-gray-100 rounded-lg"
+                  aria-label="Kapat"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Ödeme Bilgileri</h3>
+              <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg">
+                <p className="font-semibold text-sm sm:text-base">🧪 Mock Test Modu (Localhost)</p>
+                <p className="text-xs sm:text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
+              </div>
             </div>
             <PremiumCreditCard
               onSubmit={handleMockPaymentSubmit}
@@ -920,8 +920,8 @@ export default function OrderTrackingPage() {
               amount={mockAmount}
             />
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

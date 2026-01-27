@@ -153,20 +153,25 @@ export default function CampaignsPage() {
                     </p>
                   </div>
 
-                  <div className="flex gap-2 pt-4 border-t border-gray-100">
-                    <Link href={`/admin/campaigns/${campaign.id}/edit`} prefetch={false} className="flex-1">
-                      <Button variant="outline" className="premium-btn-secondary w-full">
-                        <Edit className="w-4 h-4 mr-2" />
-                        Düzenle
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" asChild className="premium-btn-secondary px-4 py-2 text-sm font-bold flex-1 sm:flex-none min-w-0">
+                        <Link href={`/admin/campaigns/${campaign.id}/edit`} className="flex items-center justify-center gap-2 w-full">
+                          <Edit className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">Düzenle</span>
+                        </Link>
                       </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      onClick={() => deleteCampaign(campaign.id)}
-                      className="premium-btn-secondary text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 px-4"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => deleteCampaign(campaign.id)}
+                        className="premium-btn-secondary px-4 py-2 text-sm font-bold flex-1 sm:flex-none min-w-0 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                      >
+                        <span className="flex items-center justify-center gap-2 w-full">
+                          <Trash2 className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">Sil</span>
+                        </span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );

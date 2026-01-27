@@ -141,25 +141,30 @@ export default function CategoriesPage() {
                       {category.description}
                     </p>
                   )}
-                  <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                    <span className="text-sm font-bold text-gray-600">
-                      {category._count.products} ürün
-                    </span>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="icon" asChild className="premium-btn-secondary p-2">
-                        <Link href={`/admin/categories/${category.id}/edit`}>
-                          <Edit className="w-4 h-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleDelete(category.id)}
-                        disabled={category._count.products > 0}
-                        className="premium-btn-secondary p-2 hover:bg-red-50 hover:border-red-300 hover:text-red-600 disabled:opacity-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex flex-col gap-3">
+                      <span className="text-sm font-bold text-gray-600 break-words">
+                        {category._count.products} ürün
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" asChild className="premium-btn-secondary px-4 py-2 text-sm font-bold flex-1 sm:flex-none min-w-0">
+                          <Link href={`/admin/categories/${category.id}/edit`} className="flex items-center justify-center gap-2 w-full">
+                            <Edit className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Düzenle</span>
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleDelete(category.id)}
+                          disabled={category._count.products > 0}
+                          className="premium-btn-secondary px-4 py-2 text-sm font-bold flex-1 sm:flex-none min-w-0 hover:bg-red-50 hover:border-red-300 hover:text-red-600 disabled:opacity-50"
+                        >
+                          <span className="flex items-center justify-center gap-2 w-full">
+                            <Trash2 className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">Sil</span>
+                          </span>
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
