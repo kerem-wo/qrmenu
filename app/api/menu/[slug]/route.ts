@@ -10,6 +10,9 @@ export async function GET(
     const url = new URL(request.url);
     const requestedLang = (url.searchParams.get("lang") || "").trim().toLowerCase() || "";
     const requestedTheme = (url.searchParams.get("theme") || "").trim().toLowerCase() || "";
+    
+    console.log(`[Menu API] Fetching menu for slug: ${slug}, lang: ${requestedLang}`);
+    
     const restaurant = await prisma.restaurant.findUnique({
       where: { slug },
       select: {
@@ -24,11 +27,14 @@ export async function GET(
     });
 
     if (!restaurant) {
+      console.log(`[Menu API] Restaurant not found for slug: ${slug}`);
       return NextResponse.json(
         { error: "Restoran bulunamadı" },
         { status: 404 }
       );
     }
+
+    console.log(`[Menu API] Restaurant found: ${restaurant.id} (${restaurant.name})`);
 
     const lang = requestedLang || restaurant.language || "tr";
 
@@ -37,6 +43,7 @@ export async function GET(
       select: { name: true, description: true },
     });
 
+    console.log(`[Menu API] Fetching categories for restaurant: ${restaurant.id}`);
     const categories = await prisma.category.findMany({
       where: {
         restaurantId: restaurant.id,
@@ -66,6 +73,8 @@ export async function GET(
       },
     });
 
+    console.log(`[Menu API] Found ${categories.length} categories`);
+
     const now = new Date();
     const rawCampaigns = await prisma.campaign.findMany({
       where: {
@@ -88,10 +97,13 @@ export async function GET(
       },
       orderBy: { createdAt: "desc" },
       take: 20,
+    }).catch((err) => {
+      console.error("[Menu API] Error fetching campaigns:", err);
+      return []; // Return empty array if campaigns query fails
     });
 
     const campaigns = rawCampaigns
-      .filter((c) => c.usageLimit === null || c.usedCount < c.usageLimit)
+      .filter((c) => c.usageLimit === null || (c.usedCount !== undefined && c.usedCount < c.usageLimit))
       .slice(0, 10)
       .map(({ usageLimit, usedCount, ...rest }) => rest);
 
@@ -127,10 +139,21 @@ export async function GET(
       categories: resolvedCategories,
       campaigns,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching menu:", error);
+    console.error("Error details:", {
+      message: error?.message,
+      stack: error?.stack,
+      code: error?.code,
+      meta: error?.meta,
+    });
     return NextResponse.json(
-      { error: "Menü yüklenirken bir hata oluştu" },
+      { 
+        error: "Menü yüklenirken bir hata oluştu",
+        ...(process.env.NODE_ENV === "development" && {
+          details: error?.message || String(error),
+        }),
+      },
       { status: 500 }
     );
   }
