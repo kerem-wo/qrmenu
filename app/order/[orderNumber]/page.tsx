@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2, ArrowLeft, Wallet } from "lucide-react";
@@ -297,6 +297,17 @@ export default function OrderTrackingPage() {
   const [mockAmount, setMockAmount] = useState<number>(0);
   const paymentFormRef = useRef<HTMLDivElement>(null);
 
+  // Ensure body overflow is restored on mount/unmount
+  useEffect(() => {
+    // Restore body overflow when component mounts (in case it was locked from previous page)
+    document.body.style.overflow = "";
+    
+    return () => {
+      // Ensure body overflow is restored on unmount
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   // Scroll to payment form when opened
   useEffect(() => {
     if (showMockPayment && paymentFormRef.current) {
@@ -385,16 +396,7 @@ export default function OrderTrackingPage() {
     }
   }, [searchParams]);
 
-  useEffect(() => {
-    if (orderNumber) {
-      fetchOrder();
-      // Her 5 saniyede bir güncelle
-      const interval = setInterval(fetchOrder, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [orderNumber, lang]);
-
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     if (!orderNumber) return;
     
     try {
@@ -410,7 +412,16 @@ export default function OrderTrackingPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orderNumber, lang]);
+
+  useEffect(() => {
+    if (orderNumber) {
+      fetchOrder();
+      // Her 5 saniyede bir güncelle
+      const interval = setInterval(fetchOrder, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [orderNumber, fetchOrder]);
 
   const showMockPaymentForm = (paymentId: string, amount: number) => {
     setMockPaymentId(paymentId);

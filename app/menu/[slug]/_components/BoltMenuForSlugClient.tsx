@@ -708,6 +708,17 @@ export function BoltMenuForSlugClient() {
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const orderNumber = searchParams.get("orderNumber");
 
+  // Ensure body overflow is restored on mount/unmount
+  useEffect(() => {
+    // Restore body overflow when component mounts (in case it was locked)
+    document.body.style.overflow = "";
+    
+    return () => {
+      // Ensure body overflow is restored on unmount
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
   
   // Get theme from URL param (for preview) - URL param has priority, then restaurant data
