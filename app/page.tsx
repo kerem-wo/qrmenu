@@ -29,6 +29,50 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // İframe içeriğini scroll etmek için
+  useEffect(() => {
+    const iframe = document.querySelector('iframe[title="Demo Menu"]') as HTMLIFrameElement;
+    if (!iframe) return;
+
+    const handleLoad = () => {
+      // İframe yüklendikten sonra içeriğini scroll et
+      setTimeout(() => {
+        try {
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+          if (iframeDoc) {
+            // "En Popüler" bölümüne scroll et
+            const popularSection = iframeDoc.querySelector('[data-tab="Most Popular"]') || 
+                                   iframeDoc.querySelector('section[id*="Most Popular"]') ||
+                                   iframeDoc.querySelector('section[id*="most-popular"]');
+            if (popularSection) {
+              popularSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+              // Eğer "En Popüler" bulunamazsa, ilk ürün bölümüne scroll et
+              const firstProductSection = iframeDoc.querySelector('section[data-tab]') ||
+                                         iframeDoc.querySelector('section[id*="category"]');
+              if (firstProductSection) {
+                firstProductSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }
+          }
+        } catch (e) {
+          // Cross-origin hatası olabilir, görmezden gel
+          console.debug('Iframe scroll error (expected in some cases):', e);
+        }
+      }, 1000); // 1 saniye bekle ki içerik yüklensin
+    };
+
+    iframe.addEventListener('load', handleLoad);
+    // Eğer iframe zaten yüklenmişse
+    if (iframe.contentDocument?.readyState === 'complete') {
+      handleLoad();
+    }
+
+    return () => {
+      iframe.removeEventListener('load', handleLoad);
+    };
+  }, [currentTheme]);
+
   // Referans logoları (sadece ilk 4)
   const referenceLogos = [
     {
@@ -154,8 +198,9 @@ export default function Home() {
                         zoom: '0.75'
                       }}
                       title="Demo Menu"
-                      scrolling="no"
+                      scrolling="yes"
                       loading="lazy"
+                      allow="clipboard-read; clipboard-write"
                     />
                   </div>
                 </div>
