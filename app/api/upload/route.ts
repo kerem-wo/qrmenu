@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { encryptDataUrl, hashData } from "@/lib/encryption";
-import { validateFileType, rateLimit, getClientIP, logSecurityEvent, requireHTTPS } from "@/lib/security";
+import { validateFileType, rateLimit, getClientIP, logSecurityEvent } from "@/lib/security";
 import { getAdminSession } from "@/lib/auth";
 
 export const dynamic = 'force-dynamic';
@@ -93,11 +93,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 6. Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // 6. Validate file size (max 4MB - Vercel limit)
+    const maxSize = 4 * 1024 * 1024; // 4MB (Vercel API route limit: 4.5MB)
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "Dosya boyutu 10MB'dan küçük olmalıdır" },
+        { error: "Dosya boyutu 4MB'dan küçük olmalıdır" },
         { status: 400 }
       );
     }
