@@ -89,9 +89,19 @@ export async function POST(request: NextRequest) {
     // Set session cookie
     try {
       await setPlatformAdminSession(session);
+      if (process.env.NODE_ENV === "production") {
+        console.log("Platform admin session cookie set successfully");
+      }
     } catch (sessionError: any) {
-      console.error("Session cookie error (non-fatal):", sessionError?.message || sessionError);
-      // Continue anyway - client will use localStorage
+      console.error("Session cookie error:", sessionError?.message || sessionError);
+      // In production, cookie setting failure is critical
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          { error: "Session oluşturulamadı. Lütfen tekrar deneyin." },
+          { status: 500 }
+        );
+      }
+      // In development, continue anyway - client will use localStorage
     }
 
     // Log successful login

@@ -80,7 +80,7 @@ export async function setPlatformAdminSession(session: PlatformAdminSession) {
     cookieStore.set("platform_admin_session", signedSession, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: "strict", // CSRF protection
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : "strict", // Lax in production for better compatibility
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
