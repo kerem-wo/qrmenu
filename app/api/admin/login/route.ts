@@ -58,15 +58,19 @@ export async function POST(request: NextRequest) {
     });
 
     if (!admin) {
+      console.log(`Admin login failed - Admin not found: ${sanitizedEmail}`);
       return NextResponse.json(
         { error: "Geçersiz e-posta veya şifre" },
         { status: 401 }
       );
     }
 
+    console.log(`Admin login attempt - Admin found: ${admin.email}, Restaurant status: ${admin.restaurant.status}`);
+
     const isValid = await bcrypt.compare(sanitizedPassword, admin.password);
 
     if (!isValid) {
+      console.log(`Admin login failed - Invalid password for: ${sanitizedEmail}`);
       await logSecurityEvent({
         action: 'FAILED_LOGIN_ATTEMPT',
         userType: 'anonymous',
@@ -81,13 +85,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log(`Admin login - Password valid for: ${sanitizedEmail}`);
+
     // Check if restaurant is approved
     if (admin.restaurant.status !== 'approved') {
+      console.log(`Admin login failed - Restaurant not approved: ${admin.restaurant.status}`);
       return NextResponse.json(
         { error: "Hesabınız henüz onaylanmamış. Lütfen platform yöneticilerinin onayını bekleyin." },
         { status: 403 }
       );
     }
+
+    console.log(`Admin login - Restaurant approved, proceeding with login`);
 
     const session = {
       id: admin.id,
