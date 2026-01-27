@@ -15,13 +15,19 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(request: NextRequest) {
   try {
-    // 1. Authentication Check
+    // 1. Authentication Check (optional for registration)
     const session = await getAdminSession();
-    if (!session) {
+    const clientIP = getClientIP(request);
+    
+    // Check if request is from registration page (allow without auth)
+    const referer = request.headers.get('referer') || '';
+    const isRegistrationPage = referer.includes('/restaurant/register');
+    
+    if (!session && !isRegistrationPage) {
       await logSecurityEvent({
         action: 'UNAUTHORIZED_UPLOAD_ATTEMPT',
         userType: 'anonymous',
-        ip: getClientIP(request),
+        ip: clientIP,
         userAgent: request.headers.get('user-agent') || 'unknown',
         timestamp: new Date(),
       });
@@ -31,14 +37,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Rate Limiting
-    const clientIP = getClientIP(request);
-    const rateLimitKey = `upload:${session.id}:${clientIP}`;
-    if (!rateLimit(rateLimitKey, 20, 60000)) { // 20 uploads per minute
+    // 3. Rate Limiting (IP-based for registration, session-based for authenticated)
+    const rateLimitKey = session 
+      ? `upload:${session.id}:${clientIP}` 
+      : `upload:anonymous:${clientIP}`;
+    const rateLimitMax = session ? 20 : 10; // Lower limit for anonymous
+    if (!rateLimit(rateLimitKey, rateLimitMax, 60000)) { // 20 uploads per minute (auth) or 10 (anonymous)
       await logSecurityEvent({
         action: 'RATE_LIMIT_EXCEEDED',
-        userId: session.id,
-        userType: 'admin',
+        userId: session?.id || 'anonymous',
+        userType: session ? 'admin' : 'anonymous',
         ip: clientIP,
         userAgent: request.headers.get('user-agent') || 'unknown',
         timestamp: new Date(),
@@ -65,8 +73,8 @@ export async function POST(request: NextRequest) {
     if (!allowedMimeTypes.includes(file.type)) {
       await logSecurityEvent({
         action: 'INVALID_FILE_TYPE_ATTEMPT',
-        userId: session.id,
-        userType: 'admin',
+        userId: session?.id || 'anonymous',
+        userType: session ? 'admin' : 'anonymous',
         ip: clientIP,
         userAgent: request.headers.get('user-agent') || 'unknown',
         details: { fileType: file.type, fileName: file.name },
@@ -96,8 +104,8 @@ export async function POST(request: NextRequest) {
     if (!validateFileType(buffer, allowedTypes)) {
       await logSecurityEvent({
         action: 'FILE_TYPE_MISMATCH_DETECTED',
-        userId: session.id,
-        userType: 'admin',
+        userId: session?.id || 'anonymous',
+        userType: session ? 'admin' : 'anonymous',
         ip: clientIP,
         userAgent: request.headers.get('user-agent') || 'unknown',
         details: { 
@@ -126,8 +134,8 @@ export async function POST(request: NextRequest) {
     // 12. Log successful upload
     await logSecurityEvent({
       action: 'FILE_UPLOADED',
-      userId: session.id,
-      userType: 'admin',
+      userId: session?.id || 'anonymous',
+      userType: session ? 'admin' : (isRegistrationPage ? 'registration' : 'anonymous'),
       ip: clientIP,
       userAgent: request.headers.get('user-agent') || 'unknown',
       details: {
@@ -135,6 +143,7 @@ export async function POST(request: NextRequest) {
         fileType: file.type,
         fileSize: file.size,
         fileHash: fileHash,
+        isRegistration: isRegistrationPage,
       },
       timestamp: new Date(),
     });
@@ -147,10 +156,13 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Error uploading file:", error);
     
+    const errorClientIP = getClientIP(request);
+    const errorSession = await getAdminSession().catch(() => null);
     await logSecurityEvent({
       action: 'FILE_UPLOAD_ERROR',
-      userType: 'admin',
-      ip: getClientIP(request),
+      userId: errorSession?.id || 'anonymous',
+      userType: errorSession ? 'admin' : 'anonymous',
+      ip: errorClientIP,
       userAgent: request.headers.get('user-agent') || 'unknown',
       details: { error: error?.message },
       timestamp: new Date(),
