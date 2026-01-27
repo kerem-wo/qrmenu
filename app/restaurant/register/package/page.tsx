@@ -130,8 +130,9 @@ function PackageSelectionContent() {
     document.body.appendChild(modal);
 
     // Ödeme butonuna tıklama
-    const payButton = modal.querySelector("#mock-pay-button");
+    const payButton = modal.querySelector("#mock-pay-button") as HTMLButtonElement | null;
     payButton?.addEventListener("click", async () => {
+      if (!payButton) return;
       payButton.textContent = "İşleniyor...";
       payButton.disabled = true;
 
