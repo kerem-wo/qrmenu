@@ -41,15 +41,14 @@ function PackageSelectionContent() {
   const [showMockPayment, setShowMockPayment] = useState(false);
   const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
   const [mockAmount, setMockAmount] = useState<number>(0);
+  const paymentFormRef = useRef<HTMLDivElement>(null);
 
-  // Scroll lock/unlock for modal
+  // Scroll to payment form when opened
   useEffect(() => {
-    if (showMockPayment) {
-      const originalStyle = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalStyle;
-      };
+    if (showMockPayment && paymentFormRef.current) {
+      setTimeout(() => {
+        paymentFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
     }
   }, [showMockPayment]);
 
