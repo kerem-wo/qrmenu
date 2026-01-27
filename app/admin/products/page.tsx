@@ -150,11 +150,11 @@ export default function ProductsPage() {
               <div key={product.id} className="premium-card overflow-hidden premium-hover-lift animate-premium-fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
                 {product.image && (
                   <div className="relative w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={product.image}
                       alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>
                 )}
@@ -181,13 +181,12 @@ export default function ProductsPage() {
                     {product.description || "Açıklama yok"}
                   </p>
                   {product.stock !== null && (
-                    <p className={`text-xs mb-4 font-semibold ${
-                      product.stock === 0 
-                        ? "text-red-600" 
-                        : product.stock < 10 
-                        ? "text-orange-600" 
-                        : "text-gray-600"
-                    }`}>
+                    <p className={`text-xs mb-4 font-semibold ${product.stock === 0
+                        ? "text-red-600"
+                        : product.stock < 10
+                          ? "text-orange-600"
+                          : "text-gray-600"
+                      }`}>
                       Stok: {product.stock} adet
                     </p>
                   )}

@@ -29,48 +29,53 @@ export default function AdminDashboard() {
           return;
         }
 
-        // Load restaurant info
-        const restaurantRes = await fetch("/api/admin/restaurant", {
-          credentials: 'include',
-        });
-        if (restaurantRes.ok) {
-          const restaurantData = await restaurantRes.json();
-          setRestaurant(restaurantData);
+        // Load restaurant info (Critical)
+        try {
+          const restaurantRes = await fetch("/api/admin/restaurant", {
+            credentials: 'include',
+          });
+          if (restaurantRes.ok) {
+            const restaurantData = await restaurantRes.json();
+            setRestaurant(restaurantData);
+          }
+        } catch (e) {
+          console.error("Restaurant info load failed", e);
         }
 
-        // Load stats
-        const [productsRes, categoriesRes, ordersRes] = await Promise.all([
-          fetch("/api/admin/products", { credentials: 'include' }),
-          fetch("/api/admin/categories", { credentials: 'include' }),
-          fetch("/api/admin/orders", { credentials: 'include' }),
+        // Load stats independently (Non-blocking)
+        const fetchStats = async (url: string, key: keyof typeof stats) => {
+          try {
+            const res = await fetch(url, { credentials: 'include' });
+            if (res.ok) {
+              const data = await res.json();
+              setStats((prev) => ({ ...prev, [key]: data.length }));
+            }
+          } catch (e) {
+            console.error(`Failed to load ${key}`, e);
+          }
+        };
+
+        await Promise.allSettled([
+          fetchStats("/api/admin/products", "products"),
+          fetchStats("/api/admin/categories", "categories"),
+          fetchStats("/api/admin/orders", "orders"),
         ]);
 
-        if (productsRes.ok) {
-          const products = await productsRes.json();
-          setStats((prev) => ({ ...prev, products: products.length }));
-        }
-
-        if (categoriesRes.ok) {
-          const categories = await categoriesRes.json();
-          setStats((prev) => ({ ...prev, categories: categories.length }));
-        }
-
-        if (ordersRes.ok) {
-          const orders = await ordersRes.json();
-          setStats((prev) => ({ ...prev, orders: orders.length }));
-        }
-
         // Load table requests
-        const requestsRes = await fetch("/api/table-requests", {
-          credentials: 'include',
-        });
-        if (requestsRes.ok) {
-          const requests = await requestsRes.json();
-          setTableRequests(requests);
+        try {
+          const requestsRes = await fetch("/api/table-requests", {
+            credentials: 'include',
+          });
+          if (requestsRes.ok) {
+            const requests = await requestsRes.json();
+            setTableRequests(requests);
+          }
+        } catch (e) {
+          console.error("Table requests load failed", e);
         }
+
       } catch (error) {
-        console.error("Error loading dashboard:", error);
-        toast.error("Veriler yüklenirken bir hata oluştu");
+        console.error("Error loading dashboard flow:", error);
       } finally {
         setLoading(false);
       }
