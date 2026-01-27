@@ -296,6 +296,17 @@ export default function OrderTrackingPage() {
   const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
   const [mockAmount, setMockAmount] = useState<number>(0);
 
+  // Scroll lock/unlock for modal
+  useEffect(() => {
+    if (showMockPayment) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [showMockPayment]);
+
   const S = STRINGS[lang];
   const locale = LOCALE[lang];
 
@@ -626,7 +637,7 @@ export default function OrderTrackingPage() {
   const showEta = order.status === "pending" || order.status === "confirmed" || order.status === "preparing";
 
   return (
-    <div className="min-h-screen premium-bg-gradient py-6 sm:py-8 px-4">
+    <div className="min-h-screen premium-bg-gradient py-6 sm:py-8 px-4 overflow-y-auto">
       <div className="premium-container max-w-2xl mx-auto">
         <div className="premium-card p-6 sm:p-8 md:p-10 animate-premium-fade-in">
           {/* Menüye Geri Dön Butonu */}

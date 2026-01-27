@@ -42,6 +42,17 @@ function PackageSelectionContent() {
   const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
   const [mockAmount, setMockAmount] = useState<number>(0);
 
+  // Scroll lock/unlock for modal
+  useEffect(() => {
+    if (showMockPayment) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalStyle;
+      };
+    }
+  }, [showMockPayment]);
+
   useEffect(() => {
     if (!restaurantId) {
       toast.error("Restoran bilgisi bulunamadı");

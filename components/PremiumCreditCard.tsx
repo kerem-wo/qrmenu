@@ -177,50 +177,82 @@ export default function PremiumCreditCard({
 
   return (
     <div className="w-full max-w-md mx-auto p-6">
-      {/* 3D Credit Card */}
-      <div className="relative mb-8" style={{ perspective: "1000px" }}>
+      {/* 3D Credit Card - Enhanced Design */}
+      <div className="relative mb-8" style={{ perspective: "1200px" }}>
         <div
           ref={cardRef}
-          className="relative w-full h-56 rounded-2xl shadow-2xl transition-transform duration-700"
+          className="relative w-full h-64 rounded-3xl shadow-2xl transition-transform duration-700 ease-in-out"
           style={{
             transformStyle: "preserve-3d",
             transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
             background: cardType
               ? cardType.gradient
               : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+            boxShadow: isFlipped
+              ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+              : "0 20px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset",
           }}
         >
+          {/* Glossy Overlay Effect */}
+          <div
+            className="absolute inset-0 rounded-3xl pointer-events-none"
+            style={{
+              background:
+                "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)",
+              mixBlendMode: "overlay",
+            }}
+          />
+
           {/* Front of Card */}
           <div
-            className="absolute inset-0 rounded-2xl p-6 text-white flex flex-col justify-between"
+            className="absolute inset-0 rounded-3xl p-6 md:p-8 text-white flex flex-col justify-between overflow-hidden"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
             }}
           >
-            {/* Card Logo */}
-            <div className="flex justify-between items-start">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
-                <CreditCard className="w-6 h-6" />
+            {/* Decorative Circles */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -ml-12 -mb-12"></div>
+
+            {/* Card Logo & Chip */}
+            <div className="flex justify-between items-start relative z-10">
+              <div className="flex items-center gap-3">
+                {/* Chip */}
+                <div className="w-12 h-10 bg-gradient-to-br from-yellow-400/30 to-yellow-600/30 rounded-md border border-yellow-300/30 flex items-center justify-center backdrop-blur-sm">
+                  <div className="w-8 h-6 bg-gradient-to-br from-yellow-200/40 to-yellow-400/40 rounded border border-yellow-300/50"></div>
+                </div>
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm border border-white/20">
+                  <CreditCard className="w-5 h-5" />
+                </div>
               </div>
               {cardType && (
-                <div className="text-xs font-bold bg-white/20 px-3 py-1 rounded backdrop-blur-sm">
+                <div className="text-xs font-black bg-white/25 px-4 py-1.5 rounded-lg backdrop-blur-md border border-white/30 shadow-lg">
                   {cardType.logo}
                 </div>
               )}
             </div>
 
             {/* Card Number */}
-            <div className="mt-auto">
-              <div className="text-2xl font-mono tracking-wider mb-4">
+            <div className="mt-auto relative z-10">
+              <div className="text-2xl md:text-3xl font-mono tracking-[0.2em] mb-6 font-light">
                 {displayCardNumber.split("").map((char, index) => (
                   <span
                     key={index}
-                    className={`transition-all duration-300 ${
+                    className={`inline-block transition-all duration-300 ${
                       char === "0" && !cardNumber
-                        ? "opacity-30"
+                        ? "opacity-20"
+                        : char === " "
+                        ? "mx-1"
                         : "opacity-100"
+                    } ${
+                      focusedField === "cardNumber" && index < cardNumber.length
+                        ? "scale-110 text-yellow-200"
+                        : ""
                     }`}
+                    style={{
+                      textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+                    }}
                   >
                     {char}
                   </span>
@@ -228,15 +260,45 @@ export default function PremiumCreditCard({
               </div>
 
               <div className="flex justify-between items-end">
-                <div>
-                  <div className="text-xs opacity-70 mb-1">KART SAHİBİ</div>
-                  <div className="text-sm font-semibold tracking-wide">
-                    {displayName}
+                <div className="flex-1">
+                  <div className="text-[10px] opacity-60 mb-1.5 tracking-wider uppercase">
+                    KART SAHİBİ
+                  </div>
+                  <div className="text-sm md:text-base font-semibold tracking-wider">
+                    {displayName.split("").map((char, index) => (
+                      <span
+                        key={index}
+                        className={`transition-all duration-200 ${
+                          char === " " ? "mx-1" : ""
+                        } ${
+                          focusedField === "cardName" && index < cardName.length
+                            ? "text-yellow-200 scale-105"
+                            : ""
+                        }`}
+                      >
+                        {char}
+                      </span>
+                    ))}
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xs opacity-70 mb-1">SON KULLANMA</div>
-                  <div className="text-sm font-semibold">{displayExpiry}</div>
+                <div className="text-right ml-4">
+                  <div className="text-[10px] opacity-60 mb-1.5 tracking-wider uppercase">
+                    SON KULLANMA
+                  </div>
+                  <div className="text-sm md:text-base font-semibold tracking-wider">
+                    {displayExpiry.split("").map((char, index) => (
+                      <span
+                        key={index}
+                        className={`transition-all duration-200 ${
+                          focusedField === "expiry" && index < expiry.length
+                            ? "text-yellow-200 scale-110"
+                            : ""
+                        }`}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -244,7 +306,7 @@ export default function PremiumCreditCard({
 
           {/* Back of Card */}
           <div
-            className="absolute inset-0 rounded-2xl p-6 text-white flex flex-col justify-between"
+            className="absolute inset-0 rounded-3xl p-6 md:p-8 text-white flex flex-col justify-between overflow-hidden"
             style={{
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
@@ -254,12 +316,34 @@ export default function PremiumCreditCard({
                 : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
             }}
           >
-            <div className="w-full h-12 bg-black/30 mt-4"></div>
-            <div className="flex justify-end">
-              <div className="bg-white rounded px-4 py-2">
-                <div className="text-xs text-gray-800 mb-1">CVV</div>
-                <div className="text-lg font-mono font-bold text-gray-900">
-                  {displayCvv}
+            {/* Decorative Circles */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full blur-2xl -ml-12 -mb-12"></div>
+
+            {/* Magnetic Strip */}
+            <div className="w-full h-14 bg-black/40 mt-6 rounded relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer"></div>
+            </div>
+
+            {/* CVV Section */}
+            <div className="flex justify-end items-end relative z-10">
+              <div className="bg-white rounded-xl px-5 py-3 shadow-2xl border-2 border-white/20">
+                <div className="text-[10px] text-gray-600 mb-1 font-semibold uppercase tracking-wider">
+                  CVV
+                </div>
+                <div className="text-xl font-mono font-black text-gray-900 tracking-wider">
+                  {displayCvv.split("").map((char, index) => (
+                    <span
+                      key={index}
+                      className={`transition-all duration-200 ${
+                        focusedField === "cvv" && index < cvv.length
+                          ? "scale-110 text-gray-700"
+                          : ""
+                      }`}
+                    >
+                      {char}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -300,7 +384,7 @@ export default function PremiumCreditCard({
 
         {/* Card Name */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="block text-sm font-bold text-gray-800 mb-2.5">
             Kart Sahibi Adı
           </label>
           <input
@@ -310,16 +394,21 @@ export default function PremiumCreditCard({
             onFocus={() => setFocusedField("cardName")}
             onBlur={() => setFocusedField(null)}
             placeholder="AD SOYAD"
-            className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-300 ${
+            className={`w-full px-5 py-3.5 rounded-xl border-2 transition-all duration-300 text-base font-medium ${
               errors.cardName
-                ? "border-red-500 focus:border-red-600"
+                ? "border-red-500 focus:border-red-600 bg-red-50"
                 : focusedField === "cardName"
-                ? "border-[#FF6F00] focus:border-[#FF8F33] shadow-lg shadow-[#FF6F00]/20"
-                : "border-gray-300 focus:border-[#FF6F00]"
-            } focus:outline-none focus:ring-4 focus:ring-[#FF6F00]/10 uppercase`}
+                ? "border-[#FF6F00] focus:border-[#FF8F33] shadow-xl shadow-[#FF6F00]/25 bg-white"
+                : "border-gray-300 focus:border-[#FF6F00] bg-white hover:border-gray-400"
+            } focus:outline-none focus:ring-4 focus:ring-[#FF6F00]/15 uppercase`}
           />
           {errors.cardName && (
-            <p className="mt-1 text-xs text-red-600">{errors.cardName}</p>
+            <p className="mt-2 text-xs text-red-600 font-medium flex items-center gap-1">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {errors.cardName}
+            </p>
           )}
         </div>
 
@@ -385,32 +474,32 @@ export default function PremiumCreditCard({
 
         {/* Amount Display */}
         {amount > 0 && (
-          <div className="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+          <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border-2 border-gray-200 shadow-sm">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-semibold text-gray-700">
+              <span className="text-sm font-bold text-gray-700 uppercase tracking-wide">
                 Toplam Tutar:
               </span>
-              <span className="text-xl font-black text-gray-900">
-                {amount.toFixed(2)} ₺
+              <span className="text-2xl font-black text-gray-900">
+                {amount.toFixed(2)} <span className="text-lg">₺</span>
               </span>
             </div>
           </div>
         )}
 
         {/* Buttons */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 pt-2">
           {onCancel && (
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all duration-300"
+              className="flex-1 bg-gray-100 text-gray-700 px-6 py-3.5 rounded-xl font-bold hover:bg-gray-200 transition-all duration-300 border-2 border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md"
             >
               İptal
             </button>
           )}
           <button
             type="submit"
-            className="flex-1 bg-[#FF6F00] hover:bg-[#FF8F33] text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-[#FF6F00]/20 hover:shadow-xl hover:shadow-[#FF6F00]/30 transform hover:-translate-y-0.5"
+            className="flex-1 bg-gradient-to-r from-[#FF6F00] to-[#FF8F33] hover:from-[#FF8F33] hover:to-[#FF6F00] text-white px-6 py-3.5 rounded-xl font-black transition-all duration-300 shadow-xl shadow-[#FF6F00]/30 hover:shadow-2xl hover:shadow-[#FF6F00]/40 transform hover:-translate-y-1 active:scale-95"
           >
             Ödemeyi Tamamla
           </button>

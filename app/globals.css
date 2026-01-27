@@ -49,6 +49,20 @@
       radial-gradient(at 100% 100%, rgba(255, 111, 0, 0.05) 0px, transparent 50%);
   }
 
+  /* Shimmer animation for credit card */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s infinite;
+  }
+
   /* Smooth Animations */
   @keyframes slide-up {
     from {
