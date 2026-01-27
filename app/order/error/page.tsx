@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { XCircle, ArrowLeft } from "lucide-react";
 
-export default function PaymentErrorPage() {
+export const dynamic = 'force-dynamic';
+
+function PaymentErrorContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [message, setMessage] = useState<string>("Ödeme işlemi başarısız");
@@ -44,5 +46,23 @@ export default function PaymentErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PaymentErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
+        <div className="premium-card p-8 md:p-12 text-center max-w-md">
+          <div className="animate-pulse">
+            <div className="w-20 h-20 bg-gray-200 rounded-3xl mx-auto mb-6"></div>
+            <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded w-64 mx-auto"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <PaymentErrorContent />
+    </Suspense>
   );
 }
