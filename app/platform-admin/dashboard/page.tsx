@@ -28,7 +28,9 @@ export default function PlatformAdminDashboard() {
 
   const fetchRestaurants = useCallback(async () => {
     try {
-      const res = await fetch("/api/platform-admin/restaurants");
+      const res = await fetch("/api/platform-admin/restaurants", {
+        credentials: 'include',
+      });
       if (res.ok) {
         const data = await res.json();
         setRestaurants(data);
@@ -97,6 +99,7 @@ export default function PlatformAdminDashboard() {
       try {
         const res = await fetch(`/api/platform-admin/restaurants/${restaurantId}`, {
           method: "DELETE",
+          credentials: 'include',
         });
 
         if (res.ok) {

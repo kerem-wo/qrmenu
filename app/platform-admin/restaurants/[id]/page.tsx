@@ -59,7 +59,9 @@ export default function RestaurantDetailPage() {
   const fetchRestaurant = async (id: string) => {
     try {
       // Fetch restaurant data (documents are already decrypted by API)
-      const res = await fetch(`/api/platform-admin/restaurants/${id}`);
+      const res = await fetch(`/api/platform-admin/restaurants/${id}`, {
+        credentials: 'include',
+      });
       if (res.ok) {
         const data = await res.json();
         // Documents are already decrypted by the API endpoint
@@ -86,6 +88,7 @@ export default function RestaurantDetailPage() {
     try {
       const res = await fetch(`/api/platform-admin/restaurants/${restaurant.id}/approve`, {
         method: "POST",
+        credentials: 'include',
       });
 
       if (res.ok) {
@@ -153,6 +156,7 @@ export default function RestaurantDetailPage() {
     try {
       const res = await fetch(`/api/platform-admin/restaurants/${restaurant.id}`, {
         method: "DELETE",
+        credentials: 'include',
       });
 
       if (res.ok) {
