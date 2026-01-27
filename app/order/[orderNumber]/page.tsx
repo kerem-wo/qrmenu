@@ -504,6 +504,39 @@ export default function OrderTrackingPage() {
     }
   };
 
+  const handleCashPayment = async () => {
+    if (!order || processingPayment) return;
+
+    if (!confirm(lang === "tr" ? "Kasada ödeme yapacağınızı onaylıyor musunuz?" : 
+                 lang === "en" ? "Do you confirm that you will pay at the cashier?" : 
+                 "Bestätigen Sie, dass Sie an der Kasse bezahlen werden?")) {
+      return;
+    }
+
+    setProcessingPayment(true);
+
+    try {
+      const res = await fetch(`/api/orders/${order.orderNumber}/cash-payment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Ödeme durumu güncellenemedi");
+      }
+
+      // Sayfayı yenile
+      window.location.reload();
+    } catch (error: any) {
+      console.error("Cash payment error:", error);
+      alert(error.message || "Bir hata oluştu");
+      setProcessingPayment(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center premium-bg-gradient">
