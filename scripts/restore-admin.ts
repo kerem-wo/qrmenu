@@ -78,6 +78,7 @@ async function restoreAdmin() {
         where: {
           admin: null,
         },
+        include: { admin: true },
         orderBy: { createdAt: "desc" },
       });
     }
