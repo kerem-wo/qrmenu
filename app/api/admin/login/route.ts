@@ -104,11 +104,14 @@ export async function POST(request: NextRequest) {
     };
 
     // Set session cookie
+    let response = NextResponse.json({
+      success: true,
+      admin: session,
+    });
+    
     try {
       await setAdminSession(session);
-      if (process.env.NODE_ENV === "production") {
-        console.log("Admin session cookie set successfully");
-      }
+      console.log(`Admin session cookie set - NODE_ENV: ${process.env.NODE_ENV}, URL: ${request.url}`);
     } catch (sessionError: any) {
       console.error("Session cookie error:", sessionError?.message || sessionError);
       // In production, cookie setting failure is critical
@@ -132,10 +135,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date(),
     });
 
-    return NextResponse.json({
-      success: true,
-      admin: session,
-    });
+    return response;
   } catch (error: any) {
     console.error("Login error:", error);
     console.error("Error details:", {

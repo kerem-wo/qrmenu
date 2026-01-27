@@ -83,18 +83,18 @@ export async function setAdminSession(session: AdminSession) {
       .digest('hex');
     const signedSession = `${sessionData}.${signature}`;
     
+    const isProduction = process.env.NODE_ENV === "production";
+    
     cookieStore.set("admin_session", signedSession, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: process.env.NODE_ENV === "production" ? "lax" : "strict", // Lax in production for better compatibility
+      secure: isProduction, // HTTPS only in production
+      sameSite: isProduction ? "lax" : "strict", // Lax in production for better compatibility
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     });
     
-    // Log in development to help debug
-    if (process.env.NODE_ENV === "development") {
-      console.log("Session cookie set successfully");
-    }
+    // Log to help debug
+    console.log(`Admin session cookie set - Production: ${isProduction}, Secure: ${isProduction}, SameSite: ${isProduction ? "lax" : "strict"}`);
   } catch (error: any) {
     console.error("Error setting admin session cookie:", error?.message || error);
     // Don't throw - let caller decide what to do
