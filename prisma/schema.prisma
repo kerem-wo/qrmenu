@@ -116,6 +116,7 @@ model Category {
   description  String?
   image        String?
   order        Int                   @default(0)
+  isAvailable  Boolean                @default(true)
   restaurantId String
   restaurant   Restaurant            @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   products     Product[]

@@ -47,6 +47,7 @@ export async function GET(
     const categories = await prisma.category.findMany({
       where: {
         restaurantId: restaurant.id,
+        isAvailable: true, // Only show available categories
       },
       include: {
         translations: {

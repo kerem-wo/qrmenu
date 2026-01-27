@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit, Trash2, ArrowLeft } from "lucide-react";
 import { checkAuth } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ interface Category {
   description: string | null;
   image: string | null;
   order: number;
+  isAvailable: boolean;
   _count: {
     products: number;
   };
@@ -70,6 +72,31 @@ export default function CategoriesPage() {
       }
     } catch (error) {
       console.error("Error deleting category:", error);
+      toast.error("Bir hata oluştu");
+    }
+  };
+
+  const handleToggleAvailability = async (id: string, currentStatus: boolean) => {
+    try {
+      const res = await fetch(`/api/admin/categories/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          isAvailable: !currentStatus,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success(`Kategori ${!currentStatus ? "aktif" : "pasif"} edildi`);
+        setCategories((prevCategories) =>
+          prevCategories.map((c) => (c.id === id ? { ...c, isAvailable: !currentStatus } : c))
+        );
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Kategori durumu güncellenirken bir hata oluştu");
+      }
+    } catch (error) {
+      console.error("Error toggling category availability:", error);
       toast.error("Bir hata oluştu");
     }
   };
@@ -135,7 +162,21 @@ export default function CategoriesPage() {
                   </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{category.name}</h3>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-bold text-gray-900">{category.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
+                        <Checkbox
+                          checked={category.isAvailable}
+                          onCheckedChange={() => handleToggleAvailability(category.id, category.isAvailable)}
+                          className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                        />
+                        <label className="text-xs font-medium text-gray-700 cursor-pointer">
+                          {category.isAvailable ? "Aktif" : "Pasif"}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                   {category.description && (
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2 min-h-[2.5rem]">
                       {category.description}

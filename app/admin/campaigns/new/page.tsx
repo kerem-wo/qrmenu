@@ -245,10 +245,10 @@ export default function NewCampaignPage() {
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                  className="w-4 h-4 rounded border-slate-300"
+                  className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                 />
-                <Label htmlFor="isActive" className="cursor-pointer">
-                  Kampanya aktif
+                <Label htmlFor="isActive" className="cursor-pointer text-sm font-medium text-slate-700">
+                  Aktif (müşteriler görebilir)
                 </Label>
               </div>
 

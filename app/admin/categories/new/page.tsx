@@ -28,6 +28,7 @@ export default function NewCategoryPage() {
     description: "",
     image: "",
     order: "0",
+    isAvailable: true,
     translations: {
       en: { name: "", description: "" },
       de: { name: "", description: "" },
@@ -192,6 +193,19 @@ export default function NewCategoryPage() {
                     className="h-11 border-slate-300 focus:border-slate-900"
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center space-x-3 p-4 bg-slate-50 rounded-lg">
+                <input
+                  type="checkbox"
+                  id="isAvailable"
+                  checked={formData.isAvailable}
+                  onChange={(e) => setFormData({ ...formData, isAvailable: e.target.checked })}
+                  className="w-4 h-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                />
+                <Label htmlFor="isAvailable" className="cursor-pointer text-sm font-medium text-slate-700">
+                  Aktif (müşteriler görebilir)
+                </Label>
               </div>
 
               <div className="flex gap-4 pt-4">

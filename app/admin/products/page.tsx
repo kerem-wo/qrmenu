@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit, Trash2, ArrowLeft, Package } from "lucide-react";
 import Image from "next/image";
 import { checkAuth } from "@/lib/auth-client";
@@ -138,13 +139,18 @@ export default function ProductsPage() {
                       <h3 className="text-xl font-bold text-gray-900 mb-1">{product.name}</h3>
                       <p className="text-sm text-gray-500 font-medium">{product.category.name}</p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      product.isAvailable 
-                        ? "bg-green-100 text-green-700" 
-                        : "bg-red-100 text-red-700"
-                    }`}>
-                      {product.isAvailable ? "Aktif" : "Pasif"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200">
+                        <Checkbox
+                          checked={product.isAvailable}
+                          onCheckedChange={() => handleToggleAvailability(product.id, product.isAvailable)}
+                          className="data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                        />
+                        <label className="text-xs font-medium text-gray-700 cursor-pointer">
+                          {product.isAvailable ? "Aktif" : "Pasif"}
+                        </label>
+                      </div>
+                    </div>
                   </div>
                   <p className="text-sm text-gray-600 mb-4 line-clamp-2 min-h-[2.5rem]">
                     {product.description || "Açıklama yok"}

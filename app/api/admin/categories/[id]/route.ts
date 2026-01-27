@@ -86,6 +86,7 @@ export async function PUT(
           description: data.description || null,
           image: data.image || null,
           order: data.order ?? undefined,
+          isAvailable: data.isAvailable !== undefined ? data.isAvailable : undefined,
         },
       });
 

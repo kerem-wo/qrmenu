@@ -69,6 +69,7 @@ export async function POST(request: Request) {
         description: data.description || null,
         image: data.image || null,
         order: data.order || 0,
+        isAvailable: data.isAvailable !== undefined ? data.isAvailable : true,
         restaurantId: session.restaurantId,
         translations: translations.length > 0 ? { create: translations } : undefined,
       },
