@@ -21,63 +21,63 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const session = await checkAuth();
+        if (!session) {
+          router.push("/admin/login");
+          return;
+        }
+
+        // Load restaurant info
+        const restaurantRes = await fetch("/api/admin/restaurant", {
+          credentials: 'include',
+        });
+        if (restaurantRes.ok) {
+          const restaurantData = await restaurantRes.json();
+          setRestaurant(restaurantData);
+        }
+
+        // Load stats
+        const [productsRes, categoriesRes, ordersRes] = await Promise.all([
+          fetch("/api/admin/products", { credentials: 'include' }),
+          fetch("/api/admin/categories", { credentials: 'include' }),
+          fetch("/api/admin/orders", { credentials: 'include' }),
+        ]);
+
+        if (productsRes.ok) {
+          const products = await productsRes.json();
+          setStats((prev) => ({ ...prev, products: products.length }));
+        }
+
+        if (categoriesRes.ok) {
+          const categories = await categoriesRes.json();
+          setStats((prev) => ({ ...prev, categories: categories.length }));
+        }
+
+        if (ordersRes.ok) {
+          const orders = await ordersRes.json();
+          setStats((prev) => ({ ...prev, orders: orders.length }));
+        }
+
+        // Load table requests
+        const requestsRes = await fetch("/api/table-requests", {
+          credentials: 'include',
+        });
+        if (requestsRes.ok) {
+          const requests = await requestsRes.json();
+          setTableRequests(requests);
+        }
+      } catch (error) {
+        console.error("Error loading dashboard:", error);
+        toast.error("Veriler yüklenirken bir hata oluştu");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      const session = await checkAuth();
-      if (!session) {
-        router.push("/admin/login");
-        return;
-      }
-
-      // Load restaurant info
-      const restaurantRes = await fetch("/api/admin/restaurant", {
-        credentials: 'include',
-      });
-      if (restaurantRes.ok) {
-        const restaurantData = await restaurantRes.json();
-        setRestaurant(restaurantData);
-      }
-
-      // Load stats
-      const [productsRes, categoriesRes, ordersRes] = await Promise.all([
-        fetch("/api/admin/products", { credentials: 'include' }),
-        fetch("/api/admin/categories", { credentials: 'include' }),
-        fetch("/api/admin/orders", { credentials: 'include' }),
-      ]);
-
-      if (productsRes.ok) {
-        const products = await productsRes.json();
-        setStats((prev) => ({ ...prev, products: products.length }));
-      }
-
-      if (categoriesRes.ok) {
-        const categories = await categoriesRes.json();
-        setStats((prev) => ({ ...prev, categories: categories.length }));
-      }
-
-      if (ordersRes.ok) {
-        const orders = await ordersRes.json();
-        setStats((prev) => ({ ...prev, orders: orders.length }));
-      }
-
-      // Load table requests
-      const requestsRes = await fetch("/api/table-requests", {
-        credentials: 'include',
-      });
-      if (requestsRes.ok) {
-        const requests = await requestsRes.json();
-        setTableRequests(requests);
-      }
-    } catch (error) {
-      console.error("Error loading dashboard:", error);
-      toast.error("Veriler yüklenirken bir hata oluştu");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [router]);
 
   const markRequestAsRead = async (requestId: string) => {
     try {
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/admin/logout", { 
+      await fetch("/api/admin/logout", {
         method: "POST",
         credentials: 'include',
       });
@@ -200,7 +200,7 @@ export default function AdminDashboard() {
                       )}
                       {request.note && (
                         <p className="text-sm text-gray-700 mb-2 italic">
-                          "{request.note}"
+                          &quot;{request.note}&quot;
                         </p>
                       )}
                       <p className="text-xs text-gray-500">

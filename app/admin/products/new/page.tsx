@@ -52,6 +52,18 @@ export default function NewProductPage() {
   });
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/admin/categories");
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
@@ -59,23 +71,11 @@ export default function NewProductPage() {
       }
       fetchCategories();
     });
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("/api/admin/categories");
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.name.trim()) {
       toast.error("Ürün adı gereklidir!");
@@ -95,7 +95,7 @@ export default function NewProductPage() {
       toast.error("Tahmini süre aralığı geçersiz (min <= max olmalı)");
       return;
     }
-    
+
     setLoading(true);
 
     try {

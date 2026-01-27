@@ -6,14 +6,14 @@ export default function KVKKPage() {
           <h1 className="premium-heading-2 mb-8">
             KVKK Aydınlatma Metni
           </h1>
-          
+
           <div className="prose prose-slate max-w-none space-y-6 text-gray-700">
             <section>
               <h2 className="text-2xl font-semibold text-slate-900 mt-8 mb-4">
                 1. Veri Sorumlusu
               </h2>
               <p>
-                Bu aydınlatma metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, 
+                Bu aydınlatma metni, 6698 sayılı Kişisel Verilerin Korunması Kanunu (&quot;KVKK&quot;) uyarınca,
                 kişisel verilerinizin işlenmesi hakkında sizleri bilgilendirmek amacıyla hazırlanmıştır.
               </p>
               <p>
@@ -58,8 +58,8 @@ export default function KVKKPage() {
                 4. Kişisel Verilerin Aktarılması
               </h2>
               <p>
-                Kişisel verileriniz, yasal yükümlülüklerin yerine getirilmesi ve hizmetlerin sunulması 
-                amacıyla, yasal düzenlemelerde belirtilen sınırlar dahilinde, ilgili kamu kurum ve 
+                Kişisel verileriniz, yasal yükümlülüklerin yerine getirilmesi ve hizmetlerin sunulması
+                amacıyla, yasal düzenlemelerde belirtilen sınırlar dahilinde, ilgili kamu kurum ve
                 kuruluşlarına aktarılabilir.
               </p>
             </section>
@@ -69,8 +69,8 @@ export default function KVKKPage() {
                 5. Kişisel Verilerin Korunması
               </h2>
               <p>
-                Kişisel verileriniz, teknik ve idari güvenlik önlemleri alınarak korunmaktadır. 
-                Verilerinize yetkisiz erişim, değiştirme, ifşa veya imha edilmesini önlemek için 
+                Kişisel verileriniz, teknik ve idari güvenlik önlemleri alınarak korunmaktadır.
+                Verilerinize yetkisiz erişim, değiştirme, ifşa veya imha edilmesini önlemek için
                 gerekli tüm önlemler alınmaktadır.
               </p>
             </section>
@@ -80,7 +80,7 @@ export default function KVKKPage() {
                 6. KVKK Kapsamındaki Haklarınız
               </h2>
               <p>
-                KVKK'nın 11. maddesi uyarınca aşağıdaki haklara sahipsiniz:
+                KVKK&apos;nın 11. maddesi uyarınca aşağıdaki haklara sahipsiniz:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
                 <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme</li>
@@ -88,7 +88,7 @@ export default function KVKKPage() {
                 <li>İşlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme</li>
                 <li>Yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme</li>
                 <li>Eksik veya yanlış işlenmişse düzeltilmesini isteme</li>
-                <li>KVKK'da öngörülen şartlar çerçevesinde silinmesini veya yok edilmesini isteme</li>
+                <li>KVKK&apos;da öngörülen şartlar çerçevesinde silinmesini veya yok edilmesini isteme</li>
                 <li>Düzeltme, silme, yok etme işlemlerinin aktarıldığı üçüncü kişilere bildirilmesini isteme</li>
                 <li>İşlenen verilerin münhasıran otomatik sistemler ile analiz edilmesi suretiyle aleyhinize bir sonucun ortaya çıkmasına itiraz etme</li>
                 <li>Kanuna aykırı olarak işlenmesi sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme</li>

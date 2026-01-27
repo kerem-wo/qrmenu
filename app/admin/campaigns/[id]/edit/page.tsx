@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+
+const toLocalInput = (d: Date) => {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(
+    d.getMinutes()
+  )}`;
+};
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,33 +36,16 @@ export default function EditCampaignPage() {
     isActive: true,
   });
 
-  const toLocalInput = (d: Date) => {
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(
-      d.getMinutes()
-    )}`;
-  };
 
-  useEffect(() => {
-    checkAuth().then((session) => {
-      if (!session) {
-        router.push("/admin/login");
-        return;
-      }
-      if (params?.id) {
-        fetchCampaign();
-      }
-    });
-  }, [params?.id]);
 
-  const fetchCampaign = async () => {
+  const fetchCampaign = useCallback(async () => {
     if (!params?.id) {
       setLoading(false);
       toast.error("Geçersiz kampanya ID'si!");
       router.push("/admin/campaigns");
       return;
     }
-    
+
     try {
       const res = await fetch(`/api/admin/campaigns/${params.id}`);
       if (res.ok) {
@@ -84,12 +74,24 @@ export default function EditCampaignPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params?.id, router]);
+
+  useEffect(() => {
+    checkAuth().then((session) => {
+      if (!session) {
+        router.push("/admin/login");
+        return;
+      }
+      if (params?.id) {
+        fetchCampaign();
+      }
+    });
+  }, [params?.id, router, fetchCampaign]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!params?.id) return;
-    
+
     setSaving(true);
 
     try {

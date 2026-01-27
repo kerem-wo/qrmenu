@@ -40,6 +40,32 @@ export default function CustomerDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchOrders = async (customerId: string) => {
+      try {
+        const res = await fetch(`/api/customer/orders?customerId=${customerId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setOrders(data);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchFavorites = async (customerId: string) => {
+      try {
+        const res = await fetch(`/api/customer/${customerId}`);
+        if (res.ok) {
+          const data = await res.json();
+          setFavorites(data.favorites || []);
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+
     const session = localStorage.getItem("customer_session");
     if (!session) {
       router.push("/customer/login");
@@ -50,33 +76,7 @@ export default function CustomerDashboard() {
     setCustomer(customerData);
     fetchOrders(customerData.id);
     fetchFavorites(customerData.id);
-  }, []);
-
-  const fetchOrders = async (customerId: string) => {
-    try {
-      const res = await fetch(`/api/customer/orders?customerId=${customerId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setOrders(data);
-      }
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchFavorites = async (customerId: string) => {
-    try {
-      const res = await fetch(`/api/customer/${customerId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setFavorites(data.favorites || []);
-      }
-    } catch (error) {
-      console.error("Error fetching favorites:", error);
-    }
-  };
+  }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem("customer_session");
@@ -198,9 +198,8 @@ export default function CustomerDashboard() {
                         {new Date(order.createdAt).toLocaleString("tr-TR")}
                       </p>
                     </div>
-                    <span className={`px-4 py-2 rounded-full text-xs font-bold ${
-                      statusColors[order.status] || "bg-gray-100 text-gray-800"
-                    }`}>
+                    <span className={`px-4 py-2 rounded-full text-xs font-bold ${statusColors[order.status] || "bg-gray-100 text-gray-800"
+                      }`}>
                       {order.status === "pending" && "Beklemede"}
                       {order.status === "confirmed" && "Onaylandı"}
                       {order.status === "preparing" && "Hazırlanıyor"}

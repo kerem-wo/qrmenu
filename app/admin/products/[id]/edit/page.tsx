@@ -60,6 +60,62 @@ export default function EditProductPage() {
   });
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/admin/categories");
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    const fetchProduct = async () => {
+      if (!params?.id) return;
+
+      try {
+        const res = await fetch(`/api/admin/products/${params.id}`);
+        if (res.ok) {
+          const product = (await res.json()) as any;
+          const map: Record<string, { name: string; description: string }> = {
+            en: { name: "", description: "" },
+            de: { name: "", description: "" },
+            ru: { name: "", description: "" },
+            ar: { name: "", description: "" },
+            fr: { name: "", description: "" },
+            es: { name: "", description: "" },
+          };
+          const ts: ProductTranslation[] = Array.isArray(product.translations) ? product.translations : [];
+          for (const t of ts) {
+            const lang = String(t.language || "").toLowerCase();
+            if (!map[lang]) continue;
+            map[lang] = { name: t.name || "", description: t.description || "" };
+          }
+          setFormData({
+            name: product.name,
+            description: product.description || "",
+            price: product.price.toString(),
+            categoryId: product.categoryId,
+            image: product.image || "",
+            stock: product.stock?.toString() || "",
+            isAvailable: product.isAvailable,
+            order: product.order?.toString() || "0",
+            prepMinMinutes: (product.prepMinMinutes ?? 5).toString(),
+            prepMaxMinutes: (product.prepMaxMinutes ?? 10).toString(),
+            translations: map,
+          });
+        } else {
+          toast.error("Ürün bulunamadı!");
+        }
+      } catch (error) {
+        toast.error("Ürün yüklenirken bir hata oluştu!");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
@@ -68,68 +124,12 @@ export default function EditProductPage() {
       fetchCategories();
       fetchProduct();
     });
-  }, [params.id]);
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("/api/admin/categories");
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
-  const fetchProduct = async () => {
-    if (!params?.id) return;
-    
-    try {
-      const res = await fetch(`/api/admin/products/${params.id}`);
-      if (res.ok) {
-        const product = (await res.json()) as any;
-        const map: Record<string, { name: string; description: string }> = {
-          en: { name: "", description: "" },
-          de: { name: "", description: "" },
-          ru: { name: "", description: "" },
-          ar: { name: "", description: "" },
-          fr: { name: "", description: "" },
-          es: { name: "", description: "" },
-        };
-        const ts: ProductTranslation[] = Array.isArray(product.translations) ? product.translations : [];
-        for (const t of ts) {
-          const lang = String(t.language || "").toLowerCase();
-          if (!map[lang]) continue;
-          map[lang] = { name: t.name || "", description: t.description || "" };
-        }
-        setFormData({
-          name: product.name,
-          description: product.description || "",
-          price: product.price.toString(),
-          categoryId: product.categoryId,
-          image: product.image || "",
-          stock: product.stock?.toString() || "",
-          isAvailable: product.isAvailable,
-          order: product.order?.toString() || "0",
-          prepMinMinutes: (product.prepMinMinutes ?? 5).toString(),
-          prepMaxMinutes: (product.prepMaxMinutes ?? 10).toString(),
-          translations: map,
-        });
-      } else {
-        toast.error("Ürün bulunamadı!");
-      }
-    } catch (error) {
-      toast.error("Ürün yüklenirken bir hata oluştu!");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [params.id, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!params?.id) return;
-    
+
     setSaving(true);
 
     try {

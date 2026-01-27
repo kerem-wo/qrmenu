@@ -29,6 +29,23 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/admin/categories");
+        if (res.ok) {
+          const data = await res.json();
+          setCategories(data);
+        } else {
+          toast.error("Kategoriler yüklenirken bir hata oluştu");
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        toast.error("Bir hata oluştu");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
@@ -36,24 +53,7 @@ export default function CategoriesPage() {
       }
       fetchCategories();
     });
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const res = await fetch("/api/admin/categories");
-      if (res.ok) {
-        const data = await res.json();
-        setCategories(data);
-      } else {
-        toast.error("Kategoriler yüklenirken bir hata oluştu");
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      toast.error("Bir hata oluştu");
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [router]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Bu kategoriyi silmek istediğinize emin misiniz?")) return;

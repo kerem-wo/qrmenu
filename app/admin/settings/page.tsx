@@ -140,7 +140,7 @@ export default function SettingsPage() {
       if (res.ok) {
         toast.success("Hesabınız başarıyla silindi");
         clearSessionFromStorage();
-        
+
         // Logout API'sini de çağır
         try {
           await fetch("/api/admin/logout", { method: "POST" });
@@ -378,33 +378,34 @@ export default function SettingsPage() {
               />
               {formData.logo && (
                 <div className="mt-3 p-4 bg-gray-50 rounded-xl inline-block">
-                    <img
-                      src={formData.logo}
-                      alt="Logo"
-                      className="w-24 h-24 object-contain rounded-lg"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={formData.logo}
+                    alt="Logo"
+                    className="w-24 h-24 object-contain rounded-lg"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
+                  />
+                </div>
+              )}
+            </div>
 
-              <div className="flex gap-4 pt-6 border-t border-gray-200">
-                <Button type="submit" disabled={saving} className="premium-btn-primary flex-1">
-                  {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.back()}
-                  className="premium-btn-secondary flex-1"
-                >
-                  İptal
-                </Button>
-              </div>
-            </form>
-          </div>
+            <div className="flex gap-4 pt-6 border-t border-gray-200">
+              <Button type="submit" disabled={saving} className="premium-btn-primary flex-1">
+                {saving ? "Kaydediliyor..." : "Değişiklikleri Kaydet"}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+                className="premium-btn-secondary flex-1"
+              >
+                İptal
+              </Button>
+            </div>
+          </form>
+        </div>
 
         {/* Premium Hesap Durumu */}
         <div className="premium-card p-8 mt-8 animate-premium-fade-in">
@@ -416,7 +417,7 @@ export default function SettingsPage() {
           </div>
           <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
             <p className="text-sm text-gray-600 mb-2 font-medium">
-              Hesabınız platform yöneticileri tarafından incelenmektedir. 
+              Hesabınız platform yöneticileri tarafından incelenmektedir.
               Belgeleriniz ve bilgileriniz kontrol edildikten sonra hesabınız aktif hale gelecektir.
             </p>
             <p className="text-xs text-gray-500 font-medium">
@@ -473,7 +474,7 @@ export default function SettingsPage() {
               Bu işlem geri alınamaz. Hesabınız ve tüm verileriniz kalıcı olarak silinecektir:
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="py-4 space-y-2">
             <ul className="list-disc list-inside text-sm text-slate-700 space-y-1">
               <li>Restoran bilgileri</li>

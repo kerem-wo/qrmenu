@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -53,17 +53,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    checkAuth().then((session) => {
-      if (!session) {
-        router.push("/admin/login");
-        return;
-      }
-      fetchOrders();
-    });
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/orders");
       if (res.ok) {
@@ -78,7 +68,19 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkAuth().then((session) => {
+      if (!session) {
+        router.push("/admin/login");
+        return;
+      }
+      fetchOrders();
+    });
+  }, [fetchOrders, router]);
+
+
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
@@ -293,9 +295,8 @@ export default function OrdersPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <StatusIcon className="w-5 h-5 text-gray-400" />
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
+                        }`}>
                         {statusConfig[order.status]?.label || order.status}
                       </span>
                     </div>

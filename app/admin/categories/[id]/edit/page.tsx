@@ -48,54 +48,54 @@ export default function EditCategoryPage() {
   });
 
   useEffect(() => {
+    const fetchCategory = async () => {
+      if (!params?.id) return;
+
+      try {
+        const res = await fetch(`/api/admin/categories/${params.id}`);
+        if (res.ok) {
+          const category = (await res.json()) as any;
+          const map: Record<string, { name: string; description: string }> = {
+            en: { name: "", description: "" },
+            de: { name: "", description: "" },
+            ru: { name: "", description: "" },
+            ar: { name: "", description: "" },
+            fr: { name: "", description: "" },
+            es: { name: "", description: "" },
+          };
+          const ts: CategoryTranslation[] = Array.isArray(category.translations) ? category.translations : [];
+          for (const t of ts) {
+            const lang = String(t.language || "").toLowerCase();
+            if (!map[lang]) continue;
+            map[lang] = { name: t.name || "", description: t.description || "" };
+          }
+          setFormData({
+            name: category.name,
+            description: category.description || "",
+            image: category.image || "",
+            order: category.order.toString(),
+            isAvailable: category.isAvailable !== undefined ? category.isAvailable : true,
+            translations: map,
+          });
+        } else {
+          toast.error("Kategori yüklenirken bir hata oluştu!");
+        }
+      } catch (error) {
+        toast.error("Bir hata oluştu!");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (params?.id) {
       fetchCategory();
     }
   }, [params?.id]);
 
-  const fetchCategory = async () => {
-    if (!params?.id) return;
-    
-    try {
-      const res = await fetch(`/api/admin/categories/${params.id}`);
-      if (res.ok) {
-        const category = (await res.json()) as any;
-        const map: Record<string, { name: string; description: string }> = {
-          en: { name: "", description: "" },
-          de: { name: "", description: "" },
-          ru: { name: "", description: "" },
-          ar: { name: "", description: "" },
-          fr: { name: "", description: "" },
-          es: { name: "", description: "" },
-        };
-        const ts: CategoryTranslation[] = Array.isArray(category.translations) ? category.translations : [];
-        for (const t of ts) {
-          const lang = String(t.language || "").toLowerCase();
-          if (!map[lang]) continue;
-          map[lang] = { name: t.name || "", description: t.description || "" };
-        }
-        setFormData({
-          name: category.name,
-          description: category.description || "",
-          image: category.image || "",
-          order: category.order.toString(),
-          isAvailable: category.isAvailable !== undefined ? category.isAvailable : true,
-          translations: map,
-        });
-      } else {
-        toast.error("Kategori yüklenirken bir hata oluştu!");
-      }
-    } catch (error) {
-      toast.error("Bir hata oluştu!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!params?.id) return;
-    
+
     setSaving(true);
 
     try {

@@ -712,7 +712,7 @@ export function BoltMenuForSlugClient() {
   useEffect(() => {
     // Restore body overflow when component mounts (in case it was locked)
     document.body.style.overflow = "";
-    
+
     return () => {
       // Ensure body overflow is restored on unmount
       document.body.style.overflow = "";
@@ -720,10 +720,10 @@ export function BoltMenuForSlugClient() {
   }, []);
 
   const [restaurant, setRestaurant] = useState<ApiRestaurant | null>(null);
-  
+
   // Get theme from URL param (for preview) - URL param has priority, then restaurant data
   const theme = searchParams.get("theme") || restaurant?.theme || "default";
-  
+
   // Check for payment success
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
@@ -735,7 +735,7 @@ export function BoltMenuForSlugClient() {
         newUrl.searchParams.delete("orderNumber");
       }
       window.history.replaceState({}, "", newUrl.toString());
-      
+
       // Hide message after 5 seconds
       setTimeout(() => {
         setShowPaymentSuccess(false);
@@ -951,19 +951,19 @@ export function BoltMenuForSlugClient() {
   useEffect(() => {
     // Check if we're in an iframe
     const isInIframe = window.self !== window.top;
-    
+
     if (isInIframe && items.length > 0) {
       // Wait for content to render, then scroll to products
       setTimeout(() => {
-        const popularSection = document.querySelector('[data-tab="Most Popular"]') || 
-                               document.querySelector('section[id*="Most Popular"]') ||
-                               document.querySelector('section[id*="most-popular"]');
+        const popularSection = document.querySelector('[data-tab="Most Popular"]') ||
+          document.querySelector('section[id*="Most Popular"]') ||
+          document.querySelector('section[id*="most-popular"]');
         if (popularSection) {
           popularSection.scrollIntoView({ behavior: 'auto', block: 'start' });
         } else {
           // If "Most Popular" not found, scroll to first category section
           const firstCategorySection = document.querySelector('section[data-tab]') ||
-                                       document.querySelector('section[id*="category"]');
+            document.querySelector('section[id*="category"]');
           if (firstCategorySection) {
             firstCategorySection.scrollIntoView({ behavior: 'auto', block: 'start' });
           }
@@ -1035,10 +1035,10 @@ export function BoltMenuForSlugClient() {
       return prev.map((l) =>
         l.item.id === it.id
           ? {
-              ...l,
-              quantity: l.quantity + q,
-              note: (note?.trim() ? note.trim() : l.note) || undefined,
-            }
+            ...l,
+            quantity: l.quantity + q,
+            note: (note?.trim() ? note.trim() : l.note) || undefined,
+          }
           : l
       );
     });
@@ -1301,9 +1301,9 @@ export function BoltMenuForSlugClient() {
           {/* Header Image */}
           {restaurant?.logo && (
             <div className="mt-6 mb-8 -mx-4">
-              <img 
-                src={restaurant.logo} 
-                alt={restaurant.name || ""} 
+              <img
+                src={restaurant.logo}
+                alt={restaurant.name || ""}
                 className="w-full h-48 md:h-64 object-cover"
                 loading="lazy"
               />
@@ -1488,11 +1488,10 @@ export function BoltMenuForSlugClient() {
           <div className="mt-6 mb-4 flex justify-end">
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                darkMode 
-                  ? "bg-gray-800 text-white hover:bg-gray-700" 
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${darkMode
+                  ? "bg-gray-800 text-white hover:bg-gray-700"
                   : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-200"
-              }`}
+                }`}
             >
               {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
             </button>
@@ -1509,17 +1508,15 @@ export function BoltMenuForSlugClient() {
                   <button
                     key={item.id}
                     onClick={() => setSelected(item)}
-                    className={`rounded-3xl shadow-xl border-2 hover:scale-[1.02] hover:shadow-2xl transition-all overflow-hidden text-left ${
-                      darkMode 
-                        ? "bg-gray-800 border-purple-600/50" 
+                    className={`rounded-3xl shadow-xl border-2 hover:scale-[1.02] hover:shadow-2xl transition-all overflow-hidden text-left ${darkMode
+                        ? "bg-gray-800 border-purple-600/50"
                         : "bg-white border-purple-200"
-                    }`}
+                      }`}
                   >
                     <div className="relative h-48 w-full bg-gray-100">
                       <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-3xl" loading="lazy" />
-                      <div className={`absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold shadow-xl ${
-                        darkMode ? "bg-purple-600 text-white" : "bg-purple-500 text-white"
-                      }`}>
+                      <div className={`absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold shadow-xl ${darkMode ? "bg-purple-600 text-white" : "bg-purple-500 text-white"
+                        }`}>
                         {formatTry(item.priceCents)}
                       </div>
                     </div>
@@ -1552,17 +1549,15 @@ export function BoltMenuForSlugClient() {
                     <button
                       key={item.id}
                       onClick={() => setSelected(item)}
-                      className={`rounded-3xl shadow-xl border-2 hover:scale-[1.02] hover:shadow-2xl transition-all overflow-hidden text-left ${
-                        darkMode 
-                          ? "bg-gray-800 border-purple-600/50" 
+                      className={`rounded-3xl shadow-xl border-2 hover:scale-[1.02] hover:shadow-2xl transition-all overflow-hidden text-left ${darkMode
+                          ? "bg-gray-800 border-purple-600/50"
                           : "bg-white border-purple-200"
-                      }`}
+                        }`}
                     >
                       <div className="relative h-48 w-full bg-gray-100">
                         <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover rounded-t-3xl" loading="lazy" />
-                        <div className={`absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold shadow-xl ${
-                          darkMode ? "bg-purple-600 text-white" : "bg-purple-500 text-white"
-                        }`}>
+                        <div className={`absolute bottom-3 right-3 rounded-full px-4 py-1.5 text-sm font-extrabold shadow-xl ${darkMode ? "bg-purple-600 text-white" : "bg-purple-500 text-white"
+                          }`}>
                           {formatTry(item.priceCents)}
                         </div>
                       </div>
@@ -1595,11 +1590,10 @@ export function BoltMenuForSlugClient() {
           <div className="mt-6 mb-4 flex justify-end">
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                darkMode 
-                  ? "bg-gray-800 text-white hover:bg-gray-700" 
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${darkMode
+                  ? "bg-gray-800 text-white hover:bg-gray-700"
                   : "bg-white text-gray-900 hover:bg-gray-50 border border-gray-200"
-              }`}
+                }`}
             >
               {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
             </button>
@@ -1616,11 +1610,10 @@ export function BoltMenuForSlugClient() {
                   <button
                     key={item.id}
                     onClick={() => setSelected(item)}
-                    className={`rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden text-left border ${
-                      darkMode 
-                        ? "bg-gray-800 border-amber-600/50" 
+                    className={`rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden text-left border ${darkMode
+                        ? "bg-gray-800 border-amber-600/50"
                         : "bg-white border-amber-200"
-                    }`}
+                      }`}
                   >
                     <div className="relative h-48 w-full bg-gray-100">
                       <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
@@ -1654,11 +1647,10 @@ export function BoltMenuForSlugClient() {
                     <button
                       key={item.id}
                       onClick={() => setSelected(item)}
-                      className={`rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden text-left border ${
-                        darkMode 
-                          ? "bg-gray-800 border-amber-600/50" 
+                      className={`rounded-xl shadow-md hover:shadow-lg transition-all overflow-hidden text-left border ${darkMode
+                          ? "bg-gray-800 border-amber-600/50"
                           : "bg-white border-amber-200"
-                      }`}
+                        }`}
                     >
                       <div className="relative h-48 w-full bg-gray-100">
                         <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
@@ -1689,9 +1681,8 @@ export function BoltMenuForSlugClient() {
       <>
         <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
           <div className="mt-6 flex items-end justify-between">
-            <h2 className={`text-xl font-extrabold ${
-              theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-            }`}>{S.mostPopular}</h2>
+            <h2 className={`text-xl font-extrabold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+              }`}>{S.mostPopular}</h2>
           </div>
           <div
             ref={popularScrollRef}
@@ -1722,58 +1713,50 @@ export function BoltMenuForSlugClient() {
                   onClick={() => setSelected(item)}
                   className={`snap-start shrink-0 ${cardSize} overflow-hidden text-left ${getCardClasses()}`}
                 >
-                  <div className={`relative ${imageHeight} w-full bg-gray-100 ${
-                    theme === "paper" ? "border-b border-amber-200" : ""
-                  }`}>
+                  <div className={`relative ${imageHeight} w-full bg-gray-100 ${theme === "paper" ? "border-b border-amber-200" : ""
+                    }`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={item.imageUrl}
                       alt={item.name}
-                      className={`h-full w-full object-cover ${
-                        theme === "swipe" ? "rounded-t-3xl" : 
-                        theme === "soft-ui" ? "rounded-t-[2rem]" :
-                        theme === "paper" ? "" : "rounded-t-xl"
-                      }`}
+                      className={`h-full w-full object-cover ${theme === "swipe" ? "rounded-t-3xl" :
+                          theme === "soft-ui" ? "rounded-t-[2rem]" :
+                            theme === "paper" ? "" : "rounded-t-xl"
+                        }`}
                       loading="lazy"
                     />
-                    <div className={`absolute bottom-3 right-3 px-3 py-1 text-sm font-extrabold shadow-lg ${
-                      theme === "paper"
+                    <div className={`absolute bottom-3 right-3 px-3 py-1 text-sm font-extrabold shadow-lg ${theme === "paper"
                         ? "rounded-none bg-amber-600 text-white"
                         : theme === "swipe"
-                        ? "rounded-full bg-purple-500 text-white"
-                        : theme === "premium-plus"
-                        ? "rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-white"
-                        : theme === "ultra-plus"
-                        ? "rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white"
-                        : theme === "soft-ui"
-                        ? "rounded-full bg-rose-400 text-white"
-                        : "rounded-full bg-white/95 text-gray-950"
-                    }`}>
+                          ? "rounded-full bg-purple-500 text-white"
+                          : theme === "premium-plus"
+                            ? "rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-white"
+                            : theme === "ultra-plus"
+                              ? "rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white"
+                              : theme === "soft-ui"
+                                ? "rounded-full bg-rose-400 text-white"
+                                : "rounded-full bg-white/95 text-gray-950"
+                      }`}>
                       {formatTry(item.priceCents)}
                     </div>
                   </div>
-                  <div className={`${
-                    theme === "paper" ? "p-3" : 
-                    theme === "swipe" ? "p-5" :
-                    theme === "premium-plus" || theme === "ultra-plus" ? "p-5" :
-                    "p-4"
-                  }`}>
-                    <div className={`${
-                      theme === "paper" ? "text-sm" :
-                      theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" :
-                      "text-sm"
-                    } font-extrabold ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-                    }`}>{item.name}</div>
-                    <div className={`mt-1 ${
-                      theme === "swipe" ? "text-sm" : "text-xs"
-                    } line-clamp-1 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-500"
+                  <div className={`${theme === "paper" ? "p-3" :
+                      theme === "swipe" ? "p-5" :
+                        theme === "premium-plus" || theme === "ultra-plus" ? "p-5" :
+                          "p-4"
                     }`}>
+                    <div className={`${theme === "paper" ? "text-sm" :
+                        theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" :
+                          "text-sm"
+                      } font-extrabold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                      }`}>{item.name}</div>
+                    <div className={`mt-1 ${theme === "swipe" ? "text-sm" : "text-xs"
+                      } line-clamp-1 ${theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-500"
+                      }`}>
                       {item.shortDescription}
                     </div>
-                    <div className={`mt-2 text-xs font-semibold ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-500"
-                    }`}>
+                    <div className={`mt-2 text-xs font-semibold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-500"
+                      }`}>
                       {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
                     </div>
                   </div>
@@ -1794,9 +1777,8 @@ export function BoltMenuForSlugClient() {
               data-tab={cat.name}
               className="scroll-mt-24"
             >
-              <h3 className={`text-lg font-extrabold ${
-                theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-              }`}>{cat.name}</h3>
+              <h3 className={`text-lg font-extrabold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                }`}>{cat.name}</h3>
               <div className={`mt-4 ${getCardClasses()}`}>
                 {cat.items.map((item) => (
                   <MenuRow key={item.id} item={item} onOpen={() => setSelected(item)} labels={S} theme={theme} />
@@ -2024,428 +2006,411 @@ export function BoltMenuForSlugClient() {
           </div>
         </div>
       )}
-    <div className={getThemeClasses()} style={
-      theme === "paper" 
-        ? { 
+      <div className={getThemeClasses()} style={
+        theme === "paper"
+          ? {
             background: "#f5f1e8",
             backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)"
           }
-        : undefined
-    }>
-      <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 pb-6 pt-4">
-        {campaigns.length > 0 ? (
-          <CampaignMarquee campaigns={campaigns} labels={S} />
-        ) : null}
-        <div className="mb-3 flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            {restaurant ? (
-              <>
-                <div className={`text-xl font-extrabold ${
-                  theme === "paper"
-                    ? "text-amber-900"
-                    : theme === "premium-plus" || theme === "ultra-plus" 
-                    ? "text-white" 
-                    : "text-gray-950"
-                }`}>{restaurant.name}</div>
-                {restaurant.description ? (
-                  <div className={`mt-1 text-sm ${
-                    theme === "paper"
-                      ? "text-amber-800"
-                      : theme === "premium-plus" || theme === "ultra-plus" 
-                      ? "text-gray-300" 
-                      : "text-gray-500"
-                  }`}>{restaurant.description}</div>
-                ) : null}
-              </>
-            ) : null}
-          </div>
-
-          <div className="shrink-0 flex items-center gap-2">
-            {/* Mobile: Garson Çağır & Hesap İste Butonları */}
-            <div className="md:hidden flex items-center gap-2">
-              <button
-                onClick={() => openRequestModal("waiter")}
-                disabled={isRequestingWaiter}
-                className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
-                  theme === "premium-plus" || theme === "ultra-plus"
-                    ? "bg-amber-500 hover:bg-amber-600"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }`}
-                title="Garson Çağır"
-              >
-                <Bell className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => openRequestModal("bill")}
-                disabled={isRequestingBill}
-                className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
-                  theme === "premium-plus" || theme === "ultra-plus"
-                    ? "bg-amber-500 hover:bg-amber-600"
-                    : "bg-green-500 hover:bg-green-600"
-                }`}
-                title="Hesap İste"
-              >
-                <Receipt className="w-5 h-5" />
-              </button>
+          : undefined
+      }>
+        <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 pb-6 pt-4">
+          {campaigns.length > 0 ? (
+            <CampaignMarquee campaigns={campaigns} labels={S} />
+          ) : null}
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              {restaurant ? (
+                <>
+                  <div className={`text-xl font-extrabold ${theme === "paper"
+                      ? "text-amber-900"
+                      : theme === "premium-plus" || theme === "ultra-plus"
+                        ? "text-white"
+                        : "text-gray-950"
+                    }`}>{restaurant.name}</div>
+                  {restaurant.description ? (
+                    <div className={`mt-1 text-sm ${theme === "paper"
+                        ? "text-amber-800"
+                        : theme === "premium-plus" || theme === "ultra-plus"
+                          ? "text-gray-300"
+                          : "text-gray-500"
+                      }`}>{restaurant.description}</div>
+                  ) : null}
+                </>
+              ) : null}
             </div>
 
-            {/* Language Selector */}
-            <div>
-              <label className="sr-only" htmlFor="menu-language">
-                {S.language}
-              </label>
-              <div className="relative">
-                <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                <select
-                  id="menu-language"
-                  value={lang}
-                  onChange={(e) => setLang(e.target.value as Lang)}
-                  className="h-10 rounded-full border border-gray-200 bg-white pl-9 pr-4 text-sm font-semibold text-gray-900 shadow-sm focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+            <div className="shrink-0 flex items-center gap-2">
+              {/* Mobile: Garson Çağır & Hesap İste Butonları */}
+              <div className="md:hidden flex items-center gap-2">
+                <button
+                  onClick={() => openRequestModal("waiter")}
+                  disabled={isRequestingWaiter}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${theme === "premium-plus" || theme === "ultra-plus"
+                      ? "bg-amber-500 hover:bg-amber-600"
+                      : "bg-blue-500 hover:bg-blue-600"
+                    }`}
+                  title="Garson Çağır"
                 >
-                  {LANG_OPTIONS.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                  <Bell className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => openRequestModal("bill")}
+                  disabled={isRequestingBill}
+                  className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${theme === "premium-plus" || theme === "ultra-plus"
+                      ? "bg-amber-500 hover:bg-amber-600"
+                      : "bg-green-500 hover:bg-green-600"
+                    }`}
+                  title="Hesap İste"
+                >
+                  <Receipt className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Language Selector */}
+              <div>
+                <label className="sr-only" htmlFor="menu-language">
+                  {S.language}
+                </label>
+                <div className="relative">
+                  <Globe className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                  <select
+                    id="menu-language"
+                    value={lang}
+                    onChange={(e) => setLang(e.target.value as Lang)}
+                    className="h-10 rounded-full border border-gray-200 bg-white pl-9 pr-4 text-sm font-semibold text-gray-900 shadow-sm focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                  >
+                    {LANG_OPTIONS.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Search + add product */}
-        <div className="relative">
-          <Search className={`pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 ${
-            theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-400"
-          }`} />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={S.searchPlaceholder}
-            className={getSearchInputClasses()}
-          />
-        </div>
-      </div>
-
-      {/* Sticky tabs */}
-      <div className={`sticky top-0 z-30 ${getStickyTabsClasses()}`}>
-        <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 py-3">
-          <div className="flex gap-5 overflow-x-auto whitespace-nowrap pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {tabs.map((t) => {
-              const active = t.name === activeTab;
-              const label = t.name === "Most Popular" ? S.mostPopular : t.name;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => scrollTo(t.name)}
-                  className={[
-                    "relative pb-2 text-sm font-semibold transition-colors",
-                    active 
-                      ? (theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950")
-                      : (theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-800"),
-                  ].join(" ")}
-                >
-                  {label}
-                  <span
-                    className={[
-                      "absolute left-0 right-0 -bottom-[1px] h-[2px] rounded-full transition-opacity",
-                      active ? `${getTabActiveClasses()} opacity-100` : "bg-transparent opacity-0",
-                    ].join(" ")}
-                  />
-                </button>
-              );
-            })}
+          {/* Search + add product */}
+          <div className="relative">
+            <Search className={`pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 ${theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-400"
+              }`} />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={S.searchPlaceholder}
+              className={getSearchInputClasses()}
+            />
           </div>
         </div>
-      </div>
 
-      <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4">
-        {/* Render theme-specific layouts */}
-        {renderThemeLayout()}
-      </div>
-
-
-      {/* Desktop Floating action buttons - Garson Çağır & Hesap İste */}
-      <div className="hidden md:flex fixed right-4 top-20 z-40 flex-col gap-3">
-        <button
-          onClick={() => openRequestModal("waiter")}
-          disabled={isRequestingWaiter}
-          className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
-            theme === "premium-plus" || theme === "ultra-plus"
-              ? "bg-amber-500 hover:bg-amber-600"
-              : "bg-blue-500 hover:bg-blue-600"
-          }`}
-          title="Garson Çağır"
-        >
-          <Bell className="w-5 h-5" />
-          <span className="text-sm font-bold">Garson Çağır</span>
-        </button>
-        <button
-          onClick={() => openRequestModal("bill")}
-          disabled={isRequestingBill}
-          className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
-            theme === "premium-plus" || theme === "ultra-plus"
-              ? "bg-amber-500 hover:bg-amber-600"
-              : "bg-green-500 hover:bg-green-600"
-          }`}
-          title="Hesap İste"
-        >
-          <Receipt className="w-5 h-5" />
-          <span className="text-sm font-bold">Hesap İste</span>
-        </button>
-      </div>
-
-      {/* Request Modal */}
-      <AnimatePresence>
-        {requestModalOpen && requestType && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-            onClick={() => setRequestModalOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className={`w-full max-w-md rounded-2xl shadow-2xl ${
-                theme === "premium-plus" || theme === "ultra-plus"
-                  ? "bg-gray-800"
-                  : "bg-white"
-              }`}
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className={`text-xl font-bold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
-                  }`}>
-                    {requestType === "waiter" ? "Garson Çağır" : "Hesap İste"}
-                  </h2>
+        {/* Sticky tabs */}
+        <div className={`sticky top-0 z-30 ${getStickyTabsClasses()}`}>
+          <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4 py-3">
+            <div className="flex gap-5 overflow-x-auto whitespace-nowrap pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {tabs.map((t) => {
+                const active = t.name === activeTab;
+                const label = t.name === "Most Popular" ? S.mostPopular : t.name;
+                return (
                   <button
-                    onClick={() => setRequestModalOpen(false)}
-                    className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "hover:bg-gray-700" : ""
-                    }`}
+                    key={t.id}
+                    onClick={() => scrollTo(t.name)}
+                    className={[
+                      "relative pb-2 text-sm font-semibold transition-colors",
+                      active
+                        ? (theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950")
+                        : (theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-800"),
+                    ].join(" ")}
                   >
-                    <X className={`w-5 h-5 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-600"
-                    }`} />
+                    {label}
+                    <span
+                      className={[
+                        "absolute left-0 right-0 -bottom-[1px] h-[2px] rounded-full transition-opacity",
+                        active ? `${getTabActiveClasses()} opacity-100` : "bg-transparent opacity-0",
+                      ].join(" ")}
+                    />
                   </button>
-                </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
-                    }`}>
-                      Masa Numarası *
-                    </label>
-                    <input
-                      type="text"
-                      value={requestTableNumber}
-                      onChange={(e) => setRequestTableNumber(e.target.value)}
-                      placeholder="Örn: 5, A12"
-                      className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 ${
-                        theme === "premium-plus" || theme === "ultra-plus"
-                          ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
-                          : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                      }`}
-                      required
-                    />
-                  </div>
+        <div className="mx-auto w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] px-4">
+          {/* Render theme-specific layouts */}
+          {renderThemeLayout()}
+        </div>
 
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
-                    }`}>
-                      Not (Opsiyonel)
-                    </label>
-                    <textarea
-                      value={requestNote}
-                      onChange={(e) => setRequestNote(e.target.value)}
-                      placeholder="Eklemek istediğiniz bir not var mı?"
-                      rows={3}
-                      className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 resize-none ${
-                        theme === "premium-plus" || theme === "ultra-plus"
-                          ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
-                          : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
-                      }`}
-                    />
-                  </div>
 
-                  <div className="flex gap-3 pt-2">
+        {/* Desktop Floating action buttons - Garson Çağır & Hesap İste */}
+        <div className="hidden md:flex fixed right-4 top-20 z-40 flex-col gap-3">
+          <button
+            onClick={() => openRequestModal("waiter")}
+            disabled={isRequestingWaiter}
+            className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${theme === "premium-plus" || theme === "ultra-plus"
+                ? "bg-amber-500 hover:bg-amber-600"
+                : "bg-blue-500 hover:bg-blue-600"
+              }`}
+            title="Garson Çağır"
+          >
+            <Bell className="w-5 h-5" />
+            <span className="text-sm font-bold">Garson Çağır</span>
+          </button>
+          <button
+            onClick={() => openRequestModal("bill")}
+            disabled={isRequestingBill}
+            className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${theme === "premium-plus" || theme === "ultra-plus"
+                ? "bg-amber-500 hover:bg-amber-600"
+                : "bg-green-500 hover:bg-green-600"
+              }`}
+            title="Hesap İste"
+          >
+            <Receipt className="w-5 h-5" />
+            <span className="text-sm font-bold">Hesap İste</span>
+          </button>
+        </div>
+
+        {/* Request Modal */}
+        <AnimatePresence>
+          {requestModalOpen && requestType && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+              onClick={() => setRequestModalOpen(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className={`w-full max-w-md rounded-2xl shadow-2xl ${theme === "premium-plus" || theme === "ultra-plus"
+                    ? "bg-gray-800"
+                    : "bg-white"
+                  }`}
+              >
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className={`text-xl font-bold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
+                      }`}>
+                      {requestType === "waiter" ? "Garson Çağır" : "Hesap İste"}
+                    </h2>
                     <button
                       onClick={() => setRequestModalOpen(false)}
-                      className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${
-                        theme === "premium-plus" || theme === "ultra-plus"
-                          ? "bg-gray-700 text-white hover:bg-gray-600"
-                          : "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                      }`}
+                      className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${theme === "premium-plus" || theme === "ultra-plus" ? "hover:bg-gray-700" : ""
+                        }`}
                     >
-                      İptal
-                    </button>
-                    <button
-                      onClick={handleSubmitRequest}
-                      disabled={!requestTableNumber.trim() || isRequestingWaiter || isRequestingBill}
-                      className={`flex-1 px-4 py-3 rounded-xl font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                        requestType === "waiter"
-                          ? theme === "premium-plus" || theme === "ultra-plus"
-                            ? "bg-amber-500 hover:bg-amber-600"
-                            : "bg-blue-500 hover:bg-blue-600"
-                          : theme === "premium-plus" || theme === "ultra-plus"
-                            ? "bg-amber-500 hover:bg-amber-600"
-                            : "bg-green-500 hover:bg-green-600"
-                      }`}
-                    >
-                      {(isRequestingWaiter || isRequestingBill) ? "Gönderiliyor..." : "Gönder"}
+                      <X className={`w-5 h-5 ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-600"
+                        }`} />
                     </button>
                   </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
+                        }`}>
+                        Masa Numarası *
+                      </label>
+                      <input
+                        type="text"
+                        value={requestTableNumber}
+                        onChange={(e) => setRequestTableNumber(e.target.value)}
+                        placeholder="Örn: 5, A12"
+                        className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 ${theme === "premium-plus" || theme === "ultra-plus"
+                            ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
+                            : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                          }`}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className={`block text-sm font-bold mb-2 ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
+                        }`}>
+                        Not (Opsiyonel)
+                      </label>
+                      <textarea
+                        value={requestNote}
+                        onChange={(e) => setRequestNote(e.target.value)}
+                        placeholder="Eklemek istediğiniz bir not var mı?"
+                        rows={3}
+                        className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 resize-none ${theme === "premium-plus" || theme === "ultra-plus"
+                            ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
+                            : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                          }`}
+                      />
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={() => setRequestModalOpen(false)}
+                        className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${theme === "premium-plus" || theme === "ultra-plus"
+                            ? "bg-gray-700 text-white hover:bg-gray-600"
+                            : "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                          }`}
+                      >
+                        İptal
+                      </button>
+                      <button
+                        onClick={handleSubmitRequest}
+                        disabled={!requestTableNumber.trim() || isRequestingWaiter || isRequestingBill}
+                        className={`flex-1 px-4 py-3 rounded-xl font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${requestType === "waiter"
+                            ? theme === "premium-plus" || theme === "ultra-plus"
+                              ? "bg-amber-500 hover:bg-amber-600"
+                              : "bg-blue-500 hover:bg-blue-600"
+                            : theme === "premium-plus" || theme === "ultra-plus"
+                              ? "bg-amber-500 hover:bg-amber-600"
+                              : "bg-green-500 hover:bg-green-600"
+                          }`}
+                      >
+                        {(isRequestingWaiter || isRequestingBill) ? "Gönderiliyor..." : "Gönder"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
 
-      {/* Floating mini cart bar */}
-      <AnimatePresence>
-        {cartTotals.totalCents > 0 ? (
-          <motion.div
-            initial={{ y: 24, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 24, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 420, damping: 32 }}
-            className="fixed inset-x-0 bottom-4 z-40 px-4"
-          >
-            <button
-              className={`mx-auto flex w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] items-center justify-between rounded-full px-5 py-4 text-white shadow-lg ${getButtonClasses()}`}
-              aria-label={S.viewOrderAria}
-              onClick={() => setCartOpen(true)}
+        {/* Floating mini cart bar */}
+        <AnimatePresence>
+          {cartTotals.totalCents > 0 ? (
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 420, damping: 32 }}
+              className="fixed inset-x-0 bottom-4 z-40 px-4"
             >
-              <span className="text-sm font-extrabold">{S.viewOrder}</span>
-              <span className="text-sm font-extrabold">{formatTry(cartTotals.totalCents)}</span>
-            </button>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+              <button
+                className={`mx-auto flex w-full max-w-[720px] md:max-w-[900px] lg:max-w-[1100px] items-center justify-between rounded-full px-5 py-4 text-white shadow-lg ${getButtonClasses()}`}
+                aria-label={S.viewOrderAria}
+                onClick={() => setCartOpen(true)}
+              >
+                <span className="text-sm font-extrabold">{S.viewOrder}</span>
+                <span className="text-sm font-extrabold">{formatTry(cartTotals.totalCents)}</span>
+              </button>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
 
-      <ProductSheet
-        item={selected}
-        onClose={() => setSelected(null)}
-        onAdd={(it, qty, note) => addLine(it, qty, note)}
-        labels={S}
-        theme={theme}
-      />
+        <ProductSheet
+          item={selected}
+          onClose={() => setSelected(null)}
+          onAdd={(it, qty, note) => addLine(it, qty, note)}
+          labels={S}
+          theme={theme}
+        />
 
-      <OrderSheet
-        open={cartOpen}
-        onClose={() => setCartOpen(false)}
-        lines={cartLines}
-        onSetQty={setLineQty}
-        totalCents={cartTotals.totalCents}
-        onConfirm={() => {
-          if (cartLines.length === 0) {
-            toast.error(S.cartEmpty);
-            return;
-          }
-          setConfirmOpen(true);
-        }}
-        labels={S}
-      />
+        <OrderSheet
+          open={cartOpen}
+          onClose={() => setCartOpen(false)}
+          lines={cartLines}
+          onSetQty={setLineQty}
+          totalCents={cartTotals.totalCents}
+          onConfirm={() => {
+            if (cartLines.length === 0) {
+              toast.error(S.cartEmpty);
+              return;
+            }
+            setConfirmOpen(true);
+          }}
+          labels={S}
+        />
 
-      <OrderConfirmSheet
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        restaurantId={restaurant?.id ?? null}
-        lines={cartLines}
-        subtotalTry={cartTotals.totalCents / 100}
-        discountTry={discountTry}
-        totalTry={discountedTotalTry}
-        orderForm={orderForm}
-        setOrderForm={setOrderForm}
-        isSubmitting={isSubmittingOrder}
-        couponCode={couponCode}
-        setCouponCode={setCouponCode}
-        isValidatingCoupon={isValidatingCoupon}
-        onApplyCoupon={applyCoupon}
-        labels={S}
-        enableTakeaway={enableTakeaway}
-        orderType={orderType}
-        setOrderType={setOrderType}
-        onSubmit={async () => {
-          if (cartLines.length === 0) {
-            toast.error(S.cartEmpty);
-            return;
-          }
-          if (!restaurant?.id) {
-            toast.error(S.missingRestaurant);
-            return;
-          }
-
-          if (!orderForm.customerName.trim()) {
-            toast.error(S.missingName);
-            return;
-          }
-          if (!orderForm.customerPhone.trim()) {
-            toast.error(S.missingPhone);
-            return;
-          }
-          const phoneRegex = /^[0-9+\-\s()]+$/;
-          if (!phoneRegex.test(orderForm.customerPhone.trim())) {
-            toast.error(S.invalidPhone);
-            return;
-          }
-
-          setIsSubmittingOrder(true);
-          try {
-            const res = await fetch("/api/orders", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                restaurantId: restaurant.id,
-                orderType,
-                tableNumber: orderType === "takeaway" ? null : (orderForm.tableNumber.trim() || null),
-                customerName: orderForm.customerName.trim(),
-                customerPhone: orderForm.customerPhone.trim(),
-                couponCode: (couponCode || "").trim() ? (couponCode || "").trim().toUpperCase() : null,
-                items: cartLines.map((l) => ({
-                  productId: l.item.id,
-                  quantity: l.quantity,
-                  price: l.item.priceCents / 100,
-                  notes: l.note || null,
-                })),
-              }),
-            });
-
-            const data = await res.json();
-            if (!res.ok) {
-              toast.error(S.orderSubmitError(data?.error));
+        <OrderConfirmSheet
+          open={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          restaurantId={restaurant?.id ?? null}
+          lines={cartLines}
+          subtotalTry={cartTotals.totalCents / 100}
+          discountTry={discountTry}
+          totalTry={discountedTotalTry}
+          orderForm={orderForm}
+          setOrderForm={setOrderForm}
+          isSubmitting={isSubmittingOrder}
+          couponCode={couponCode}
+          setCouponCode={setCouponCode}
+          isValidatingCoupon={isValidatingCoupon}
+          onApplyCoupon={applyCoupon}
+          labels={S}
+          enableTakeaway={enableTakeaway}
+          orderType={orderType}
+          setOrderType={setOrderType}
+          onSubmit={async () => {
+            if (cartLines.length === 0) {
+              toast.error(S.cartEmpty);
+              return;
+            }
+            if (!restaurant?.id) {
+              toast.error(S.missingRestaurant);
               return;
             }
 
-            const orderNumber = data.orderNumber;
-            toast.success(S.orderReceived(orderNumber));
+            if (!orderForm.customerName.trim()) {
+              toast.error(S.missingName);
+              return;
+            }
+            if (!orderForm.customerPhone.trim()) {
+              toast.error(S.missingPhone);
+              return;
+            }
+            const phoneRegex = /^[0-9+\-\s()]+$/;
+            if (!phoneRegex.test(orderForm.customerPhone.trim())) {
+              toast.error(S.invalidPhone);
+              return;
+            }
 
-            setCartLines([]);
-            setConfirmOpen(false);
-            setCartOpen(false);
-            setOrderForm({ customerName: "", customerPhone: "", tableNumber: "" });
-            setOrderType("restaurant");
-            setCouponCode("");
-            setDiscountTry(0);
+            setIsSubmittingOrder(true);
+            try {
+              const res = await fetch("/api/orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  restaurantId: restaurant.id,
+                  orderType,
+                  tableNumber: orderType === "takeaway" ? null : (orderForm.tableNumber.trim() || null),
+                  customerName: orderForm.customerName.trim(),
+                  customerPhone: orderForm.customerPhone.trim(),
+                  couponCode: (couponCode || "").trim() ? (couponCode || "").trim().toUpperCase() : null,
+                  items: cartLines.map((l) => ({
+                    productId: l.item.id,
+                    quantity: l.quantity,
+                    price: l.item.priceCents / 100,
+                    notes: l.note || null,
+                  })),
+                }),
+              });
 
-            router.push(`/order/${orderNumber}`);
-          } catch (e) {
-            console.error(e);
-            toast.error(S.genericErrorTryAgain);
-          } finally {
-            setIsSubmittingOrder(false);
-          }
-        }}
-      />
-    </div>
+              const data = await res.json();
+              if (!res.ok) {
+                toast.error(S.orderSubmitError(data?.error));
+                return;
+              }
+
+              const orderNumber = data.orderNumber;
+              toast.success(S.orderReceived(orderNumber));
+
+              setCartLines([]);
+              setConfirmOpen(false);
+              setCartOpen(false);
+              setOrderForm({ customerName: "", customerPhone: "", tableNumber: "" });
+              setOrderType("restaurant");
+              setCouponCode("");
+              setDiscountTry(0);
+
+              router.push(`/order/${orderNumber}`);
+            } catch (e) {
+              console.error(e);
+              toast.error(S.genericErrorTryAgain);
+            } finally {
+              setIsSubmittingOrder(false);
+            }
+          }}
+        />
+      </div>
     </>
   );
 }
@@ -2572,37 +2537,32 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") onOpen();
       }}
-      className={`w-full text-left focus:outline-none ${getRowClasses()} ${
-        theme === "paper" ? "mb-0" : "mb-2"
-      }`}
+      className={`w-full text-left focus:outline-none ${getRowClasses()} ${theme === "paper" ? "mb-0" : "mb-2"
+        }`}
     >
       <div className={`flex gap-4 ${rowPadding}`}>
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-2">
-            <div className={`${
-              theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
-            } font-extrabold ${getTextColor()}`}>{item.name}</div>
+            <div className={`${theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
+              } font-extrabold ${getTextColor()}`}>{item.name}</div>
             {item.isVegetarian ? (
-              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
-                theme === "paper"
+              <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${theme === "paper"
                   ? "bg-amber-50 text-amber-700"
                   : theme === "swipe"
-                  ? "bg-purple-50 text-purple-700"
-                  : theme === "premium-plus" || theme === "ultra-plus"
-                  ? "bg-amber-500/30 text-amber-200"
-                  : "bg-emerald-50 text-emerald-700"
-              }`}>
+                    ? "bg-purple-50 text-purple-700"
+                    : theme === "premium-plus" || theme === "ultra-plus"
+                      ? "bg-amber-500/30 text-amber-200"
+                      : "bg-emerald-50 text-emerald-700"
+                }`}>
                 <Leaf className="h-3 w-3" />
                 {labels.vegBadge}
               </span>
             ) : null}
           </div>
-          <div className={`mt-1 ${
-            theme === "swipe" ? "text-sm" : "text-xs"
-          } ${getDescColor()} line-clamp-2`}>{item.shortDescription}</div>
-          <div className={`mt-2 ${
-            theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
-          } font-extrabold ${getTextColor()}`}>{formatTry(item.priceCents)}</div>
+          <div className={`mt-1 ${theme === "swipe" ? "text-sm" : "text-xs"
+            } ${getDescColor()} line-clamp-2`}>{item.shortDescription}</div>
+          <div className={`mt-2 ${theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
+            } font-extrabold ${getTextColor()}`}>{formatTry(item.priceCents)}</div>
           <div className={`mt-1 text-xs font-semibold ${getDescColor()}`}>
             {labels.stockLabel}: {item.stock === null ? labels.stockUnlimited : item.stock}
           </div>
@@ -2735,12 +2695,10 @@ function ProductSheet({
             <div className="max-h-[60vh] overflow-y-auto px-5 pb-28 pt-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className={`text-xl font-extrabold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-                  }`}>{item.name}</div>
-                  <div className={`mt-2 text-sm font-extrabold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-                  }`}>
+                  <div className={`text-xl font-extrabold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    }`}>{item.name}</div>
+                  <div className={`mt-2 text-sm font-extrabold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    }`}>
                     {formatTry(item.priceCents)}
                   </div>
                 </div>
@@ -2752,97 +2710,89 @@ function ProductSheet({
                 ) : null}
               </div>
 
-              <p className={`mt-3 text-sm leading-relaxed ${
-                theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-600"
-              }`}>{item.description}</p>
+              <p className={`mt-3 text-sm leading-relaxed ${theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-600"
+                }`}>{item.description}</p>
 
               <div className="mt-6">
-                <label className={`text-sm font-bold ${
-                  theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
-                }`}>{labels.addNoteLabel}</label>
+                <label className={`text-sm font-bold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
+                  }`}>{labels.addNoteLabel}</label>
                 <textarea
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder={labels.addNotePlaceholder}
-                  className={`mt-2 w-full resize-none px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 ${
-                    theme === "paper"
+                  className={`mt-2 w-full resize-none px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-4 ${theme === "paper"
                       ? "rounded-none border border-amber-300 bg-white focus:border-amber-600 focus:ring-amber-500/10 text-gray-900"
                       : theme === "paper-image"
-                      ? "rounded-xl border border-amber-200 bg-white focus:border-amber-500 focus:ring-amber-500/10 text-gray-900"
-                      : theme === "swipe"
-                      ? "rounded-2xl border border-purple-200 bg-white focus:border-purple-500 focus:ring-purple-500/10 text-gray-900"
-                      : theme === "premium-plus"
-                      ? "rounded-2xl border border-amber-500/30 bg-gray-800/50 focus:border-amber-400 focus:ring-amber-400/20 text-white"
-                      : theme === "pro"
-                      ? "rounded-lg border border-blue-200 bg-white focus:border-blue-600 focus:ring-blue-500/10 text-gray-900"
-                      : theme === "soft-ui"
-                      ? "rounded-3xl border border-rose-200/50 bg-white/80 backdrop-blur-sm focus:border-rose-400 focus:ring-rose-400/20 text-gray-900"
-                      : theme === "ultra-plus"
-                      ? "rounded-2xl border border-violet-400/30 bg-gray-800/50 focus:border-violet-400 focus:ring-violet-400/20 text-white"
-                      : "rounded-2xl border border-gray-200 bg-gray-50 focus:border-emerald-500 focus:ring-emerald-500/10 text-gray-900"
-                  }`}
+                        ? "rounded-xl border border-amber-200 bg-white focus:border-amber-500 focus:ring-amber-500/10 text-gray-900"
+                        : theme === "swipe"
+                          ? "rounded-2xl border border-purple-200 bg-white focus:border-purple-500 focus:ring-purple-500/10 text-gray-900"
+                          : theme === "premium-plus"
+                            ? "rounded-2xl border border-amber-500/30 bg-gray-800/50 focus:border-amber-400 focus:ring-amber-400/20 text-white"
+                            : theme === "pro"
+                              ? "rounded-lg border border-blue-200 bg-white focus:border-blue-600 focus:ring-blue-500/10 text-gray-900"
+                              : theme === "soft-ui"
+                                ? "rounded-3xl border border-rose-200/50 bg-white/80 backdrop-blur-sm focus:border-rose-400 focus:ring-rose-400/20 text-gray-900"
+                                : theme === "ultra-plus"
+                                  ? "rounded-2xl border border-violet-400/30 bg-gray-800/50 focus:border-violet-400 focus:ring-violet-400/20 text-white"
+                                  : "rounded-2xl border border-gray-200 bg-gray-50 focus:border-emerald-500 focus:ring-emerald-500/10 text-gray-900"
+                    }`}
                   rows={3}
                 />
               </div>
             </div>
 
             {/* Sticky bottom action bar */}
-            <div className={`absolute inset-x-0 bottom-0 border-t backdrop-blur ${
-              theme === "paper"
+            <div className={`absolute inset-x-0 bottom-0 border-t backdrop-blur ${theme === "paper"
                 ? "border-amber-200 bg-white/95"
                 : theme === "paper-image"
-                ? "border-amber-200 bg-white/95"
-                : theme === "swipe"
-                ? "border-purple-200 bg-white/95"
-                : theme === "premium-plus"
-                ? "border-amber-500/30 bg-gray-800/95"
-                : theme === "pro"
-                ? "border-blue-200 bg-white/95"
-                : theme === "soft-ui"
-                ? "border-rose-200/50 bg-white/95 backdrop-blur-sm"
-                : theme === "ultra-plus"
-                ? "border-violet-400/30 bg-violet-900/95"
-                : "border-gray-100 bg-white/95"
-            }`}>
+                  ? "border-amber-200 bg-white/95"
+                  : theme === "swipe"
+                    ? "border-purple-200 bg-white/95"
+                    : theme === "premium-plus"
+                      ? "border-amber-500/30 bg-gray-800/95"
+                      : theme === "pro"
+                        ? "border-blue-200 bg-white/95"
+                        : theme === "soft-ui"
+                          ? "border-rose-200/50 bg-white/95 backdrop-blur-sm"
+                          : theme === "ultra-plus"
+                            ? "border-violet-400/30 bg-violet-900/95"
+                            : "border-gray-100 bg-white/95"
+              }`}>
               <div className="flex items-center gap-3 px-5 py-4">
-                <div className={`flex items-center gap-2 rounded-full border px-2 py-2 shadow-sm ${
-                  theme === "paper"
+                <div className={`flex items-center gap-2 rounded-full border px-2 py-2 shadow-sm ${theme === "paper"
                     ? "border-amber-200 bg-white"
                     : theme === "paper-image"
-                    ? "border-amber-200 bg-white"
-                    : theme === "swipe"
-                    ? "border-purple-200 bg-white"
-                    : theme === "premium-plus"
-                    ? "border-amber-500/30 bg-gray-800/50"
-                    : theme === "pro"
-                    ? "border-blue-200 bg-white"
-                    : theme === "soft-ui"
-                    ? "border-rose-200/50 bg-white/80 backdrop-blur-sm"
-                    : theme === "ultra-plus"
-                    ? "border-violet-400/30 bg-gray-800/50"
-                    : "border-gray-200 bg-white"
-                }`}>
+                      ? "border-amber-200 bg-white"
+                      : theme === "swipe"
+                        ? "border-purple-200 bg-white"
+                        : theme === "premium-plus"
+                          ? "border-amber-500/30 bg-gray-800/50"
+                          : theme === "pro"
+                            ? "border-blue-200 bg-white"
+                            : theme === "soft-ui"
+                              ? "border-rose-200/50 bg-white/80 backdrop-blur-sm"
+                              : theme === "ultra-plus"
+                                ? "border-violet-400/30 bg-gray-800/50"
+                                : "border-gray-200 bg-white"
+                  }`}>
                   <button
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
-                    className={`grid h-9 w-9 place-items-center rounded-full ${
-                      theme === "premium-plus" || theme === "ultra-plus"
+                    className={`grid h-9 w-9 place-items-center rounded-full ${theme === "premium-plus" || theme === "ultra-plus"
                         ? "bg-gray-700 text-white"
                         : "bg-gray-50 text-gray-900"
-                    }`}
+                      }`}
                     aria-label="Decrease quantity"
                   >
                     <span className="text-lg font-extrabold leading-none">-</span>
                   </button>
-                  <div className={`w-8 text-center text-sm font-extrabold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-                  }`}>{qty}</div>
+                  <div className={`w-8 text-center text-sm font-extrabold ${theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    }`}>{qty}</div>
                   <button
                     onClick={() => setQty((q) => q + 1)}
-                    className={`grid h-9 w-9 place-items-center rounded-full ${
-                      theme === "premium-plus" || theme === "ultra-plus"
+                    className={`grid h-9 w-9 place-items-center rounded-full ${theme === "premium-plus" || theme === "ultra-plus"
                         ? "bg-gray-700 text-white"
                         : "bg-gray-50 text-gray-900"
-                    }`}
+                      }`}
                     aria-label="Increase quantity"
                   >
                     <span className="text-lg font-extrabold leading-none">+</span>

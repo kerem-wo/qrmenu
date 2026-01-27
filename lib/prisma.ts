@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
 // Prisma Accelerate is automatically used if PRISMA_DATABASE_URL is set
 // Otherwise, DATABASE_URL from schema.prisma is used
 const prismaClientOptions = {
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  log: (process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']) as ('query' | 'info' | 'warn' | 'error')[],
 }
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient(prismaClientOptions)

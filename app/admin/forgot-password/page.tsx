@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
 
       if (res.ok) {
         toast.success(data.message || "Şifre sıfırlama linki e-posta adresinize gönderildi!");
-        
+
         // Development modunda token gösteriliyor
         if (data.resetToken && data.resetUrl && process.env.NODE_ENV === "development") {
           setResetToken(data.resetToken);
@@ -84,16 +84,16 @@ export default function ForgotPasswordPage() {
                   className="premium-input"
                 />
               </div>
-              <Button 
-                type="submit" 
-                className="premium-btn-primary w-full" 
+              <Button
+                type="submit"
+                className="premium-btn-primary w-full"
                 disabled={loading}
               >
                 {loading ? "Gönderiliyor..." : "Şifre Sıfırlama Linki Gönder"}
               </Button>
               <div className="text-center">
-                <Link 
-                  href="/admin/login" 
+                <Link
+                  href="/admin/login"
                   className="text-sm text-gray-600 hover:text-gray-900 font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />
@@ -108,11 +108,11 @@ export default function ForgotPasswordPage() {
                   Şifre sıfırlama linki oluşturuldu!
                 </p>
                 <p className="text-xs text-blue-600 mb-4 font-medium">
-                  Development modunda link aşağıda gösteriliyor. Production'da bu link e-posta ile gönderilir.
+                  Development modunda link aşağıda gösteriliyor. Production&apos;da bu link e-posta ile gönderilir.
                 </p>
                 <div className="bg-white rounded-xl p-4 border border-blue-200">
                   <p className="text-xs text-gray-600 mb-2 font-bold">Şifre Sıfırlama Linki:</p>
-                  <a 
+                  <a
                     href={resetUrl || `/admin/reset-password/${resetToken}`}
                     className="text-xs text-blue-600 hover:text-blue-800 break-all underline font-medium"
                     target="_blank"
@@ -131,8 +131,8 @@ export default function ForgotPasswordPage() {
                 </Button>
               </div>
               <div className="text-center">
-                <Link 
-                  href="/admin/login" 
+                <Link
+                  href="/admin/login"
                   className="text-sm text-gray-600 hover:text-gray-900 font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4" />

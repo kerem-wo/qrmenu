@@ -33,7 +33,7 @@ export default function NewCampaignPage() {
         router.push("/admin/login");
       }
     });
-  }, []);
+  }, [router]);
 
   // datetime-local helpers (use local time, store as ISO)
   const toLocalInput = (d: Date) => {

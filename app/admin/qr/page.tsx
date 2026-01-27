@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, QrCode } from "lucide-react";
@@ -16,6 +17,37 @@ export default function QRCodePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const generateQRCode = async (slug: string) => {
+      if (typeof window === "undefined") return;
+
+      try {
+        const QRCodeModule = await import("qrcode");
+        const menuUrl = `${window.location.origin}/menu/${slug}`;
+        const qrCodeDataUrl = await QRCodeModule.default.toDataURL(menuUrl, {
+          width: 300,
+          margin: 2,
+        });
+        setQrCodeUrl(qrCodeDataUrl);
+      } catch (error) {
+        console.error("Error generating QR code:", error);
+      }
+    };
+
+    const fetchRestaurant = async (restaurantId: string) => {
+      try {
+        const res = await fetch(`/api/admin/restaurant`);
+        if (res.ok) {
+          const data = await res.json();
+          setRestaurant(data);
+          generateQRCode(data.slug);
+        }
+      } catch (error) {
+        console.error("Error fetching restaurant:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     checkAuth().then((session) => {
       if (!session) {
         router.push("/admin/login");
@@ -23,42 +55,11 @@ export default function QRCodePage() {
       }
       fetchRestaurant(session.restaurantId);
     });
-  }, []);
-
-  const fetchRestaurant = async (restaurantId: string) => {
-    try {
-      const res = await fetch(`/api/admin/restaurant`);
-      if (res.ok) {
-        const data = await res.json();
-        setRestaurant(data);
-        generateQRCode(data.slug);
-      }
-    } catch (error) {
-      console.error("Error fetching restaurant:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generateQRCode = async (slug: string) => {
-    if (typeof window === "undefined") return;
-    
-    try {
-      const QRCodeModule = await import("qrcode");
-      const menuUrl = `${window.location.origin}/menu/${slug}`;
-      const qrCodeDataUrl = await QRCodeModule.default.toDataURL(menuUrl, {
-        width: 300,
-        margin: 2,
-      });
-      setQrCodeUrl(qrCodeDataUrl);
-    } catch (error) {
-      console.error("Error generating QR code:", error);
-    }
-  };
+  }, [router]);
 
   const downloadQRCode = () => {
     if (!qrCodeUrl) return;
-    
+
     const link = document.createElement("a");
     link.download = `qr-menu-${restaurant?.slug || "menu"}.png`;
     link.href = qrCodeUrl;
@@ -107,7 +108,7 @@ export default function QRCodePage() {
             {qrCodeUrl && (
               <div className="flex flex-col items-center space-y-6">
                 <div className="bg-white p-8 rounded-2xl border border-gray-200 premium-shadow-md">
-                  <img src={qrCodeUrl} alt="QR Code" className="w-64 h-64" />
+                  <Image src={qrCodeUrl} alt="QR Code" width={256} height={256} className="w-64 h-64" />
                 </div>
                 <Button onClick={downloadQRCode} className="premium-btn-primary w-full md:w-auto">
                   <Download className="w-5 h-5 mr-2" />

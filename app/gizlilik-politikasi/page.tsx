@@ -6,15 +6,15 @@ export default function PrivacyPolicyPage() {
           <h1 className="premium-heading-2 mb-8">
             Gizlilik Politikası
           </h1>
-          
+
           <div className="prose prose-slate max-w-none space-y-6 text-gray-700">
             <section>
               <h2 className="text-2xl font-semibold text-slate-900 mt-8 mb-4">
                 1. Gizlilik Politikası Hakkında
               </h2>
               <p>
-                Bu Gizlilik Politikası, Rivo QR Platformu ("Platform", "Biz", "Bizim") tarafından 
-                sunulan hizmetler kapsamında toplanan, kullanılan ve korunan kişisel bilgileriniz 
+                Bu Gizlilik Politikası, Rivo QR Platformu (&quot;Platform&quot;, &quot;Biz&quot;, &quot;Bizim&quot;) tarafından
+                sunulan hizmetler kapsamında toplanan, kullanılan ve korunan kişisel bilgileriniz
                 hakkında sizleri bilgilendirmek amacıyla hazırlanmıştır.
               </p>
             </section>
@@ -70,7 +70,7 @@ export default function PrivacyPolicyPage() {
                 5. Çerezler (Cookies)
               </h2>
               <p>
-                Platformumuz, hizmetlerimizi iyileştirmek ve kullanıcı deneyimini geliştirmek için 
+                Platformumuz, hizmetlerimizi iyileştirmek ve kullanıcı deneyimini geliştirmek için
                 çerezler kullanmaktadır. Çerezler hakkında detaylı bilgi için Çerez Politikamızı inceleyebilirsiniz.
               </p>
             </section>
@@ -80,8 +80,8 @@ export default function PrivacyPolicyPage() {
                 6. Veri Güvenliği
               </h2>
               <p>
-                Bilgilerinizin güvenliği bizim için önceliklidir. Verilerinizi korumak için teknik ve 
-                idari güvenlik önlemleri alınmaktadır. Ancak, internet üzerinden veri aktarımının %100 
+                Bilgilerinizin güvenliği bizim için önceliklidir. Verilerinizi korumak için teknik ve
+                idari güvenlik önlemleri alınmaktadır. Ancak, internet üzerinden veri aktarımının %100
                 güvenli olmadığını unutmayın.
               </p>
             </section>
@@ -91,7 +91,7 @@ export default function PrivacyPolicyPage() {
                 7. Veri Saklama Süresi
               </h2>
               <p>
-                Kişisel verileriniz, yasal saklama süreleri ve hizmet sunumu için gerekli süre boyunca 
+                Kişisel verileriniz, yasal saklama süreleri ve hizmet sunumu için gerekli süre boyunca
                 saklanmaktadır. Bu süre sona erdiğinde, verileriniz güvenli bir şekilde silinir veya anonimleştirilir.
               </p>
             </section>
@@ -101,7 +101,7 @@ export default function PrivacyPolicyPage() {
                 8. Haklarınız
               </h2>
               <p>
-                KVKK kapsamında, kişisel verilerinizle ilgili olarak bilgi talep etme, düzeltme, 
+                KVKK kapsamında, kişisel verilerinizle ilgili olarak bilgi talep etme, düzeltme,
                 silme ve itiraz etme haklarınıza sahipsiniz. Bu haklarınızı kullanmak için bizimle iletişime geçebilirsiniz.
               </p>
             </section>
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
                 9. Değişiklikler
               </h2>
               <p>
-                Bu Gizlilik Politikası, yasal düzenlemelerdeki değişiklikler veya hizmetlerimizdeki 
+                Bu Gizlilik Politikası, yasal düzenlemelerdeki değişiklikler veya hizmetlerimizdeki
                 güncellemeler nedeniyle değiştirilebilir. Önemli değişikliklerde sizleri bilgilendireceğiz.
               </p>
             </section>
