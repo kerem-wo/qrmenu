@@ -77,101 +77,6 @@ function PackageSelectionContent() {
     }
   };
 
-  const showMockPaymentForm = (paymentId: string, amount: number) => {
-    // Mock ödeme formu modal oluştur
-    const modal = document.createElement("div");
-    modal.id = "mock-payment-modal";
-    modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50";
-    modal.innerHTML = `
-      <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 relative">
-        <button onclick="document.getElementById('mock-payment-modal').remove()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-        <div class="mb-4">
-          <div class="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg mb-4">
-            <p class="font-semibold">🧪 Mock Test Modu</p>
-            <p class="text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
-          </div>
-          <h3 class="text-xl font-bold mb-2">Test Ödeme Formu</h3>
-          <p class="text-gray-600 mb-4">Tutar: <span class="font-bold">${amount.toFixed(2)} ₺</span></p>
-        </div>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Kart Numarası</label>
-            <input type="text" id="mock-card" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="4355 0843 5508 4358" value="4355 0843 5508 4358" />
-          </div>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Son Kullanma</label>
-              <input type="text" id="mock-expiry" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="12/30" value="12/30" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">CVV</label>
-              <input type="text" id="mock-cvv" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="000" value="000" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Kart Sahibi</label>
-            <input type="text" id="mock-name" class="w-full px-4 py-2 border border-gray-300 rounded-lg" placeholder="Test Kullanıcı" value="Test Kullanıcı" />
-          </div>
-        </div>
-        <div class="mt-6 flex gap-3">
-          <button onclick="document.getElementById('mock-payment-modal').remove()" class="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-semibold hover:bg-gray-300 transition-all">
-            İptal
-          </button>
-          <button id="mock-pay-button" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-all">
-            Ödemeyi Simüle Et
-          </button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    // Ödeme butonuna tıklama
-    const payButton = modal.querySelector("#mock-pay-button") as HTMLButtonElement | null;
-    payButton?.addEventListener("click", async () => {
-      if (!payButton) return;
-      payButton.textContent = "İşleniyor...";
-      payButton.disabled = true;
-
-      // 2 saniye bekle (simüle edilmiş ödeme işlemi)
-      setTimeout(async () => {
-        try {
-          // Mock callback'i simüle et - payment kaydından merchant_oid'i al
-          const paymentRes = await fetch(`/api/payment/paytr/mock-info?paymentId=${paymentId}`);
-          const paymentInfo = await paymentRes.json();
-          const merchantOid = paymentInfo.merchantOid || `sub_${restaurantId}_${Date.now()}`;
-          
-          const callbackRes = await fetch("/api/payment/paytr/callback", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-              merchant_oid: merchantOid,
-              status: "success",
-              total_amount: amount.toFixed(2),
-              hash: "mock_hash_" + Date.now(),
-            }),
-          });
-
-          if (callbackRes.ok) {
-            modal.remove();
-            // Başarı sayfasına yönlendir
-            window.location.href = `/restaurant/register/success?payment=success&restaurantId=${restaurantId}`;
-          } else {
-            throw new Error("Mock ödeme başarısız");
-          }
-        } catch (error) {
-          console.error("Mock payment error:", error);
-          alert("Mock ödeme simülasyonu başarısız. Lütfen tekrar deneyin.");
-          payButton.textContent = "Ödemeyi Simüle Et";
-          payButton.disabled = false;
-        }
-      }, 2000);
-    });
-  };
-
   const showPayTRIframe = (token: string, iframeUrl: string) => {
     // PayTR iframe modal oluştur
     const modal = document.createElement("div");
@@ -264,16 +169,7 @@ function PackageSelectionContent() {
 
       const data = await res.json();
 
-      if (data.mockMode) {
-        // Mock mode: Simüle edilmiş ödeme formu göster
-        const selectedThemeData = themes.find((t) => t.id === selectedTheme);
-        const calculatedPrice = selectedThemeData
-          ? selectedPackage === "monthly"
-            ? selectedThemeData.monthlyPrice
-            : selectedThemeData.yearlyPrice * (1 - selectedThemeData.yearlyDiscount / 100)
-          : 0;
-        showMockPaymentForm(data.paymentId, calculatedPrice);
-      } else if (data.token && data.iframeUrl) {
+      if (data.token && data.iframeUrl) {
         // PayTR iframe'i göster
         showPayTRIframe(data.token, data.iframeUrl);
       } else {

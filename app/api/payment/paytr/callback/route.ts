@@ -26,9 +26,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Hash doğrulama (mock mode için atla)
-    const isMockMode = callbackData.hash?.startsWith("mock_hash_");
-    if (!isMockMode && !verifyPayTRCallback(callbackData)) {
+    // Hash doğrulama
+    if (!verifyPayTRCallback(callbackData)) {
       console.error("PayTR callback hash verification failed");
       return NextResponse.json(
         { error: "Hash doğrulama başarısız" },
@@ -36,103 +35,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Payment kaydını bul (mock mode için farklı arama)
-    let payment;
-    if (isMockMode) {
-      // Mock mode: merchant_oid formatı farklı olabilir, en son pending payment'i bul
-      // merchant_oid formatı: "order_{orderId}_..." veya "sub_{restaurantId}_..."
-      const merchantOidParts = callbackData.merchant_oid.split("_");
-      const searchId = merchantOidParts.length > 1 ? merchantOidParts[1] : null;
-      
-      // Mock mode: Önce merchant_oid ile dene, sonra fallback
-      payment = await prisma.payment.findFirst({
-        where: { 
-          paytrMerchantOid: callbackData.merchant_oid,
-          status: "pending",
-        },
-        include: {
-          order: {
-            include: {
-              restaurant: {
-                select: {
-                  slug: true,
-                },
+    // Payment kaydını bul
+    const payment = await prisma.payment.findFirst({
+      where: { paytrMerchantOid: callbackData.merchant_oid },
+      include: {
+        order: {
+          include: {
+            restaurant: {
+              select: {
+                slug: true,
               },
             },
           },
-          restaurant: true,
-          packageTheme: true,
         },
-      });
-
-      // Eğer bulunamazsa, merchant_oid'in başlangıcına göre ara
-      if (!payment) {
-        if (merchantOidParts[0] === "order" && searchId) {
-          // Sipariş ödemesi için orderId ile ara
-          payment = await prisma.payment.findFirst({
-            where: { 
-              status: "pending",
-              orderId: searchId,
-              paytrToken: { contains: "mock_token" },
-            },
-            include: {
-              order: {
-                include: {
-                  restaurant: {
-                    select: {
-                      slug: true,
-                    },
-                  },
-                },
-              },
-              restaurant: true,
-              packageTheme: true,
-            },
-            orderBy: { createdAt: "desc" },
-          });
-        } else if (merchantOidParts[0] === "sub" && searchId) {
-          // Bayilik ödemesi için restaurantId ile ara
-          payment = await prisma.payment.findFirst({
-            where: { 
-              status: "pending",
-              restaurantId: searchId,
-              paytrToken: { contains: "mock_token" },
-            },
-            include: {
-              order: {
-                include: {
-                  restaurant: {
-                    select: {
-                      slug: true,
-                    },
-                  },
-                },
-              },
-              restaurant: true,
-              packageTheme: true,
-            },
-            orderBy: { createdAt: "desc" },
-          });
-        }
-      }
-    } else {
-      payment = await prisma.payment.findFirst({
-        where: { paytrMerchantOid: callbackData.merchant_oid },
-        include: {
-          order: {
-            include: {
-              restaurant: {
-                select: {
-                  slug: true,
-                },
-              },
-            },
-          },
-          restaurant: true,
-          packageTheme: true,
-        },
-      });
-    }
+        restaurant: true,
+        packageTheme: true,
+      },
+    });
 
     if (!payment) {
       console.error("Payment not found for merchant_oid:", callbackData.merchant_oid);
