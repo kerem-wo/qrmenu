@@ -9,7 +9,7 @@ export interface AdminSession {
 
 export async function getAdminSession(): Promise<AdminSession | null> {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("admin_session");
     
     console.log('getAdminSession - Cookie found:', !!sessionCookie);
@@ -123,7 +123,7 @@ export async function setAdminSession(session: AdminSession, response?: any) {
       });
     } else {
       // Otherwise use cookies() directly (for server components)
-      const cookieStore = cookies();
+      const cookieStore = await cookies();
       cookieStore.set("admin_session", signedSession, {
         httpOnly: true,
         secure: isProduction,
@@ -142,6 +142,6 @@ export async function setAdminSession(session: AdminSession, response?: any) {
 }
 
 export async function clearAdminSession() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.delete("admin_session");
 }

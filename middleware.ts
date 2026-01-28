@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { requireHTTPS, getClientIP, logSecurityEvent } from "@/lib/security";
+import { requireHTTPS, getClientIP, logSecurityEvent } from "@/lib/security-edge";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

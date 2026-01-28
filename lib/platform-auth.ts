@@ -9,7 +9,7 @@ export interface PlatformAdminSession {
 
 export async function getPlatformAdminSession(): Promise<PlatformAdminSession | null> {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("platform_admin_session");
     
     console.log('getPlatformAdminSession - Cookie found:', !!sessionCookie);
@@ -120,7 +120,7 @@ export async function setPlatformAdminSession(session: PlatformAdminSession, res
       });
     } else {
       // Otherwise use cookies() directly (for server components)
-      const cookieStore = cookies();
+      const cookieStore = await cookies();
       cookieStore.set("platform_admin_session", signedSession, {
         httpOnly: true,
         secure: isProduction,

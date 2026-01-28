@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2, ArrowLeft, Wallet } from "lucide-react";
+import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import PremiumCreditCard from "@/components/PremiumCreditCard";
 
@@ -581,38 +581,7 @@ export default function OrderTrackingPage() {
     }
   };
 
-  const handleCashPayment = async () => {
-    if (!order || processingPayment) return;
-
-    if (!confirm(lang === "tr" ? "Kasada ödeme yapacağınızı onaylıyor musunuz?" : 
-                 lang === "en" ? "Do you confirm that you will pay at the cashier?" : 
-                 "Bestätigen Sie, dass Sie an der Kasse bezahlen werden?")) {
-      return;
-    }
-
-    setProcessingPayment(true);
-
-    try {
-      const res = await fetch(`/api/orders/${order.orderNumber}/cash-payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Ödeme durumu güncellenemedi");
-      }
-
-      // Sayfayı yenile
-      window.location.reload();
-    } catch (error: any) {
-      console.error("Cash payment error:", error);
-      alert(error.message || "Bir hata oluştu");
-      setProcessingPayment(false);
-    }
-  };
+  // "Kasada ödeme" yöntemi kaldırıldı.
 
   if (loading) {
     return (
@@ -843,23 +812,6 @@ export default function OrderTrackingPage() {
                       <>
                         <CreditCard className="w-5 h-5" />
                         <span>{lang === "tr" ? "Ödeme Yap" : lang === "en" ? "Pay Now" : "Jetzt bezahlen"}</span>
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={handleCashPayment}
-                    disabled={processingPayment}
-                    className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-gray-600/20 hover:shadow-xl hover:shadow-gray-600/30 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-                  >
-                    {processingPayment ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>{lang === "tr" ? "İşleniyor..." : lang === "en" ? "Processing..." : "Wird verarbeitet..."}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Wallet className="w-5 h-5" />
-                        <span>{lang === "tr" ? "Kasada Ödeme Yapacağım" : lang === "en" ? "Pay at Cashier" : "An der Kasse bezahlen"}</span>
                       </>
                     )}
                   </button>

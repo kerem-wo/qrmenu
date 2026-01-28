@@ -132,7 +132,9 @@ export function getClientIP(request: NextRequest): string {
     return realIP;
   }
   
-  return request.ip || 'unknown';
+  // `NextRequest.ip` is not part of the stable public type across Next versions/runtimes.
+  // Fall back to a best-effort read, otherwise "unknown".
+  return (request as any).ip || 'unknown';
 }
 
 /**

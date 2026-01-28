@@ -15,8 +15,9 @@ export const runtime = 'nodejs';
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { restaurantId: string } }
+  context: { params: Promise<{ restaurantId: string }> }
 ) {
+  const { restaurantId } = await context.params;
   try {
     // 1. HTTPS Check
     if (!requireHTTPS(request)) {
@@ -34,7 +35,7 @@ export async function GET(
         userType: 'anonymous',
         ip: getClientIP(request),
         userAgent: request.headers.get('user-agent') || 'unknown',
-        details: { restaurantId: params.restaurantId },
+        details: { restaurantId },
         timestamp: new Date(),
       });
       return NextResponse.json(
@@ -45,7 +46,7 @@ export async function GET(
 
     // 3. Get restaurant documents
     const restaurant = await prisma.restaurant.findUnique({
-      where: { id: params.restaurantId },
+      where: { id: restaurantId },
       select: {
         id: true,
         name: true,
@@ -84,7 +85,7 @@ export async function GET(
       ip: getClientIP(request),
       userAgent: request.headers.get('user-agent') || 'unknown',
       details: {
-        restaurantId: params.restaurantId,
+        restaurantId,
         restaurantName: restaurant.name,
       },
       timestamp: new Date(),
@@ -104,7 +105,7 @@ export async function GET(
       ip: getClientIP(request),
       userAgent: request.headers.get('user-agent') || 'unknown',
       details: { 
-        restaurantId: params.restaurantId,
+        restaurantId,
         error: error?.message 
       },
       timestamp: new Date(),
