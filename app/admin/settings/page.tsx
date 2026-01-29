@@ -238,8 +238,8 @@ export default function SettingsPage() {
                 id="language"
                 value={formData.language}
                 onChange={(e) => setFormData({ ...formData, language: e.target.value })}
-                className="premium-input h-11 flex items-center py-0"
-                style={{ lineHeight: '2.75rem' }}
+                className="w-full h-11 px-4 rounded-xl border-2 border-gray-200 bg-white text-gray-900 font-medium focus:border-[#10b981] focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 appearance-none cursor-pointer"
+                style={{ minHeight: "2.75rem" }}
               >
                 <option value="tr">Türkçe</option>
                 <option value="en">English</option>
@@ -260,9 +260,10 @@ export default function SettingsPage() {
                 id="theme"
                 value={formData.theme}
                 onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                className="premium-input h-11 flex items-center py-0"
-                style={{ lineHeight: '2.75rem' }}
+                className="w-full h-11 px-4 rounded-xl border-2 border-gray-200 bg-white text-gray-900 font-medium focus:border-[#10b981] focus:outline-none focus:ring-2 focus:ring-[#10b981]/20 appearance-none cursor-pointer"
+                style={{ minHeight: "2.75rem" }}
               >
+                <option value="default">Varsayılan Menü</option>
                 <option value="premium">Premium Menü</option>
                 <option value="paper">Kağıt Menü</option>
                 <option value="paper-image">Resimli Kağıt Menü</option>

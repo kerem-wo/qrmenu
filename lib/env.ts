@@ -26,6 +26,10 @@ const envSchema = z.object({
 
   NEXT_PUBLIC_BASE_URL: z.string().url().optional(),
 
+  // Google OAuth (optional - admin Google login)
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+
   // Socket.io (optional)
   NEXT_PUBLIC_SOCKET_URL: z.string().url().optional().or(z.literal("")),
 });
