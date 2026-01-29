@@ -6,30 +6,26 @@ import { z } from "zod";
 const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  
+
   // NextAuth
   NEXTAUTH_SECRET: z.string().min(32, "NEXTAUTH_SECRET must be at least 32 characters"),
   NEXTAUTH_URL: z.string().url("NEXTAUTH_URL must be a valid URL"),
-  
+
   // Node Environment
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  
+
   // Cloudinary (optional)
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
-  
+
   // Stripe (optional - only needed if using payment)
   STRIPE_SECRET_KEY: z.string().optional(),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
-  
-  // PayTR (optional - only needed if using payment)
-  PAYTR_MERCHANT_ID: z.string().optional(),
-  PAYTR_MERCHANT_KEY: z.string().optional(),
-  PAYTR_MERCHANT_SALT: z.string().optional(),
+
   NEXT_PUBLIC_BASE_URL: z.string().url().optional(),
-  
+
   // Socket.io (optional)
   NEXT_PUBLIC_SOCKET_URL: z.string().url().optional().or(z.literal("")),
 });

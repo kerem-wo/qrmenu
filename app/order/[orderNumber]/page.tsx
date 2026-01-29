@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Globe, Clock, CheckCircle, ChefHat, XCircle, CreditCard, Loader2, ArrowLeft } from "lucide-react";
+import { Globe, Clock, CheckCircle, ChefHat, XCircle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import PremiumCreditCard from "@/components/PremiumCreditCard";
 
 interface OrderItem {
   id: string;
@@ -284,38 +283,18 @@ const STRINGS: Record<Lang, Strings> = {
 
 export default function OrderTrackingPage() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const orderNumber = params?.orderNumber as string;
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [lang, setLang] = useState<Lang>("tr");
-  const [processingPayment, setProcessingPayment] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [paymentError, setPaymentError] = useState<string | null>(null);
-  const [showMockPayment, setShowMockPayment] = useState(false);
-  const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
-  const [mockAmount, setMockAmount] = useState<number>(0);
-  const paymentFormRef = useRef<HTMLDivElement>(null);
 
   // Ensure body overflow is restored on mount/unmount
   useEffect(() => {
-    // Restore body overflow when component mounts (in case it was locked from previous page)
     document.body.style.overflow = "";
-    
     return () => {
-      // Ensure body overflow is restored on unmount
       document.body.style.overflow = "";
     };
   }, []);
-
-  // Scroll to payment form when opened
-  useEffect(() => {
-    if (showMockPayment && paymentFormRef.current) {
-      setTimeout(() => {
-        paymentFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    }
-  }, [showMockPayment]);
 
   const S = STRINGS[lang];
   const locale = LOCALE[lang];
@@ -380,25 +359,9 @@ export default function OrderTrackingPage() {
     } as Record<string, { label: string; color: string; icon: any; description: string }>;
   }, [S]);
 
-  useEffect(() => {
-    // URL parametrelerini kontrol et
-    const payment = searchParams?.get("payment");
-    const warning = searchParams?.get("warning");
-    const error = searchParams?.get("error");
-    
-    if (payment === "success") {
-      setPaymentSuccess(true);
-      if (warning) {
-        setPaymentError("Ödeme başarılı ancak sipariş durumu güncellenirken bir uyarı oluştu");
-      }
-    } else if (error) {
-      setPaymentError(decodeURIComponent(error));
-    }
-  }, [searchParams]);
-
   const fetchOrder = useCallback(async () => {
     if (!orderNumber) return;
-    
+
     try {
       const res = await fetch(`/api/orders/${orderNumber}?lang=${encodeURIComponent(lang)}`);
       if (res.ok) {
@@ -422,166 +385,6 @@ export default function OrderTrackingPage() {
       return () => clearInterval(interval);
     }
   }, [orderNumber, fetchOrder]);
-
-  const showMockPaymentForm = (paymentId: string, amount: number) => {
-    setMockPaymentId(paymentId);
-    setMockAmount(amount);
-    setShowMockPayment(true);
-  };
-
-  const handleMockPaymentSubmit = async (data: {
-    cardNumber: string;
-    cardName: string;
-    expiry: string;
-    cvv: string;
-  }) => {
-    if (!mockPaymentId) return;
-
-    try {
-      // Mock callback'i simüle et
-      const paymentRes = await fetch(`/api/payment/paytr/mock-info?paymentId=${mockPaymentId}`);
-      const paymentInfo = await paymentRes.json();
-      const merchantOid = paymentInfo.merchantOid || `order_${mockPaymentId}_${Date.now()}`;
-      
-      const callbackRes = await fetch("/api/payment/paytr/callback", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          merchant_oid: merchantOid,
-          status: "success",
-          total_amount: mockAmount.toFixed(2),
-          hash: "mock_hash_" + Date.now(),
-        }),
-      });
-
-      if (callbackRes.ok) {
-        setShowMockPayment(false);
-        window.location.reload();
-      } else {
-        throw new Error("Mock ödeme başarısız");
-      }
-    } catch (error) {
-      console.error("Mock payment error:", error);
-      alert("Mock ödeme simülasyonu başarısız. Lütfen tekrar deneyin.");
-    }
-  };
-
-  const handleMockPaymentCancel = () => {
-    setShowMockPayment(false);
-    setMockPaymentId(null);
-    setMockAmount(0);
-  };
-
-  const showPayTRIframe = (token: string, iframeUrl: string) => {
-    // PayTR iframe modal oluştur
-    const modal = document.createElement("div");
-    modal.id = "paytr-modal";
-    modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50";
-    modal.innerHTML = `
-      <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative">
-        <button onclick="document.getElementById('paytr-modal').remove()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-        <h3 class="text-xl font-bold mb-4">Ödeme</h3>
-        <iframe 
-          name="paytriframe" 
-          id="paytriframe" 
-          width="100%" 
-          height="600" 
-          scrolling="no" 
-          style="border: none;"
-          allowtransparency="true"
-        ></iframe>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    // PayTR iframe formu oluştur ve submit et
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = iframeUrl;
-    form.target = "paytriframe";
-    form.style.display = "none";
-    
-    const tokenInput = document.createElement("input");
-    tokenInput.type = "hidden";
-    tokenInput.name = "token";
-    tokenInput.value = token;
-    form.appendChild(tokenInput);
-    
-    document.body.appendChild(form);
-    form.submit();
-    
-    // Form submit sonrası formu kaldır
-    setTimeout(() => {
-      document.body.removeChild(form);
-    }, 1000);
-
-    // PayTR callback sonrası sayfa yenileme için kontrol (5 saniye sonra başla)
-    setTimeout(() => {
-      const checkInterval = setInterval(() => {
-        // URL parametrelerini kontrol et (callback sayfadan geldiyse)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("payment") === "success") {
-          clearInterval(checkInterval);
-          modal.remove();
-          window.location.reload();
-        }
-      }, 2000);
-
-      // 5 dakika sonra interval'i temizle
-      setTimeout(() => clearInterval(checkInterval), 300000);
-    }, 5000);
-  };
-
-  const handlePayment = async () => {
-    if (!order || processingPayment) return;
-
-    setProcessingPayment(true);
-
-    try {
-      // Ödeme başlat
-      const res = await fetch("/api/payment/paytr/initialize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderId: order.id,
-          orderNumber: order.orderNumber,
-          amount: order.total,
-          customerName: order.customerName || "Müşteri",
-          customerPhone: order.customerPhone || "",
-          customerEmail: "",
-        }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Ödeme başlatılamadı");
-      }
-
-      const data = await res.json();
-
-      if (data.mockMode) {
-        // Mock mode: Simüle edilmiş ödeme formu göster
-        showMockPaymentForm(data.paymentId, order.total);
-      } else if (data.token && data.iframeUrl) {
-        // PayTR iframe'i göster
-        showPayTRIframe(data.token, data.iframeUrl);
-      } else {
-        throw new Error("Ödeme sayfası bilgisi alınamadı");
-      }
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      alert(error.message || "Ödeme başlatılırken bir hata oluştu");
-      setProcessingPayment(false);
-    }
-  };
-
-  // "Kasada ödeme" yöntemi kaldırıldı.
 
   if (loading) {
     return (
@@ -658,9 +461,8 @@ export default function OrderTrackingPage() {
 
               <StatusIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
               <span
-                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-bold ${
-                  statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
-                }`}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm font-bold ${statusConfig[order.status]?.color || "bg-gray-100 text-gray-800"
+                  }`}
               >
                 {statusConfig[order.status]?.label || order.status}
               </span>
@@ -757,94 +559,6 @@ export default function OrderTrackingPage() {
                 </span>
               </div>
 
-            {/* Ödeme Başarı Mesajı */}
-            {paymentSuccess && order.paymentStatus === "paid" && (
-              <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-4 animate-premium-fade-in">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                  <p className="text-sm text-green-900 font-semibold">
-                    {lang === "tr" ? "Ödeme başarıyla tamamlandı!" : lang === "en" ? "Payment completed successfully!" : "Zahlung erfolgreich abgeschlossen!"}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Ödeme Hata Mesajı */}
-            {paymentError && (
-              <div className="bg-red-50 p-4 rounded-xl border border-red-200 mb-4 animate-premium-fade-in">
-                <div className="flex items-center gap-2">
-                  <XCircle className="w-5 h-5 text-red-600" />
-                  <p className="text-sm text-red-900 font-semibold">{paymentError}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Ödeme Durumu */}
-            {order.paymentStatus === "paid" ? (
-                <div className="bg-green-50 p-4 rounded-xl border border-green-200 mb-4">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <p className="text-sm text-green-900 font-semibold">
-                      {lang === "tr" ? "Ödeme Tamamlandı" : lang === "en" ? "Payment Completed" : "Zahlung abgeschlossen"}
-                    </p>
-                  </div>
-                  {order.paymentMethod && (
-                    <p className="text-xs text-green-700 mt-1">
-                      {lang === "tr" ? `Ödeme Yöntemi: ${order.paymentMethod === "online" ? "Online Ödeme" : order.paymentMethod}` : 
-                       lang === "en" ? `Payment Method: ${order.paymentMethod}` : 
-                       `Zahlungsmethode: ${order.paymentMethod}`}
-                    </p>
-                  )}
-                </div>
-              ) : order.paymentStatus === "pending" ? (
-                <div className="mb-4 space-y-3">
-                  <button
-                    onClick={handlePayment}
-                    disabled={processingPayment}
-                    className="w-full bg-[#FF6F00] hover:bg-[#FF8F33] text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg shadow-[#FF6F00]/20 hover:shadow-xl hover:shadow-[#FF6F00]/30 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
-                  >
-                    {processingPayment ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>{lang === "tr" ? "Ödeme sayfası açılıyor..." : lang === "en" ? "Opening payment page..." : "Zahlungsseite wird geöffnet..."}</span>
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="w-5 h-5" />
-                        <span>{lang === "tr" ? "Ödeme Yap" : lang === "en" ? "Pay Now" : "Jetzt bezahlen"}</span>
-                      </>
-                    )}
-                  </button>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    {lang === "tr" ? "Güvenli ödeme sayfasına yönlendirileceksiniz" : 
-                     lang === "en" ? "You will be redirected to a secure payment page" : 
-                     "Sie werden zu einer sicheren Zahlungsseite weitergeleitet"}
-                  </p>
-                </div>
-              ) : order.paymentStatus === "failed" ? (
-                <div className="bg-red-50 p-4 rounded-xl border border-red-200 mb-4">
-                  <div className="flex items-center gap-2">
-                    <XCircle className="w-5 h-5 text-red-600" />
-                    <p className="text-sm text-red-900 font-semibold">
-                      {lang === "tr" ? "Ödeme Başarısız" : lang === "en" ? "Payment Failed" : "Zahlung fehlgeschlagen"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handlePayment}
-                    disabled={processingPayment}
-                    className="mt-3 w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {processingPayment ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>{lang === "tr" ? "Yeniden deneniyor..." : lang === "en" ? "Retrying..." : "Wird erneut versucht..."}</span>
-                      </>
-                    ) : (
-                      <span>{lang === "tr" ? "Tekrar Dene" : lang === "en" ? "Try Again" : "Erneut versuchen"}</span>
-                    )}
-                  </button>
-                </div>
-              ) : null}
             </div>
 
             {/* Durum Açıklaması */}
@@ -855,35 +569,6 @@ export default function OrderTrackingPage() {
             </div>
           </div>
         </div>
-
-        {/* Mock Payment Form - Inline (not modal) */}
-        {showMockPayment && (
-          <div ref={paymentFormRef} className="premium-card p-6 sm:p-8 md:p-10 mt-8 animate-premium-fade-in">
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-gray-900">Ödeme Bilgileri</h3>
-                <button
-                  onClick={handleMockPaymentCancel}
-                  className="text-gray-500 hover:text-gray-700 transition-colors p-2 hover:bg-gray-100 rounded-lg"
-                  aria-label="Kapat"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                  </svg>
-                </button>
-              </div>
-              <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg">
-                <p className="font-semibold text-sm sm:text-base">🧪 Mock Test Modu (Localhost)</p>
-                <p className="text-xs sm:text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
-              </div>
-            </div>
-            <PremiumCreditCard
-              onSubmit={handleMockPaymentSubmit}
-              onCancel={handleMockPaymentCancel}
-              amount={mockAmount}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

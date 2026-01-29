@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Loader2, CreditCard } from "lucide-react";
-import Image from "next/image";
+import { ArrowLeft, Check } from "lucide-react";
 import toast from "react-hot-toast";
-import PremiumCreditCard from "@/components/PremiumCreditCard";
 
 interface Theme {
   id: string;
@@ -31,26 +29,12 @@ function PackageSelectionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const restaurantId = searchParams?.get("restaurantId");
-  
+
   const [themes, setThemes] = useState<Theme[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<"monthly" | "yearly">("monthly");
   const [loading, setLoading] = useState(true);
-  const [processingPayment, setProcessingPayment] = useState(false);
-  const [showMockPayment, setShowMockPayment] = useState(false);
-  const [mockPaymentId, setMockPaymentId] = useState<string | null>(null);
-  const [mockAmount, setMockAmount] = useState<number>(0);
-  const paymentFormRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to payment form when opened
-  useEffect(() => {
-    if (showMockPayment && paymentFormRef.current) {
-      setTimeout(() => {
-        paymentFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    }
-  }, [showMockPayment]);
 
   useEffect(() => {
     if (!restaurantId) {
@@ -72,10 +56,10 @@ function PackageSelectionContent() {
       if (themesRes.ok && packagesRes.ok) {
         const themesData = await themesRes.json();
         const packagesData = await packagesRes.json();
-        
+
         setThemes(themesData);
         setPackages(packagesData);
-        
+
         // İlk temayı seç
         if (themesData.length > 0) {
           setSelectedTheme(themesData[0].id);
@@ -91,167 +75,9 @@ function PackageSelectionContent() {
     }
   };
 
-  const showMockPaymentForm = (paymentId: string, amount: number) => {
-    setMockPaymentId(paymentId);
-    setMockAmount(amount);
-    setShowMockPayment(true);
-  };
-
-  const handleMockPaymentSubmit = async (data: {
-    cardNumber: string;
-    cardName: string;
-    expiry: string;
-    cvv: string;
-  }) => {
-    if (!mockPaymentId || !restaurantId) return;
-
-    try {
-      // Mock callback'i simüle et
-      const paymentRes = await fetch(`/api/payment/paytr/mock-info?paymentId=${mockPaymentId}`);
-      const paymentInfo = await paymentRes.json();
-      const merchantOid = paymentInfo.merchantOid || `sub_${restaurantId}_${Date.now()}`;
-      
-      const callbackRes = await fetch("/api/payment/paytr/callback", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          merchant_oid: merchantOid,
-          status: "success",
-          total_amount: mockAmount.toFixed(2),
-          hash: "mock_hash_" + Date.now(),
-        }),
-      });
-
-      if (callbackRes.ok) {
-        setShowMockPayment(false);
-        window.location.href = `/restaurant/register/success?payment=success&restaurantId=${restaurantId}`;
-      } else {
-        throw new Error("Mock ödeme başarısız");
-      }
-    } catch (error) {
-      console.error("Mock payment error:", error);
-      alert("Mock ödeme simülasyonu başarısız. Lütfen tekrar deneyin.");
-    }
-  };
-
-  const handleMockPaymentCancel = () => {
-    setShowMockPayment(false);
-    setMockPaymentId(null);
-    setMockAmount(0);
-  };
-
-  const showPayTRIframe = (token: string, iframeUrl: string) => {
-    // PayTR iframe modal oluştur
-    const modal = document.createElement("div");
-    modal.id = "paytr-modal";
-    modal.className = "fixed inset-0 z-50 flex items-center justify-center bg-black/50";
-    modal.innerHTML = `
-      <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 relative">
-        <button onclick="document.getElementById('paytr-modal').remove()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-        <h3 class="text-xl font-bold mb-4">Ödeme</h3>
-        <iframe 
-          name="paytriframe" 
-          id="paytriframe" 
-          width="100%" 
-          height="600" 
-          scrolling="no" 
-          style="border: none;"
-          allowtransparency="true"
-        ></iframe>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    // PayTR iframe formu oluştur ve submit et
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = iframeUrl;
-    form.target = "paytriframe";
-    form.style.display = "none";
-    
-    const tokenInput = document.createElement("input");
-    tokenInput.type = "hidden";
-    tokenInput.name = "token";
-    tokenInput.value = token;
-    form.appendChild(tokenInput);
-    
-    document.body.appendChild(form);
-    form.submit();
-    
-    // Form submit sonrası formu kaldır
-    setTimeout(() => {
-      document.body.removeChild(form);
-    }, 1000);
-
-    // PayTR callback sonrası yönlendirme için kontrol (5 saniye sonra başla)
-    setTimeout(() => {
-      const checkInterval = setInterval(() => {
-        // URL parametrelerini kontrol et (callback sayfadan geldiyse)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get("payment") === "success") {
-          clearInterval(checkInterval);
-          modal.remove();
-          window.location.href = `/restaurant/register/success?payment=success&restaurantId=${restaurantId}`;
-        }
-      }, 2000);
-
-      // 5 dakika sonra interval'i temizle
-      setTimeout(() => clearInterval(checkInterval), 300000);
-    }, 5000);
-  };
-
-  const handlePayment = async () => {
-    if (!restaurantId || !selectedTheme || processingPayment) return;
-
-    setProcessingPayment(true);
-
-    try {
-      const res = await fetch("/api/payment/paytr/subscription/initialize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          restaurantId: restaurantId,
-          themeId: selectedTheme,
-          packageType: selectedPackage,
-          customerName: "Restoran Sahibi", // Bu bilgiyi restaurant kaydından alabilirsiniz
-          customerPhone: "",
-          customerEmail: "",
-        }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Ödeme başlatılamadı");
-      }
-
-      const data = await res.json();
-
-      if (data.mockMode) {
-        // Mock mode: Simüle edilmiş ödeme formu göster
-        const selectedThemeData = themes.find((t) => t.id === selectedTheme);
-        const calculatedPrice = selectedThemeData
-          ? selectedPackage === "monthly"
-            ? selectedThemeData.monthlyPrice
-            : selectedThemeData.yearlyPrice * (1 - selectedThemeData.yearlyDiscount / 100)
-          : 0;
-        showMockPaymentForm(data.paymentId, calculatedPrice);
-      } else if (data.token && data.iframeUrl) {
-        // PayTR iframe'i göster
-        showPayTRIframe(data.token, data.iframeUrl);
-      } else {
-        throw new Error("Ödeme sayfası bilgisi alınamadı");
-      }
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      toast.error(error.message || "Ödeme başlatılırken bir hata oluştu");
-      setProcessingPayment(false);
-    }
+  const handleContinue = () => {
+    if (!restaurantId || !selectedTheme) return;
+    window.location.href = `/restaurant/register/success?restaurantId=${restaurantId}`;
   };
 
   const selectedThemeData = themes.find((t) => t.id === selectedTheme);
@@ -297,11 +123,10 @@ function PackageSelectionContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
             <button
               onClick={() => setSelectedPackage("monthly")}
-              className={`p-6 rounded-xl border-2 transition-all ${
-                selectedPackage === "monthly"
+              className={`p-6 rounded-xl border-2 transition-all ${selectedPackage === "monthly"
                   ? "border-[#FF6F00] bg-[#FF6F00]/10"
                   : "border-gray-200 bg-white hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="text-center">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Aylık Paket</h3>
@@ -310,11 +135,10 @@ function PackageSelectionContent() {
             </button>
             <button
               onClick={() => setSelectedPackage("yearly")}
-              className={`p-6 rounded-xl border-2 transition-all ${
-                selectedPackage === "yearly"
+              className={`p-6 rounded-xl border-2 transition-all ${selectedPackage === "yearly"
                   ? "border-[#FF6F00] bg-[#FF6F00]/10"
                   : "border-gray-200 bg-white hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="text-center">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">Yıllık Paket</h3>
@@ -336,11 +160,10 @@ function PackageSelectionContent() {
               <button
                 key={theme.id}
                 onClick={() => setSelectedTheme(theme.id)}
-                className={`p-6 rounded-xl border-2 transition-all text-left ${
-                  selectedTheme === theme.id
+                className={`p-6 rounded-xl border-2 transition-all text-left ${selectedTheme === theme.id
                     ? "border-[#FF6F00] bg-[#FF6F00]/10"
                     : "border-gray-200 bg-white hover:border-gray-300"
-                }`}
+                  }`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-gray-900">{theme.displayName}</h3>
@@ -409,53 +232,14 @@ function PackageSelectionContent() {
           </div>
 
           <Button
-            onClick={handlePayment}
-            disabled={!selectedTheme || processingPayment}
+            onClick={handleContinue}
+            disabled={!selectedTheme}
             className="w-full h-14 bg-[#FF6F00] text-white rounded-xl font-bold hover:bg-[#FF8F33] transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {processingPayment ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Ödeme sayfası açılıyor...</span>
-              </>
-            ) : (
-              <>
-                <CreditCard className="w-5 h-5" />
-                <span>Ödemeye Geç</span>
-              </>
-            )}
+            <span>Devam Et</span>
           </Button>
         </div>
       </div>
-
-      {/* Mock Payment Form - Inline (not modal) */}
-      {showMockPayment && (
-        <div ref={paymentFormRef} className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl mt-8 animate-premium-fade-in">
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-bold text-gray-900">Ödeme Bilgileri</h3>
-              <button
-                onClick={handleMockPaymentCancel}
-                className="text-gray-500 hover:text-gray-700 transition-colors p-2 hover:bg-gray-100 rounded-lg"
-                aria-label="Kapat"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-              </button>
-            </div>
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded-lg">
-              <p className="font-semibold text-sm sm:text-base">🧪 Mock Test Modu (Localhost)</p>
-              <p className="text-xs sm:text-sm mt-1">PayTR API bilgileri yapılandırılmamış. Bu bir simülasyondur.</p>
-            </div>
-          </div>
-          <PremiumCreditCard
-            onSubmit={handleMockPaymentSubmit}
-            onCancel={handleMockPaymentCancel}
-            amount={mockAmount}
-          />
-        </div>
-      )}
     </div>
   );
 }
