@@ -1689,9 +1689,15 @@ export function BoltMenuForSlugClient() {
       <>
         <section id={tabId("Most Popular")} data-tab="Most Popular" className="scroll-mt-24">
           <div className="mt-6 flex items-end justify-between">
-            <h2 className={`text-xl font-extrabold ${
-              theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-            }`}>{S.mostPopular}</h2>
+            <h2 className={
+              theme === "editorial"
+                ? "text-2xl md:text-3xl font-serif tracking-tight text-neutral-900"
+                : theme === "night-luxe"
+                ? "text-2xl font-serif tracking-tight text-white"
+                : `text-xl font-extrabold ${
+                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                  }`
+            }>{S.mostPopular}</h2>
           </div>
           <div
             ref={popularScrollRef}
@@ -1746,6 +1752,10 @@ export function BoltMenuForSlugClient() {
                         ? "rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white"
                         : theme === "soft-ui"
                         ? "rounded-full bg-rose-400 text-white"
+                        : theme === "night-luxe"
+                        ? "rounded-full bg-[#d4a574] text-neutral-950"
+                        : theme === "editorial"
+                        ? "rounded-full bg-neutral-900 text-white"
                         : "rounded-full bg-white/95 text-gray-950"
                     }`}>
                       {formatTry(item.priceCents)}
@@ -1754,25 +1764,25 @@ export function BoltMenuForSlugClient() {
                   <div className={`${
                     theme === "paper" ? "p-3" : 
                     theme === "swipe" ? "p-5" :
-                    theme === "premium-plus" || theme === "ultra-plus" ? "p-5" :
+                    theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "p-5" :
                     "p-4"
                   }`}>
                     <div className={`${
                       theme === "paper" ? "text-sm" :
-                      theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" :
+                      theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-base" :
                       "text-sm"
                     } font-extrabold ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-950"
                     }`}>{item.name}</div>
                     <div className={`mt-1 ${
                       theme === "swipe" ? "text-sm" : "text-xs"
                     } line-clamp-1 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-500"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-gray-300" : "text-gray-500"
                     }`}>
                       {item.shortDescription}
                     </div>
                     <div className={`mt-2 text-xs font-semibold ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-500"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-gray-400" : "text-gray-500"
                     }`}>
                       {S.stockLabel}: {item.stock === null ? S.stockUnlimited : item.stock}
                     </div>
@@ -1794,9 +1804,15 @@ export function BoltMenuForSlugClient() {
               data-tab={cat.name}
               className="scroll-mt-24"
             >
-              <h3 className={`text-lg font-extrabold ${
-                theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
-              }`}>{cat.name}</h3>
+              <h3 className={
+                theme === "editorial"
+                  ? "text-2xl font-serif tracking-tight text-neutral-900 mb-1 border-b border-neutral-200/70 pb-2"
+                  : theme === "night-luxe"
+                  ? "text-xl font-serif tracking-tight text-white mb-1 border-b border-white/[0.08] pb-2"
+                  : `text-lg font-extrabold ${
+                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    }`
+              }>{cat.name}</h3>
               <div className={`mt-4 ${getCardClasses()}`}>
                 {cat.items.map((item) => (
                   <MenuRow key={item.id} item={item} onOpen={() => setSelected(item)} labels={S} theme={theme} />
@@ -1838,6 +1854,10 @@ export function BoltMenuForSlugClient() {
         return `${base} bg-gradient-to-br from-rose-50 to-pink-50 text-gray-900`;
       case "ultra-plus":
         return `${base} bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white`;
+      case "editorial":
+        return `${base} bg-[#faf7f2] text-neutral-900`;
+      case "night-luxe":
+        return `${base} bg-[#0d0d0f] text-neutral-100`;
       case "premium":
       default:
         return `${base} bg-white text-black`;
@@ -1867,6 +1887,12 @@ export function BoltMenuForSlugClient() {
       case "ultra-plus":
         // Ultra Plus: Koyu gradient, blur, lüks border
         return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 shadow-2xl hover:border-violet-300/60 transition-all";
+      case "editorial":
+        // Editorial: Beyaz, ince kenarlık, sıcak gölge — dergi kartı
+        return "bg-white rounded-2xl border border-neutral-200/70 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300";
+      case "night-luxe":
+        // Night Luxe: Koyu cam, bakır border, prestij hissi
+        return "bg-neutral-900/70 backdrop-blur-md rounded-2xl border border-white/[0.06] shadow-2xl hover:border-[#d4a574]/50 hover:bg-neutral-900/85 transition-all duration-300";
       case "premium":
       default:
         // Premium: Standart, temiz, modern
@@ -1885,6 +1911,10 @@ export function BoltMenuForSlugClient() {
         return "w-[260px] md:w-[300px]";
       case "soft-ui":
         return "w-[250px] md:w-[280px]";
+      case "editorial":
+        return "w-[260px] md:w-[300px]";
+      case "night-luxe":
+        return "w-[270px] md:w-[310px]";
       default:
         return "w-[240px] md:w-[260px]";
     }
@@ -1896,7 +1926,10 @@ export function BoltMenuForSlugClient() {
         return "h-48";
       case "premium-plus":
       case "ultra-plus":
+      case "night-luxe":
         return "h-44";
+      case "editorial":
+        return "h-52";
       case "paper":
         return "h-32";
       default:
@@ -1920,6 +1953,10 @@ export function BoltMenuForSlugClient() {
         return "bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white";
       case "ultra-plus":
         return "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white";
+      case "editorial":
+        return "bg-neutral-900 hover:bg-neutral-800 text-white";
+      case "night-luxe":
+        return "bg-gradient-to-r from-[#d4a574] to-[#b8894d] hover:from-[#e0b686] hover:to-[#c99a5e] text-neutral-950";
       case "premium":
       default:
         return "bg-emerald-600 hover:bg-emerald-700 text-white";
@@ -1942,6 +1979,10 @@ export function BoltMenuForSlugClient() {
         return "bg-rose-400";
       case "ultra-plus":
         return "bg-violet-400";
+      case "editorial":
+        return "bg-neutral-900";
+      case "night-luxe":
+        return "bg-[#d4a574]";
       case "premium":
       default:
         return "bg-emerald-500";
@@ -1965,6 +2006,10 @@ export function BoltMenuForSlugClient() {
         return `${base} border-rose-200/50 bg-white/80 backdrop-blur-sm focus:border-rose-400 focus:ring-rose-400/20 text-gray-950`;
       case "ultra-plus":
         return `${base} border-violet-400/30 bg-gray-800/50 focus:border-violet-400 focus:ring-violet-400/20 text-white placeholder:text-gray-400`;
+      case "editorial":
+        return `${base} border-neutral-200 bg-white focus:border-neutral-900 focus:ring-neutral-900/10 text-neutral-900`;
+      case "night-luxe":
+        return `${base} border-white/10 bg-white/[0.04] backdrop-blur focus:border-[#d4a574] focus:ring-[#d4a574]/20 text-white placeholder:text-neutral-500`;
       case "premium":
       default:
         return `${base} border-gray-200 bg-gray-50 focus:border-emerald-500 focus:bg-white focus:ring-emerald-500/10 text-gray-950`;
@@ -1987,6 +2032,10 @@ export function BoltMenuForSlugClient() {
         return "bg-gradient-to-br from-rose-50/95 to-pink-50/95 backdrop-blur border-b border-rose-200/50";
       case "ultra-plus":
         return "bg-violet-900/90 backdrop-blur border-b border-violet-700";
+      case "editorial":
+        return "bg-[#faf7f2]/90 backdrop-blur-md border-b border-neutral-200/70";
+      case "night-luxe":
+        return "bg-black/70 backdrop-blur-xl border-b border-white/[0.06]";
       case "premium":
       default:
         return "bg-white/90 backdrop-blur border-b border-gray-100";
@@ -1994,8 +2043,11 @@ export function BoltMenuForSlugClient() {
   };
 
   const getTextColor = () => {
-    if (theme === "premium-plus" || theme === "ultra-plus") {
+    if (theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe") {
       return "text-white";
+    }
+    if (theme === "editorial") {
+      return "text-neutral-900";
     }
     return "text-gray-950";
   };
@@ -2003,6 +2055,12 @@ export function BoltMenuForSlugClient() {
   const getDescColor = () => {
     if (theme === "premium-plus" || theme === "ultra-plus") {
       return "text-gray-300";
+    }
+    if (theme === "night-luxe") {
+      return "text-neutral-400";
+    }
+    if (theme === "editorial") {
+      return "text-neutral-500";
     }
     return "text-gray-500";
   };
@@ -2040,19 +2098,27 @@ export function BoltMenuForSlugClient() {
           <div className="min-w-0">
             {restaurant ? (
               <>
-                <div className={`text-xl font-extrabold ${
-                  theme === "paper"
-                    ? "text-amber-900"
-                    : theme === "premium-plus" || theme === "ultra-plus" 
-                    ? "text-white" 
-                    : "text-gray-950"
-                }`}>{restaurant.name}</div>
+                <div className={
+                  theme === "editorial"
+                    ? "text-3xl md:text-4xl font-serif tracking-tight text-neutral-900"
+                    : `text-xl font-extrabold ${
+                        theme === "paper"
+                          ? "text-amber-900"
+                          : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
+                          ? "text-white"
+                          : "text-gray-950"
+                      }`
+                }>{restaurant.name}</div>
                 {restaurant.description ? (
                   <div className={`mt-1 text-sm ${
                     theme === "paper"
                       ? "text-amber-800"
-                      : theme === "premium-plus" || theme === "ultra-plus" 
-                      ? "text-gray-300" 
+                      : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
+                      ? "text-gray-300"
+                      : theme === "night-luxe"
+                      ? "text-neutral-400"
+                      : theme === "editorial"
+                      ? "text-neutral-500 italic"
                       : "text-gray-500"
                   }`}>{restaurant.description}</div>
                 ) : null}
@@ -2067,7 +2133,7 @@ export function BoltMenuForSlugClient() {
                 onClick={() => openRequestModal("waiter")}
                 disabled={isRequestingWaiter}
                 className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
-                  theme === "premium-plus" || theme === "ultra-plus"
+                  theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                     ? "bg-amber-500 hover:bg-amber-600"
                     : "bg-blue-500 hover:bg-blue-600"
                 }`}
@@ -2079,7 +2145,7 @@ export function BoltMenuForSlugClient() {
                 onClick={() => openRequestModal("bill")}
                 disabled={isRequestingBill}
                 className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
-                  theme === "premium-plus" || theme === "ultra-plus"
+                  theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                     ? "bg-amber-500 hover:bg-amber-600"
                     : "bg-green-500 hover:bg-green-600"
                 }`}
@@ -2116,7 +2182,7 @@ export function BoltMenuForSlugClient() {
         {/* Search + add product */}
         <div className="relative">
           <Search className={`pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 ${
-            theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400" : "text-gray-400"
+            theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-gray-400" : "text-gray-400"
           }`} />
           <input
             value={query}
@@ -2140,9 +2206,9 @@ export function BoltMenuForSlugClient() {
                   onClick={() => scrollTo(t.name)}
                   className={[
                     "relative pb-2 text-sm font-semibold transition-colors",
-                    active 
-                      ? (theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950")
-                      : (theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-800"),
+                    active
+                      ? (theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-950")
+                      : (theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-gray-400 hover:text-gray-200" : "text-gray-500 hover:text-gray-800"),
                   ].join(" ")}
                 >
                   {label}
@@ -2171,7 +2237,7 @@ export function BoltMenuForSlugClient() {
           onClick={() => openRequestModal("waiter")}
           disabled={isRequestingWaiter}
           className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
-            theme === "premium-plus" || theme === "ultra-plus"
+            theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
               ? "bg-amber-500 hover:bg-amber-600"
               : "bg-blue-500 hover:bg-blue-600"
           }`}
@@ -2184,7 +2250,7 @@ export function BoltMenuForSlugClient() {
           onClick={() => openRequestModal("bill")}
           disabled={isRequestingBill}
           className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
-            theme === "premium-plus" || theme === "ultra-plus"
+            theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
               ? "bg-amber-500 hover:bg-amber-600"
               : "bg-green-500 hover:bg-green-600"
           }`}
@@ -2211,7 +2277,7 @@ export function BoltMenuForSlugClient() {
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
               className={`w-full max-w-md rounded-2xl shadow-2xl ${
-                theme === "premium-plus" || theme === "ultra-plus"
+                theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                   ? "bg-gray-800"
                   : "bg-white"
               }`}
@@ -2219,18 +2285,18 @@ export function BoltMenuForSlugClient() {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className={`text-xl font-bold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
+                    theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-900"
                   }`}>
                     {requestType === "waiter" ? "Garson Çağır" : "Hesap İste"}
                   </h2>
                   <button
                     onClick={() => setRequestModalOpen(false)}
                     className={`p-2 rounded-full hover:bg-gray-100 transition-colors ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "hover:bg-gray-700" : ""
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "hover:bg-gray-700" : ""
                     }`}
                   >
                     <X className={`w-5 h-5 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-600"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-600"
                     }`} />
                   </button>
                 </div>
@@ -2238,7 +2304,7 @@ export function BoltMenuForSlugClient() {
                 <div className="space-y-4">
                   <div>
                     <label className={`block text-sm font-bold mb-2 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-700"
                     }`}>
                       Masa Numarası *
                     </label>
@@ -2248,7 +2314,7 @@ export function BoltMenuForSlugClient() {
                       onChange={(e) => setRequestTableNumber(e.target.value)}
                       placeholder="Örn: 5, A12"
                       className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 ${
-                        theme === "premium-plus" || theme === "ultra-plus"
+                        theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                           ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
                           : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
@@ -2258,7 +2324,7 @@ export function BoltMenuForSlugClient() {
 
                   <div>
                     <label className={`block text-sm font-bold mb-2 ${
-                      theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-700"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-700"
                     }`}>
                       Not (Opsiyonel)
                     </label>
@@ -2268,7 +2334,7 @@ export function BoltMenuForSlugClient() {
                       placeholder="Eklemek istediğiniz bir not var mı?"
                       rows={3}
                       className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-4 resize-none ${
-                        theme === "premium-plus" || theme === "ultra-plus"
+                        theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                           ? "bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 focus:border-amber-400 focus:ring-amber-400/20"
                           : "bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       }`}
@@ -2279,7 +2345,7 @@ export function BoltMenuForSlugClient() {
                     <button
                       onClick={() => setRequestModalOpen(false)}
                       className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors ${
-                        theme === "premium-plus" || theme === "ultra-plus"
+                        theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                           ? "bg-gray-700 text-white hover:bg-gray-600"
                           : "bg-gray-100 text-gray-900 hover:bg-gray-200"
                       }`}
@@ -2291,10 +2357,10 @@ export function BoltMenuForSlugClient() {
                       disabled={!requestTableNumber.trim() || isRequestingWaiter || isRequestingBill}
                       className={`flex-1 px-4 py-3 rounded-xl font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                         requestType === "waiter"
-                          ? theme === "premium-plus" || theme === "ultra-plus"
+                          ? theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                             ? "bg-amber-500 hover:bg-amber-600"
                             : "bg-blue-500 hover:bg-blue-600"
-                          : theme === "premium-plus" || theme === "ultra-plus"
+                          : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                             ? "bg-amber-500 hover:bg-amber-600"
                             : "bg-green-500 hover:bg-green-600"
                       }`}
@@ -2474,6 +2540,10 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
       case "ultra-plus":
         // Ultra Plus: Koyu gradient, blur, lüks
         return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 hover:border-violet-300/60 transition-all";
+      case "editorial":
+        return "bg-white rounded-2xl border border-neutral-200/70 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300";
+      case "night-luxe":
+        return "bg-neutral-900/70 backdrop-blur-md rounded-2xl border border-white/[0.06] shadow-2xl hover:border-[#d4a574]/50 hover:bg-neutral-900/85 transition-all duration-300";
       case "premium":
       default:
         // Premium: Standart, temiz
@@ -2488,6 +2558,8 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
       case "swipe":
       case "premium-plus":
       case "ultra-plus":
+      case "night-luxe":
+      case "editorial":
         return "p-5"; // Daha fazla padding, lüks
       case "soft-ui":
         return "p-4"; // Orta padding
@@ -2504,7 +2576,10 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
         return "h-[100px] w-[110px]"; // Büyük, swipe için
       case "premium-plus":
       case "ultra-plus":
+      case "night-luxe":
         return "h-[96px] w-[108px]"; // Lüks, büyük
+      case "editorial":
+        return "h-[104px] w-[104px]";
       default:
         return "h-[86px] w-[98px]"; // Standart
     }
@@ -2518,6 +2593,9 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
         return "rounded-3xl"; // Büyük köşeler
       case "soft-ui":
         return "rounded-[2rem]"; // Yumuşak köşeler
+      case "editorial":
+      case "night-luxe":
+        return "rounded-xl";
       default:
         return "rounded-2xl"; // Standart
     }
@@ -2539,6 +2617,10 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
         return "bg-rose-400 text-white shadow-lg";
       case "ultra-plus":
         return "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-2xl";
+      case "editorial":
+        return "bg-neutral-900 text-white shadow-md";
+      case "night-luxe":
+        return "bg-gradient-to-r from-[#d4a574] to-[#b8894d] text-neutral-950 shadow-lg";
       case "premium":
       default:
         return "bg-emerald-600 text-white shadow-lg";
@@ -2546,8 +2628,11 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
   };
 
   const getTextColor = () => {
-    if (theme === "premium-plus" || theme === "ultra-plus") {
+    if (theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe") {
       return "text-white";
+    }
+    if (theme === "editorial") {
+      return "text-neutral-900";
     }
     return "text-gray-950";
   };
@@ -2555,6 +2640,12 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
   const getDescColor = () => {
     if (theme === "premium-plus" || theme === "ultra-plus") {
       return "text-gray-300";
+    }
+    if (theme === "night-luxe") {
+      return "text-neutral-400";
+    }
+    if (theme === "editorial") {
+      return "text-neutral-500";
     }
     return "text-gray-500";
   };
@@ -2580,7 +2671,7 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
         <div className="min-w-0 flex-1">
           <div className="flex items-start gap-2">
             <div className={`${
-              theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
+              theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-base" : "text-sm"
             } font-extrabold ${getTextColor()}`}>{item.name}</div>
             {item.isVegetarian ? (
               <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${
@@ -2588,7 +2679,7 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
                   ? "bg-amber-50 text-amber-700"
                   : theme === "swipe"
                   ? "bg-purple-50 text-purple-700"
-                  : theme === "premium-plus" || theme === "ultra-plus"
+                  : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                   ? "bg-amber-500/30 text-amber-200"
                   : "bg-emerald-50 text-emerald-700"
               }`}>
@@ -2601,7 +2692,7 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
             theme === "swipe" ? "text-sm" : "text-xs"
           } ${getDescColor()} line-clamp-2`}>{item.shortDescription}</div>
           <div className={`mt-2 ${
-            theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" ? "text-base" : "text-sm"
+            theme === "swipe" || theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-base" : "text-sm"
           } font-extrabold ${getTextColor()}`}>{formatTry(item.priceCents)}</div>
           <div className={`mt-1 text-xs font-semibold ${getDescColor()}`}>
             {labels.stockLabel}: {item.stock === null ? labels.stockUnlimited : item.stock}
@@ -2736,10 +2827,10 @@ function ProductSheet({
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className={`text-xl font-extrabold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-950"
                   }`}>{item.name}</div>
                   <div className={`mt-2 text-sm font-extrabold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-950"
                   }`}>
                     {formatTry(item.priceCents)}
                   </div>
@@ -2753,12 +2844,12 @@ function ProductSheet({
               </div>
 
               <p className={`mt-3 text-sm leading-relaxed ${
-                theme === "premium-plus" || theme === "ultra-plus" ? "text-gray-300" : "text-gray-600"
+                theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-gray-300" : "text-gray-600"
               }`}>{item.description}</p>
 
               <div className="mt-6">
                 <label className={`text-sm font-bold ${
-                  theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-900"
+                  theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-900"
                 }`}>{labels.addNoteLabel}</label>
                 <textarea
                   value={note}
@@ -2825,7 +2916,7 @@ function ProductSheet({
                   <button
                     onClick={() => setQty((q) => Math.max(1, q - 1))}
                     className={`grid h-9 w-9 place-items-center rounded-full ${
-                      theme === "premium-plus" || theme === "ultra-plus"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                         ? "bg-gray-700 text-white"
                         : "bg-gray-50 text-gray-900"
                     }`}
@@ -2834,12 +2925,12 @@ function ProductSheet({
                     <span className="text-lg font-extrabold leading-none">-</span>
                   </button>
                   <div className={`w-8 text-center text-sm font-extrabold ${
-                    theme === "premium-plus" || theme === "ultra-plus" ? "text-white" : "text-gray-950"
+                    theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe" ? "text-white" : "text-gray-950"
                   }`}>{qty}</div>
                   <button
                     onClick={() => setQty((q) => q + 1)}
                     className={`grid h-9 w-9 place-items-center rounded-full ${
-                      theme === "premium-plus" || theme === "ultra-plus"
+                      theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
                         ? "bg-gray-700 text-white"
                         : "bg-gray-50 text-gray-900"
                     }`}

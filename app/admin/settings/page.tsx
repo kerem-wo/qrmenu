@@ -272,6 +272,10 @@ export default function SettingsPage() {
                 <option value="pro">Pro QR Menu</option>
                 <option value="soft-ui">Soft UI Menü</option>
                 <option value="ultra-plus">Ultra+ Menü</option>
+                <optgroup label="✨ Yeni">
+                  <option value="editorial">Editorial — Minimal & Sıcak</option>
+                  <option value="night-luxe">Night Luxe — Koyu & Bakır</option>
+                </optgroup>
               </select>
               <p className="text-xs text-gray-600 mt-1 font-medium">
                 Menünüzün görsel tasarımını seçin. Değişiklikler kaydedildikten sonra menü sayfanızda görünecektir.
