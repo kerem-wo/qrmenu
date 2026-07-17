@@ -1843,17 +1843,17 @@ export function BoltMenuForSlugClient() {
       case "paper":
         return `${base} text-gray-900`;
       case "paper-image":
-        return `${base} bg-gradient-to-br from-amber-50 to-orange-50 text-gray-900`;
+        return `${base} bg-gradient-to-b from-[#fdf9f2] to-[#f7f0e3] text-neutral-900`;
       case "swipe":
-        return `${base} bg-gradient-to-br from-purple-50 to-pink-50 text-gray-900`;
+        return `${base} bg-gradient-to-b from-[#faf6ff] to-[#fef4f9] text-neutral-900`;
       case "premium-plus":
-        return `${base} bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white`;
+        return `${base} bg-gradient-to-b from-[#111114] via-[#1a1512] to-[#111114] text-white`;
       case "pro":
-        return `${base} bg-gradient-to-br from-blue-50 to-indigo-50 text-gray-900`;
+        return `${base} bg-gradient-to-b from-[#f5f8ff] to-[#eef2ff] text-neutral-900`;
       case "soft-ui":
-        return `${base} bg-gradient-to-br from-rose-50 to-pink-50 text-gray-900`;
+        return `${base} bg-gradient-to-b from-[#fff5f7] to-[#fdeef2] text-neutral-900`;
       case "ultra-plus":
-        return `${base} bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 text-white`;
+        return `${base} bg-gradient-to-b from-[#12102a] via-[#231a4a] to-[#12102a] text-white`;
       case "editorial":
         return `${base} bg-[#faf7f2] text-neutral-900`;
       case "night-luxe":
@@ -1875,26 +1875,19 @@ export function BoltMenuForSlugClient() {
   const getCardClasses = () => {
     switch (theme) {
       case "paper":
-        // Kağıt: Minimal, köşesiz, sol border, gölge yok
-        return "bg-white rounded-none border-l-4 border-amber-600 shadow-none hover:shadow-md transition-shadow";
+        return "bg-white rounded-none border-l-[3px] border-amber-700 shadow-none hover:bg-amber-50/40 transition-colors duration-200";
       case "paper-image":
-        // Resimli Kağıt: Yuvarlak köşeler, hafif gölge
-        return "bg-white rounded-xl shadow-md border border-amber-200 hover:shadow-lg transition-shadow";
+        return "bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-amber-100 hover:shadow-[0_10px_24px_-8px_rgba(180,120,40,0.15)] hover:-translate-y-0.5 transition-all duration-300";
       case "swipe":
-        // Swipe: Büyük yuvarlak köşeler, belirgin gölge, hover efekti
-        return "bg-white rounded-3xl shadow-xl border-2 border-purple-200 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300";
+        return "bg-white rounded-3xl shadow-[0_4px_12px_rgba(168,85,247,0.08)] border border-purple-100 hover:shadow-[0_20px_40px_-12px_rgba(168,85,247,0.25)] hover:-translate-y-1 transition-all duration-300";
       case "premium-plus":
-        // Premium Plus: Gradient arka plan, blur, lüks görünüm
-        return "bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 shadow-2xl hover:border-amber-400/60 transition-all";
+        return "bg-gradient-to-br from-amber-900/30 via-neutral-900/70 to-amber-900/20 backdrop-blur-md rounded-2xl border border-amber-500/25 shadow-2xl hover:border-amber-400/50 transition-all duration-300";
       case "pro":
-        // Pro: Profesyonel, sol border, minimal gölge
-        return "bg-white rounded-lg shadow-sm border-l-4 border-blue-600 hover:shadow-md transition-shadow";
+        return "bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] border-l-[3px] border-blue-700 hover:shadow-[0_8px_20px_-6px_rgba(37,99,235,0.15)] transition-all duration-200";
       case "soft-ui":
-        // Soft UI: Yumuşak, büyük köşeler, blur, hafif border
-        return "bg-white/90 backdrop-blur-md rounded-[2rem] shadow-lg border border-rose-200/60 hover:bg-white hover:shadow-xl transition-all";
+        return "bg-white rounded-3xl shadow-[0_2px_10px_rgba(244,114,182,0.08)] border border-rose-100 hover:shadow-[0_16px_32px_-8px_rgba(244,114,182,0.2)] hover:-translate-y-0.5 transition-all duration-300";
       case "ultra-plus":
-        // Ultra Plus: Koyu gradient, blur, lüks border
-        return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 shadow-2xl hover:border-violet-300/60 transition-all";
+        return "bg-violet-950/60 backdrop-blur-xl rounded-2xl border border-violet-400/20 shadow-2xl hover:border-violet-300/50 hover:bg-violet-950/80 transition-all duration-300";
       case "editorial":
         return "bg-white rounded-2xl border border-neutral-200/70 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300";
       case "night-luxe":
@@ -1961,19 +1954,19 @@ export function BoltMenuForSlugClient() {
   const getButtonClasses = () => {
     switch (theme) {
       case "paper":
-        return "bg-amber-600 hover:bg-amber-700 text-white";
+        return "bg-amber-800 hover:bg-amber-900 text-white";
       case "paper-image":
-        return "bg-amber-500 hover:bg-amber-600 text-white";
+        return "bg-amber-600 hover:bg-amber-700 text-white";
       case "swipe":
-        return "bg-purple-500 hover:bg-purple-600 text-white";
+        return "bg-purple-600 hover:bg-purple-700 text-white";
       case "premium-plus":
-        return "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white";
+        return "bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-neutral-950";
       case "pro":
-        return "bg-blue-600 hover:bg-blue-700 text-white";
+        return "bg-blue-700 hover:bg-blue-800 text-white";
       case "soft-ui":
-        return "bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white";
+        return "bg-rose-500 hover:bg-rose-600 text-white";
       case "ultra-plus":
-        return "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white";
+        return "bg-gradient-to-r from-violet-400 to-purple-400 hover:from-violet-500 hover:to-purple-500 text-neutral-950";
       case "editorial":
         return "bg-neutral-900 hover:bg-neutral-800 text-white";
       case "night-luxe":
@@ -1995,19 +1988,19 @@ export function BoltMenuForSlugClient() {
   const getTabActiveClasses = () => {
     switch (theme) {
       case "paper":
-        return "bg-amber-600";
+        return "bg-amber-800";
       case "paper-image":
-        return "bg-amber-500";
+        return "bg-amber-600";
       case "swipe":
-        return "bg-purple-500";
+        return "bg-purple-600";
       case "premium-plus":
         return "bg-amber-400";
       case "pro":
-        return "bg-blue-600";
+        return "bg-blue-700";
       case "soft-ui":
-        return "bg-rose-400";
+        return "bg-rose-500";
       case "ultra-plus":
-        return "bg-violet-400";
+        return "bg-violet-300";
       case "editorial":
         return "bg-neutral-900";
       case "night-luxe":
@@ -2030,19 +2023,19 @@ export function BoltMenuForSlugClient() {
     const base = "h-12 w-full rounded-full border-2 pl-12 pr-4 text-sm font-semibold placeholder:text-gray-400 focus:outline-none focus:ring-4";
     switch (theme) {
       case "paper":
-        return `${base} border-amber-300 bg-white focus:border-amber-600 focus:ring-amber-500/10 text-gray-950`;
+        return `${base} border-amber-800/25 bg-white focus:border-amber-800 focus:ring-amber-800/10 text-neutral-900`;
       case "paper-image":
-        return `${base} border-amber-200 bg-white focus:border-amber-500 focus:ring-amber-500/10 text-gray-950`;
+        return `${base} border-amber-200 bg-white focus:border-amber-600 focus:ring-amber-500/10 text-neutral-900`;
       case "swipe":
-        return `${base} border-purple-200 bg-white focus:border-purple-500 focus:ring-purple-500/10 text-gray-950`;
+        return `${base} border-purple-200/60 bg-white focus:border-purple-600 focus:ring-purple-500/10 text-neutral-900`;
       case "premium-plus":
-        return `${base} border-amber-500/30 bg-gray-800/50 focus:border-amber-400 focus:ring-amber-400/20 text-white placeholder:text-gray-400`;
+        return `${base} border-amber-500/25 bg-white/[0.04] backdrop-blur focus:border-amber-400 focus:ring-amber-400/15 text-white placeholder:text-neutral-500`;
       case "pro":
-        return `${base} border-blue-200 bg-white focus:border-blue-600 focus:ring-blue-500/10 text-gray-950`;
+        return `${base} border-blue-200/60 bg-white focus:border-blue-700 focus:ring-blue-500/10 text-neutral-900`;
       case "soft-ui":
-        return `${base} border-rose-200/50 bg-white/80 backdrop-blur-sm focus:border-rose-400 focus:ring-rose-400/20 text-gray-950`;
+        return `${base} border-rose-200/50 bg-white focus:border-rose-500 focus:ring-rose-400/15 text-neutral-900`;
       case "ultra-plus":
-        return `${base} border-violet-400/30 bg-gray-800/50 focus:border-violet-400 focus:ring-violet-400/20 text-white placeholder:text-gray-400`;
+        return `${base} border-violet-400/20 bg-white/[0.04] backdrop-blur focus:border-violet-300 focus:ring-violet-400/15 text-white placeholder:text-neutral-500`;
       case "editorial":
         return `${base} border-neutral-200 bg-white focus:border-neutral-900 focus:ring-neutral-900/10 text-neutral-900`;
       case "night-luxe":
@@ -2064,19 +2057,19 @@ export function BoltMenuForSlugClient() {
   const getStickyTabsClasses = () => {
     switch (theme) {
       case "paper":
-        return "bg-[#f5f1e8]/98 backdrop-blur-sm border-b-2 border-amber-400";
+        return "bg-[#f5f1e8]/95 backdrop-blur-md border-b border-amber-800/20";
       case "paper-image":
-        return "bg-gradient-to-br from-amber-50/95 to-orange-50/95 backdrop-blur border-b border-amber-200";
+        return "bg-[#fdf9f2]/90 backdrop-blur-md border-b border-amber-200/60";
       case "swipe":
-        return "bg-gradient-to-br from-purple-50/95 to-pink-50/95 backdrop-blur border-b border-purple-200";
+        return "bg-[#faf6ff]/90 backdrop-blur-md border-b border-purple-200/50";
       case "premium-plus":
-        return "bg-gray-900/90 backdrop-blur border-b border-gray-700";
+        return "bg-[#111114]/80 backdrop-blur-xl border-b border-amber-500/10";
       case "pro":
-        return "bg-gradient-to-br from-blue-50/95 to-indigo-50/95 backdrop-blur border-b border-blue-200";
+        return "bg-[#f5f8ff]/90 backdrop-blur-md border-b border-blue-200/50";
       case "soft-ui":
-        return "bg-gradient-to-br from-rose-50/95 to-pink-50/95 backdrop-blur border-b border-rose-200/50";
+        return "bg-[#fff5f7]/90 backdrop-blur-md border-b border-rose-200/40";
       case "ultra-plus":
-        return "bg-violet-900/90 backdrop-blur border-b border-violet-700";
+        return "bg-[#12102a]/85 backdrop-blur-xl border-b border-violet-400/10";
       case "editorial":
         return "bg-[#faf7f2]/90 backdrop-blur-md border-b border-neutral-200/70";
       case "night-luxe":
@@ -2573,26 +2566,19 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
   const getRowClasses = () => {
     switch (theme) {
       case "paper":
-        // Kağıt: Köşesiz, sol border, minimal padding, hover efekti yok
-        return "bg-white rounded-none border-l-4 border-amber-600 shadow-none hover:shadow-md transition-shadow";
+        return "bg-white rounded-none border-l-[3px] border-amber-700 shadow-none hover:bg-amber-50/40 transition-colors duration-200";
       case "paper-image":
-        // Resimli Kağıt: Yuvarlak, hafif border
-        return "bg-white rounded-xl shadow-md border border-amber-200 hover:shadow-lg transition-shadow";
+        return "bg-white rounded-2xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-amber-100 hover:shadow-[0_10px_24px_-8px_rgba(180,120,40,0.15)] transition-shadow duration-300";
       case "swipe":
-        // Swipe: Büyük köşeler, belirgin gölge, hover scale
-        return "bg-white rounded-3xl shadow-xl border-2 border-purple-200 hover:scale-[1.01] hover:shadow-2xl transition-all duration-300";
+        return "bg-white rounded-3xl shadow-[0_4px_12px_rgba(168,85,247,0.08)] border border-purple-100 hover:shadow-[0_16px_32px_-8px_rgba(168,85,247,0.2)] transition-shadow duration-300";
       case "premium-plus":
-        // Premium Plus: Gradient, blur, lüks border
-        return "bg-gradient-to-br from-amber-500/20 via-yellow-500/20 to-amber-600/20 backdrop-blur-md rounded-2xl border-2 border-amber-500/40 hover:border-amber-400/60 transition-all";
+        return "bg-gradient-to-br from-amber-900/30 via-neutral-900/70 to-amber-900/20 backdrop-blur-md rounded-2xl border border-amber-500/25 hover:border-amber-400/50 transition-all duration-300";
       case "pro":
-        // Pro: Sol border, minimal
-        return "bg-white rounded-lg shadow-sm border-l-4 border-blue-600 hover:shadow-md transition-shadow";
+        return "bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.05)] border-l-[3px] border-blue-700 hover:shadow-[0_8px_20px_-6px_rgba(37,99,235,0.15)] transition-shadow duration-200";
       case "soft-ui":
-        // Soft UI: Yumuşak, büyük köşeler, blur
-        return "bg-white/90 backdrop-blur-md rounded-[2rem] shadow-lg border border-rose-200/60 hover:bg-white hover:shadow-xl transition-all";
+        return "bg-white rounded-3xl shadow-[0_2px_10px_rgba(244,114,182,0.08)] border border-rose-100 hover:shadow-[0_14px_28px_-8px_rgba(244,114,182,0.18)] transition-shadow duration-300";
       case "ultra-plus":
-        // Ultra Plus: Koyu gradient, blur, lüks
-        return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 hover:border-violet-300/60 transition-all";
+        return "bg-violet-950/60 backdrop-blur-xl rounded-2xl border border-violet-400/20 hover:border-violet-300/50 hover:bg-violet-950/80 transition-all duration-300";
       case "editorial":
         return "bg-white rounded-2xl border border-neutral-200/70 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300";
       case "night-luxe":
@@ -2673,19 +2659,19 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
   const getButtonClasses = () => {
     switch (theme) {
       case "paper":
-        return "bg-amber-600 text-white shadow-md";
+        return "bg-amber-800 text-white shadow-md";
       case "paper-image":
-        return "bg-amber-500 text-white shadow-md";
+        return "bg-amber-600 text-white shadow-md";
       case "swipe":
-        return "bg-purple-500 text-white shadow-xl";
+        return "bg-purple-600 text-white shadow-lg";
       case "premium-plus":
-        return "bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-2xl";
+        return "bg-gradient-to-r from-amber-400 to-amber-600 text-neutral-950 shadow-lg";
       case "pro":
-        return "bg-blue-600 text-white shadow-md";
+        return "bg-blue-700 text-white shadow-md";
       case "soft-ui":
-        return "bg-rose-400 text-white shadow-lg";
+        return "bg-rose-500 text-white shadow-md";
       case "ultra-plus":
-        return "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-2xl";
+        return "bg-gradient-to-r from-violet-400 to-purple-400 text-neutral-950 shadow-lg";
       case "editorial":
         return "bg-neutral-900 text-white shadow-md";
       case "night-luxe":
@@ -2818,19 +2804,19 @@ function ProductSheet({
   const getButtonClasses = () => {
     switch (theme) {
       case "paper":
-        return "bg-amber-600 hover:bg-amber-700 text-white";
+        return "bg-amber-800 hover:bg-amber-900 text-white";
       case "paper-image":
-        return "bg-amber-500 hover:bg-amber-600 text-white";
+        return "bg-amber-600 hover:bg-amber-700 text-white";
       case "swipe":
-        return "bg-purple-500 hover:bg-purple-600 text-white";
+        return "bg-purple-600 hover:bg-purple-700 text-white";
       case "premium-plus":
-        return "bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white";
+        return "bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-neutral-950";
       case "pro":
-        return "bg-blue-600 hover:bg-blue-700 text-white";
+        return "bg-blue-700 hover:bg-blue-800 text-white";
       case "soft-ui":
-        return "bg-gradient-to-r from-rose-400 to-pink-400 hover:from-rose-500 hover:to-pink-500 text-white";
+        return "bg-rose-500 hover:bg-rose-600 text-white";
       case "ultra-plus":
-        return "bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white";
+        return "bg-gradient-to-r from-violet-400 to-purple-400 hover:from-violet-500 hover:to-purple-500 text-neutral-950";
       case "premium":
       default:
         return "bg-emerald-600 hover:bg-emerald-700 text-white";
