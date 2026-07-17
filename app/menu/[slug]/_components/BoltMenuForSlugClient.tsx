@@ -1751,11 +1751,19 @@ export function BoltMenuForSlugClient() {
                         : theme === "ultra-plus"
                         ? "rounded-full bg-gradient-to-r from-violet-500 to-purple-500 text-white"
                         : theme === "soft-ui"
-                        ? "rounded-full bg-rose-400 text-white"
+                        ? "rounded-full bg-rose-500 text-white"
                         : theme === "night-luxe"
                         ? "rounded-full bg-[#d4a574] text-neutral-950"
                         : theme === "editorial"
                         ? "rounded-full bg-neutral-900 text-white"
+                        : theme === "bento"
+                        ? "rounded-full bg-neutral-900 text-white"
+                        : theme === "warm-cafe"
+                        ? "rounded-full bg-[#4a7c59] text-white"
+                        : theme === "neo-retro"
+                        ? "rounded-none bg-black text-white border-2 border-black"
+                        : theme === "glass"
+                        ? "rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white"
                         : "rounded-full bg-white/95 text-gray-950"
                     }`}>
                       {formatTry(item.priceCents)}
@@ -2111,6 +2119,64 @@ export function BoltMenuForSlugClient() {
     return "text-gray-500";
   };
 
+  // Theme-tuned classes for the Garson Çağır / Hesap İste floating buttons.
+  // Every accent needs a text color paired with it so light copper/pink/etc.
+  // read against the pill background.
+  const getFloatingBtnClasses = (kind: "waiter" | "bill"): string => {
+    switch (theme) {
+      case "editorial":
+        return kind === "waiter"
+          ? "bg-neutral-900 hover:bg-neutral-800 text-white"
+          : "bg-neutral-700 hover:bg-neutral-800 text-white";
+      case "night-luxe":
+      case "premium-plus":
+        return kind === "waiter"
+          ? "bg-[#d4a574] hover:bg-[#c99a5e] text-neutral-950"
+          : "bg-[#b8894d] hover:bg-[#a37940] text-white";
+      case "ultra-plus":
+        return kind === "waiter"
+          ? "bg-violet-400 hover:bg-violet-500 text-neutral-950"
+          : "bg-purple-400 hover:bg-purple-500 text-neutral-950";
+      case "bento":
+        return kind === "waiter"
+          ? "bg-neutral-900 hover:bg-neutral-800 text-white"
+          : "bg-neutral-700 hover:bg-neutral-800 text-white";
+      case "warm-cafe":
+        return kind === "waiter"
+          ? "bg-[#4a7c59] hover:bg-[#3d6649] text-white"
+          : "bg-[#2d3a2e] hover:bg-[#1f2820] text-white";
+      case "neo-retro":
+        return kind === "waiter"
+          ? "bg-[#ff3d7f] hover:bg-[#ff5591] text-white border-2 border-black shadow-[3px_3px_0_0_#000]"
+          : "bg-black hover:bg-neutral-800 text-white border-2 border-black shadow-[3px_3px_0_0_#ff3d7f]";
+      case "glass":
+        return kind === "waiter"
+          ? "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
+          : "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white";
+      case "paper":
+      case "paper-image":
+        return kind === "waiter"
+          ? "bg-amber-800 hover:bg-amber-900 text-white"
+          : "bg-amber-600 hover:bg-amber-700 text-white";
+      case "swipe":
+        return kind === "waiter"
+          ? "bg-purple-600 hover:bg-purple-700 text-white"
+          : "bg-pink-500 hover:bg-pink-600 text-white";
+      case "pro":
+        return kind === "waiter"
+          ? "bg-blue-700 hover:bg-blue-800 text-white"
+          : "bg-blue-900 hover:bg-blue-950 text-white";
+      case "soft-ui":
+        return kind === "waiter"
+          ? "bg-rose-500 hover:bg-rose-600 text-white"
+          : "bg-pink-500 hover:bg-pink-600 text-white";
+      default:
+        return kind === "waiter"
+          ? "bg-blue-500 hover:bg-blue-600 text-white"
+          : "bg-green-500 hover:bg-green-600 text-white";
+    }
+  };
+
   return (
     <>
       {showPaymentSuccess && (
@@ -2147,10 +2213,20 @@ export function BoltMenuForSlugClient() {
                 <div className={
                   theme === "editorial"
                     ? "text-3xl md:text-4xl font-serif tracking-tight text-neutral-900"
+                    : theme === "night-luxe"
+                    ? "text-3xl md:text-4xl font-serif tracking-tight text-white"
+                    : theme === "neo-retro"
+                    ? "text-2xl md:text-3xl font-black uppercase tracking-tight text-black"
+                    : theme === "warm-cafe"
+                    ? "text-2xl md:text-3xl font-bold tracking-tight text-[#2d3a2e]"
+                    : theme === "bento"
+                    ? "text-2xl md:text-3xl font-black tracking-tight text-neutral-900"
+                    : theme === "glass"
+                    ? "text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
                     : `text-xl font-extrabold ${
                         theme === "paper"
                           ? "text-amber-900"
-                          : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
+                          : theme === "premium-plus" || theme === "ultra-plus"
                           ? "text-white"
                           : "text-gray-950"
                       }`
@@ -2159,12 +2235,16 @@ export function BoltMenuForSlugClient() {
                   <div className={`mt-1 text-sm ${
                     theme === "paper"
                       ? "text-amber-800"
-                      : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
+                      : theme === "premium-plus" || theme === "ultra-plus"
                       ? "text-gray-300"
                       : theme === "night-luxe"
-                      ? "text-neutral-400"
+                      ? "text-neutral-400 italic"
                       : theme === "editorial"
                       ? "text-neutral-500 italic"
+                      : theme === "warm-cafe"
+                      ? "text-[#4a7c59]"
+                      : theme === "neo-retro"
+                      ? "text-black font-semibold uppercase text-xs tracking-widest"
                       : "text-gray-500"
                   }`}>{restaurant.description}</div>
                 ) : null}
@@ -2178,11 +2258,7 @@ export function BoltMenuForSlugClient() {
               <button
                 onClick={() => openRequestModal("waiter")}
                 disabled={isRequestingWaiter}
-                className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
-                  theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
-                    ? "bg-amber-500 hover:bg-amber-600"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full shadow-lg transition-all disabled:opacity-50 ${getFloatingBtnClasses("waiter")}`}
                 title="Garson Çağır"
               >
                 <Bell className="w-5 h-5" />
@@ -2190,11 +2266,7 @@ export function BoltMenuForSlugClient() {
               <button
                 onClick={() => openRequestModal("bill")}
                 disabled={isRequestingBill}
-                className={`flex items-center justify-center w-10 h-10 rounded-full text-white shadow-lg transition-all disabled:opacity-50 ${
-                  theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
-                    ? "bg-amber-500 hover:bg-amber-600"
-                    : "bg-green-500 hover:bg-green-600"
-                }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full shadow-lg transition-all disabled:opacity-50 ${getFloatingBtnClasses("bill")}`}
                 title="Hesap İste"
               >
                 <Receipt className="w-5 h-5" />
@@ -2282,11 +2354,7 @@ export function BoltMenuForSlugClient() {
         <button
           onClick={() => openRequestModal("waiter")}
           disabled={isRequestingWaiter}
-          className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
-            theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
-              ? "bg-amber-500 hover:bg-amber-600"
-              : "bg-blue-500 hover:bg-blue-600"
-          }`}
+          className={`flex items-center gap-2 rounded-full px-4 py-3 shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${getFloatingBtnClasses("waiter")}`}
           title="Garson Çağır"
         >
           <Bell className="w-5 h-5" />
@@ -2295,11 +2363,7 @@ export function BoltMenuForSlugClient() {
         <button
           onClick={() => openRequestModal("bill")}
           disabled={isRequestingBill}
-          className={`flex items-center gap-2 rounded-full px-4 py-3 text-white shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${
-            theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
-              ? "bg-amber-500 hover:bg-amber-600"
-              : "bg-green-500 hover:bg-green-600"
-          }`}
+          className={`flex items-center gap-2 rounded-full px-4 py-3 shadow-lg transition-all hover:scale-105 disabled:opacity-50 ${getFloatingBtnClasses("bill")}`}
           title="Hesap İste"
         >
           <Receipt className="w-5 h-5" />
@@ -2401,15 +2465,7 @@ export function BoltMenuForSlugClient() {
                     <button
                       onClick={handleSubmitRequest}
                       disabled={!requestTableNumber.trim() || isRequestingWaiter || isRequestingBill}
-                      className={`flex-1 px-4 py-3 rounded-xl font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                        requestType === "waiter"
-                          ? theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
-                            ? "bg-amber-500 hover:bg-amber-600"
-                            : "bg-blue-500 hover:bg-blue-600"
-                          : theme === "premium-plus" || theme === "ultra-plus" || theme === "night-luxe"
-                            ? "bg-amber-500 hover:bg-amber-600"
-                            : "bg-green-500 hover:bg-green-600"
-                      }`}
+                      className={`flex-1 px-4 py-3 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${getFloatingBtnClasses(requestType)}`}
                     >
                       {(isRequestingWaiter || isRequestingBill) ? "Gönderiliyor..." : "Gönder"}
                     </button>

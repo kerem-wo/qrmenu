@@ -76,8 +76,8 @@ export default function Home() {
   // Referans logoları
   const referenceLogos = [
     {
-      type: "image",
-      url: "https://softwareoffuture.com/assets/logo-BN4NP9W1.jpg",
+      type: "text",
+      text: "Software Of Future",
       alt: "Software Of Future"
     },
     {
