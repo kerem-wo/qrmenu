@@ -35,6 +35,42 @@ const packages: MenuPackage[] = [
     isNew: true,
   },
   {
+    id: "bento",
+    name: "Bento — Modern Izgara",
+    description: "Apple/Notion tarzı ferah ızgara. Yuvarlak kenarlı beyaz kartlar, cömert boşluklar, teknoloji-cafe hissi.",
+    theme: "bento",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+    features: ["Modern ızgara", "3xl köşeler", "Kalkan hover", "Apple estetiği"],
+    isNew: true,
+  },
+  {
+    id: "warm-cafe",
+    name: "Warm Café — Fildişi & Yeşil",
+    description: "Butik kafe ve pastane için sıcak fildişi zemin, derin orman yeşili aksan. Sakin, güven veren atmosfer.",
+    theme: "warm-cafe",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+    features: ["Fildişi zemin", "Orman yeşili", "Sakin renkler", "Kafe dostu"],
+    isNew: true,
+  },
+  {
+    id: "neo-retro",
+    name: "Neo Retro — Cesur 80'ler",
+    description: "Sert siyah kenarlıklar, sert gölgeler, neon pembe aksan. Burger yeri, food truck, gençlik odaklı mekan için.",
+    theme: "neo-retro",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+    features: ["Sert kenarlık", "Neon pembe", "Sert gölge", "Cesur tipografi"],
+    isNew: true,
+  },
+  {
+    id: "glass",
+    name: "Glass — Cam Efekti",
+    description: "Renkli gradient zemin üzerine cam-morphism. Butik otel restoranı, cocktail lounge, moda kafe için oynak ve modern.",
+    theme: "glass",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+    features: ["Cam kartlar", "Renkli gradient", "İndigo-mor aksan", "Blur estetiği"],
+    isNew: true,
+  },
+  {
     id: "premium",
     name: "Premium Menü",
     description: "Basit ve hızlı kullanımlı dijital menü arayüzü. Modern restoranlar için optimize edilmiş, kullanıcı dostu tasarım.",
@@ -136,7 +172,7 @@ export default function MenuPackagesPage() {
           <div className="max-w-4xl mx-auto text-center animate-premium-fade-in">
             <h1 className="premium-heading-1 mb-6">Menü Paketleri</h1>
             <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 10 farklı Rivo QR tasarımını keşfedin.
+              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 14 farklı Rivo QR tasarımını keşfedin.
             </p>
           </div>
         </div>
@@ -374,6 +410,81 @@ export default function MenuPackagesPage() {
                           <div className="h-1 bg-[#d4a574]/60 rounded w-1/3"></div>
                           <div className="ml-auto text-[9px] font-semibold text-[#d4a574] uppercase tracking-wider">Wine List</div>
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {pkg.theme === "bento" && (
+                    <div className="h-full bg-[#f5f5f7] p-4">
+                      <div className="grid grid-cols-2 gap-3 h-full">
+                        <div className="bg-white rounded-3xl border border-neutral-200/60 p-3 shadow-sm">
+                          <div className="w-full h-14 bg-gradient-to-br from-orange-100 to-orange-200 rounded-2xl mb-2"></div>
+                          <div className="text-[10px] font-bold text-neutral-900">Bento Bowl</div>
+                          <div className="h-1 bg-neutral-200 rounded w-1/2 mt-1"></div>
+                        </div>
+                        <div className="flex flex-col gap-3">
+                          <div className="bg-white rounded-3xl border border-neutral-200/60 p-3 shadow-sm flex-1">
+                            <div className="text-[10px] font-bold text-neutral-900">Miso</div>
+                            <div className="mt-1 text-[9px] font-mono text-neutral-500">₺42</div>
+                          </div>
+                          <div className="bg-white rounded-3xl border border-neutral-200/60 p-3 shadow-sm flex-1">
+                            <div className="w-8 h-8 rounded-2xl bg-neutral-900 flex items-center justify-center text-white text-[10px] font-bold">+</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {pkg.theme === "warm-cafe" && (
+                    <div className="h-full bg-[#fefdf9] p-5">
+                      <div className="mb-3">
+                        <div className="text-sm font-bold text-[#2d3a2e]">Café Menu</div>
+                        <div className="w-8 h-0.5 bg-[#4a7c59] mt-1"></div>
+                      </div>
+                      <div className="bg-white rounded-2xl border border-[#4a7c59]/15 shadow-sm p-3 mb-2 flex gap-3">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#4a7c59]/20 to-[#4a7c59]/40 rounded-xl"></div>
+                        <div className="flex-1">
+                          <div className="text-[11px] font-semibold text-[#2d3a2e]">Flat White</div>
+                          <div className="h-1 bg-[#4a7c59]/20 rounded w-2/3 mt-1"></div>
+                        </div>
+                        <div className="text-[10px] font-bold text-[#4a7c59]">₺55</div>
+                      </div>
+                      <div className="bg-white rounded-2xl border border-[#4a7c59]/15 shadow-sm p-3 flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-[#4a7c59] text-white text-[9px] font-bold flex items-center justify-center">+</div>
+                        <div className="h-1 bg-[#4a7c59]/20 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  )}
+
+                  {pkg.theme === "neo-retro" && (
+                    <div className="h-full bg-[#f4ede3] p-4">
+                      <div className="text-xs font-black text-black mb-3 uppercase tracking-wider">Neo Retro</div>
+                      <div className="bg-white border-2 border-black rounded-none shadow-[4px_4px_0_0_#000] p-3 mb-3 flex gap-2">
+                        <div className="w-12 h-12 border-2 border-black bg-gradient-to-br from-[#ff3d7f] to-[#ff5591]"></div>
+                        <div className="flex-1">
+                          <div className="text-[11px] font-black text-black">DOUBLE CHEESE</div>
+                          <div className="h-1 bg-black w-2/3 mt-1"></div>
+                          <div className="mt-1 text-[10px] font-black text-[#ff3d7f]">₺185</div>
+                        </div>
+                      </div>
+                      <div className="inline-block bg-[#ff3d7f] text-white text-[9px] font-black px-2 py-1 border-2 border-black shadow-[2px_2px_0_0_#000]">+ SEPETE</div>
+                    </div>
+                  )}
+
+                  {pkg.theme === "glass" && (
+                    <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 p-4 relative overflow-hidden">
+                      <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-purple-300/40 blur-xl"></div>
+                      <div className="relative">
+                        <div className="text-xs font-bold text-neutral-900 mb-3">Glass Menu</div>
+                        <div className="bg-white/40 backdrop-blur-xl border border-white/60 rounded-2xl shadow-xl p-3 mb-2 flex gap-2">
+                          <div className="w-11 h-11 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-xl"></div>
+                          <div className="flex-1">
+                            <div className="text-[11px] font-semibold text-neutral-900">Aurora Latte</div>
+                            <div className="h-1 bg-white/60 rounded w-2/3 mt-1"></div>
+                          </div>
+                          <div className="text-[10px] font-bold text-neutral-900">₺68</div>
+                        </div>
+                        <div className="bg-white/40 backdrop-blur-xl border border-white/60 rounded-2xl p-2 text-center text-[9px] font-semibold bg-gradient-to-r from-indigo-500/80 to-purple-500/80 text-white">+ Ekle</div>
                       </div>
                     </div>
                   )}

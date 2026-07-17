@@ -275,6 +275,10 @@ export default function SettingsPage() {
                 <optgroup label="✨ Yeni">
                   <option value="editorial">Editorial — Minimal & Sıcak</option>
                   <option value="night-luxe">Night Luxe — Koyu & Bakır</option>
+                  <option value="bento">Bento — Modern Izgara</option>
+                  <option value="warm-cafe">Warm Café — Fildişi & Yeşil</option>
+                  <option value="neo-retro">Neo Retro — Cesur 80'ler</option>
+                  <option value="glass">Glass — Cam Efekti</option>
                 </optgroup>
               </select>
               <p className="text-xs text-gray-600 mt-1 font-medium">

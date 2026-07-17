@@ -1858,6 +1858,14 @@ export function BoltMenuForSlugClient() {
         return `${base} bg-[#faf7f2] text-neutral-900`;
       case "night-luxe":
         return `${base} bg-[#0d0d0f] text-neutral-100`;
+      case "bento":
+        return `${base} bg-[#f5f5f7] text-neutral-900`;
+      case "warm-cafe":
+        return `${base} bg-[#fefdf9] text-[#2d3a2e]`;
+      case "neo-retro":
+        return `${base} bg-[#f4ede3] text-black`;
+      case "glass":
+        return `${base} bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 text-neutral-900`;
       case "premium":
       default:
         return `${base} bg-white text-black`;
@@ -1888,14 +1896,19 @@ export function BoltMenuForSlugClient() {
         // Ultra Plus: Koyu gradient, blur, lüks border
         return "bg-gradient-to-br from-violet-500/25 via-purple-500/25 to-indigo-500/25 backdrop-blur-lg rounded-2xl border-2 border-violet-400/40 shadow-2xl hover:border-violet-300/60 transition-all";
       case "editorial":
-        // Editorial: Beyaz, ince kenarlık, sıcak gölge — dergi kartı
         return "bg-white rounded-2xl border border-neutral-200/70 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300";
       case "night-luxe":
-        // Night Luxe: Koyu cam, bakır border, prestij hissi
         return "bg-neutral-900/70 backdrop-blur-md rounded-2xl border border-white/[0.06] shadow-2xl hover:border-[#d4a574]/50 hover:bg-neutral-900/85 transition-all duration-300";
+      case "bento":
+        return "bg-white rounded-3xl border border-neutral-200/60 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_32px_-8px_rgba(0,0,0,0.14)] hover:-translate-y-1 transition-all duration-300";
+      case "warm-cafe":
+        return "bg-white rounded-2xl border border-[#4a7c59]/15 shadow-sm hover:shadow-lg hover:border-[#4a7c59]/40 transition-all duration-300";
+      case "neo-retro":
+        return "bg-white rounded-none border-2 border-black shadow-[6px_6px_0_0_#000] hover:shadow-[3px_3px_0_0_#000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-150";
+      case "glass":
+        return "bg-white/40 backdrop-blur-2xl rounded-2xl border border-white/60 shadow-xl hover:bg-white/60 hover:shadow-2xl transition-all duration-300";
       case "premium":
       default:
-        // Premium: Standart, temiz, modern
         return "bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow";
     }
   };
@@ -1915,6 +1928,14 @@ export function BoltMenuForSlugClient() {
         return "w-[260px] md:w-[300px]";
       case "night-luxe":
         return "w-[270px] md:w-[310px]";
+      case "bento":
+        return "w-[280px] md:w-[320px]";
+      case "warm-cafe":
+        return "w-[250px] md:w-[280px]";
+      case "neo-retro":
+        return "w-[260px] md:w-[290px]";
+      case "glass":
+        return "w-[260px] md:w-[290px]";
       default:
         return "w-[240px] md:w-[260px]";
     }
@@ -1957,6 +1978,14 @@ export function BoltMenuForSlugClient() {
         return "bg-neutral-900 hover:bg-neutral-800 text-white";
       case "night-luxe":
         return "bg-gradient-to-r from-[#d4a574] to-[#b8894d] hover:from-[#e0b686] hover:to-[#c99a5e] text-neutral-950";
+      case "bento":
+        return "bg-neutral-900 hover:bg-neutral-800 text-white rounded-2xl";
+      case "warm-cafe":
+        return "bg-[#4a7c59] hover:bg-[#3d6649] text-white";
+      case "neo-retro":
+        return "bg-[#ff3d7f] hover:bg-[#ff5591] text-white border-2 border-black shadow-[3px_3px_0_0_#000]";
+      case "glass":
+        return "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white";
       case "premium":
       default:
         return "bg-emerald-600 hover:bg-emerald-700 text-white";
@@ -1983,6 +2012,14 @@ export function BoltMenuForSlugClient() {
         return "bg-neutral-900";
       case "night-luxe":
         return "bg-[#d4a574]";
+      case "bento":
+        return "bg-neutral-900";
+      case "warm-cafe":
+        return "bg-[#4a7c59]";
+      case "neo-retro":
+        return "bg-[#ff3d7f]";
+      case "glass":
+        return "bg-gradient-to-r from-indigo-500 to-purple-500";
       case "premium":
       default:
         return "bg-emerald-500";
@@ -2010,6 +2047,14 @@ export function BoltMenuForSlugClient() {
         return `${base} border-neutral-200 bg-white focus:border-neutral-900 focus:ring-neutral-900/10 text-neutral-900`;
       case "night-luxe":
         return `${base} border-white/10 bg-white/[0.04] backdrop-blur focus:border-[#d4a574] focus:ring-[#d4a574]/20 text-white placeholder:text-neutral-500`;
+      case "bento":
+        return `${base} border-neutral-200 bg-white rounded-2xl focus:border-neutral-900 focus:ring-neutral-900/10 text-neutral-900`;
+      case "warm-cafe":
+        return `${base} border-[#4a7c59]/20 bg-white focus:border-[#4a7c59] focus:ring-[#4a7c59]/15 text-[#2d3a2e]`;
+      case "neo-retro":
+        return `${base.replace('rounded-full','')} rounded-none border-2 border-black bg-white focus:border-[#ff3d7f] focus:ring-[#ff3d7f]/20 text-black`;
+      case "glass":
+        return `${base} border-white/60 bg-white/40 backdrop-blur-xl focus:border-indigo-500 focus:ring-indigo-500/15 text-neutral-900 placeholder:text-neutral-500`;
       case "premium":
       default:
         return `${base} border-gray-200 bg-gray-50 focus:border-emerald-500 focus:bg-white focus:ring-emerald-500/10 text-gray-950`;
@@ -2036,6 +2081,14 @@ export function BoltMenuForSlugClient() {
         return "bg-[#faf7f2]/90 backdrop-blur-md border-b border-neutral-200/70";
       case "night-luxe":
         return "bg-black/70 backdrop-blur-xl border-b border-white/[0.06]";
+      case "bento":
+        return "bg-[#f5f5f7]/90 backdrop-blur-md border-b border-neutral-200/70";
+      case "warm-cafe":
+        return "bg-[#fefdf9]/90 backdrop-blur-md border-b border-[#4a7c59]/15";
+      case "neo-retro":
+        return "bg-[#f4ede3]/95 backdrop-blur border-b-2 border-black";
+      case "glass":
+        return "bg-white/30 backdrop-blur-2xl border-b border-white/50";
       case "premium":
       default:
         return "bg-white/90 backdrop-blur border-b border-gray-100";
@@ -2544,6 +2597,14 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
         return "bg-white rounded-2xl border border-neutral-200/70 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 transition-all duration-300";
       case "night-luxe":
         return "bg-neutral-900/70 backdrop-blur-md rounded-2xl border border-white/[0.06] shadow-2xl hover:border-[#d4a574]/50 hover:bg-neutral-900/85 transition-all duration-300";
+      case "bento":
+        return "bg-white rounded-3xl border border-neutral-200/60 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_16px_32px_-8px_rgba(0,0,0,0.14)] hover:-translate-y-1 transition-all duration-300";
+      case "warm-cafe":
+        return "bg-white rounded-2xl border border-[#4a7c59]/15 shadow-sm hover:shadow-lg hover:border-[#4a7c59]/40 transition-all duration-300";
+      case "neo-retro":
+        return "bg-white rounded-none border-2 border-black shadow-[6px_6px_0_0_#000] hover:shadow-[3px_3px_0_0_#000] hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-150";
+      case "glass":
+        return "bg-white/40 backdrop-blur-2xl rounded-2xl border border-white/60 shadow-xl hover:bg-white/60 hover:shadow-2xl transition-all duration-300";
       case "premium":
       default:
         // Premium: Standart, temiz
@@ -2596,6 +2657,14 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
       case "editorial":
       case "night-luxe":
         return "rounded-xl";
+      case "bento":
+        return "rounded-2xl";
+      case "warm-cafe":
+        return "rounded-xl";
+      case "neo-retro":
+        return "rounded-none";
+      case "glass":
+        return "rounded-xl";
       default:
         return "rounded-2xl"; // Standart
     }
@@ -2621,6 +2690,14 @@ function MenuRow({ item, onOpen, labels, theme = "default" }: { item: BoltItem; 
         return "bg-neutral-900 text-white shadow-md";
       case "night-luxe":
         return "bg-gradient-to-r from-[#d4a574] to-[#b8894d] text-neutral-950 shadow-lg";
+      case "bento":
+        return "bg-neutral-900 text-white shadow-md";
+      case "warm-cafe":
+        return "bg-[#4a7c59] text-white shadow-md";
+      case "neo-retro":
+        return "bg-[#ff3d7f] text-white border-2 border-black shadow-[3px_3px_0_0_#000]";
+      case "glass":
+        return "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg";
       case "premium":
       default:
         return "bg-emerald-600 text-white shadow-lg";
