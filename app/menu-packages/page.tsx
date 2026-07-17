@@ -12,9 +12,28 @@ type MenuPackage = {
   image: string;
   features: string[];
   popular?: boolean;
+  isNew?: boolean;
 };
 
 const packages: MenuPackage[] = [
+  {
+    id: "editorial",
+    name: "Editorial — Minimal Sıcak",
+    description: "Restoran-dergi hissi veren sade, sıcak tonlu tasarım. Serif başlıklar, cömert boşluklar, iyi tipografi. Fine-dining ve tasarım-odaklı işletmeler için.",
+    theme: "editorial",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+    features: ["Serif tipografi", "Minimal düzen", "Sıcak beyaz zemin", "Editorial ruh"],
+    isNew: true,
+  },
+  {
+    id: "night-luxe",
+    name: "Night Luxe — Koyu Bakır",
+    description: "Steakhouse, kokteyl bar ve gece mekanları için premium koyu tema. Bakır aksanlar, cam efektli kartlar, prestij hissi.",
+    theme: "night-luxe",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80",
+    features: ["Koyu zemin", "Bakır aksan", "Cam efekt kartlar", "Serif başlık"],
+    isNew: true,
+  },
   {
     id: "premium",
     name: "Premium Menü",
@@ -117,7 +136,7 @@ export default function MenuPackagesPage() {
           <div className="max-w-4xl mx-auto text-center animate-premium-fade-in">
             <h1 className="premium-heading-1 mb-6">Menü Paketleri</h1>
             <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 8 farklı Rivo QR tasarımını keşfedin.
+              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 10 farklı Rivo QR tasarımını keşfedin.
             </p>
           </div>
         </div>
@@ -138,6 +157,14 @@ export default function MenuPackagesPage() {
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-green-500 to-blue-600 text-white text-xs font-bold rounded-full shadow-lg">
                       <Sparkles className="w-3 h-3" />
                       Popüler
+                    </span>
+                  </div>
+                )}
+                {pkg.isNew && (
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-[#FF6F00] to-[#FF8F33] text-white text-xs font-bold rounded-full shadow-lg">
+                      <Sparkles className="w-3 h-3" />
+                      Yeni
                     </span>
                   </div>
                 )}
@@ -301,6 +328,56 @@ export default function MenuPackagesPage() {
                     </div>
                   )}
                   
+                  {pkg.theme === "editorial" && (
+                    <div className="h-full bg-[#faf7f2] p-5">
+                      <div className="mb-3">
+                        <div className="text-lg text-neutral-900" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>Editorial</div>
+                        <div className="text-[10px] italic text-neutral-500 mt-0.5">bir dergi hissi</div>
+                      </div>
+                      <div className="bg-white rounded-xl border border-neutral-200/70 shadow-sm p-3 mb-2 flex gap-3">
+                        <div className="w-14 h-14 bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-lg"></div>
+                        <div className="flex-1">
+                          <div className="text-sm text-neutral-900 mb-1" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>Signature Dish</div>
+                          <div className="h-1 bg-neutral-200 rounded w-3/4 mb-1"></div>
+                          <div className="h-1 bg-neutral-200 rounded w-1/2"></div>
+                        </div>
+                        <div className="w-9 h-9 rounded-full bg-neutral-900 text-white text-[10px] font-bold flex items-center justify-center">₺85</div>
+                      </div>
+                      <div className="bg-white rounded-xl border border-neutral-200/70 shadow-sm p-3 flex gap-3">
+                        <div className="w-14 h-14 bg-gradient-to-br from-neutral-200 to-neutral-300 rounded-lg"></div>
+                        <div className="flex-1">
+                          <div className="text-sm text-neutral-900" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>Chef Pick</div>
+                          <div className="h-1 bg-neutral-200 rounded w-2/3 mt-1"></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {pkg.theme === "night-luxe" && (
+                    <div className="h-full bg-[#0d0d0f] p-5 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-[#d4a574]/10 blur-2xl"></div>
+                      <div className="relative">
+                        <div className="mb-3">
+                          <div className="text-lg text-white" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>Night Luxe</div>
+                          <div className="text-[10px] text-neutral-500 mt-0.5">bakır aksanla premium</div>
+                        </div>
+                        <div className="bg-neutral-900/70 backdrop-blur-md rounded-xl border border-white/[0.06] shadow-2xl p-3 mb-2 flex gap-3">
+                          <div className="w-14 h-14 bg-gradient-to-br from-neutral-800 to-neutral-700 rounded-lg"></div>
+                          <div className="flex-1">
+                            <div className="text-sm text-white mb-1" style={{ fontFamily: 'ui-serif, Georgia, serif' }}>Dry-Aged Ribeye</div>
+                            <div className="h-1 bg-white/10 rounded w-3/4 mb-1"></div>
+                            <div className="h-1 bg-white/10 rounded w-1/2"></div>
+                          </div>
+                          <div className="w-9 h-9 rounded-full bg-[#d4a574] text-neutral-950 text-[10px] font-bold flex items-center justify-center">₺620</div>
+                        </div>
+                        <div className="bg-neutral-900/70 backdrop-blur-md rounded-xl border border-white/[0.06] p-3 flex items-center gap-2">
+                          <div className="h-1 bg-[#d4a574]/60 rounded w-1/3"></div>
+                          <div className="ml-auto text-[9px] font-semibold text-[#d4a574] uppercase tracking-wider">Wine List</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {pkg.theme === "ultra-plus" && (
                     <div className="h-full bg-gradient-to-br from-violet-900 via-purple-900 to-indigo-900 p-4">
                       <div className="bg-gradient-to-br from-violet-500/30 to-purple-500/30 backdrop-blur-md rounded-2xl p-3 border border-violet-400/30 mb-2 shadow-2xl">
