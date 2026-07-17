@@ -73,7 +73,7 @@ export default function Home() {
     };
   }, [currentTheme]);
 
-  // Referans logoları (sadece ilk 4)
+  // Referans logoları
   const referenceLogos = [
     {
       type: "image",
@@ -90,12 +90,62 @@ export default function Home() {
       url: "https://www.ritadanismanlik.com.tr/wp-content/uploads/2025/12/qtq_95-1-1.webp",
       alt: "RİTA Danışmanlık"
     },
-    {
-      type: "text",
-      text: "Bayimiz Olun",
-      alt: "Bayimiz Olun"
-    },
   ];
+
+  // Tema galerisi kartları
+  const themeGallery: { id: string; name: string; tag: string; preview: string }[] = [
+    { id: "editorial", name: "Editorial", tag: "Yeni", preview: "warm-serif" },
+    { id: "night-luxe", name: "Night Luxe", tag: "Yeni", preview: "dark-copper" },
+    { id: "bento", name: "Bento", tag: "Yeni", preview: "modern-grid" },
+    { id: "warm-cafe", name: "Warm Café", tag: "Yeni", preview: "ivory-green" },
+    { id: "neo-retro", name: "Neo Retro", tag: "Yeni", preview: "bold-black" },
+    { id: "glass", name: "Glass", tag: "Yeni", preview: "gradient-glass" },
+    { id: "premium-plus", name: "Premium+", tag: "Popüler", preview: "dark-gold" },
+    { id: "ultra-plus", name: "Ultra+", tag: "Popüler", preview: "dark-violet" },
+    { id: "swipe", name: "Swipe", tag: "Klasik", preview: "purple-cards" },
+    { id: "paper", name: "Kağıt", tag: "Klasik", preview: "warm-paper" },
+    { id: "paper-image", name: "Resimli Kağıt", tag: "Klasik", preview: "amber-warm" },
+    { id: "pro", name: "Pro", tag: "Klasik", preview: "blue-clean" },
+    { id: "soft-ui", name: "Soft UI", tag: "Klasik", preview: "rose-soft" },
+    { id: "premium", name: "Premium", tag: "Klasik", preview: "clean-white" },
+    { id: "default", name: "Varsayılan", tag: "Klasik", preview: "emerald-clean" },
+  ];
+
+  const previewGradient = (p: string): string => ({
+    "warm-serif": "linear-gradient(135deg,#faf7f2 0%,#efe9de 100%)",
+    "dark-copper": "linear-gradient(135deg,#0d0d0f 0%,#1a1a1c 100%)",
+    "modern-grid": "linear-gradient(135deg,#f5f5f7 0%,#e5e5ea 100%)",
+    "ivory-green": "linear-gradient(135deg,#fefdf9 0%,#e8f0ea 100%)",
+    "bold-black": "linear-gradient(135deg,#f4ede3 0%,#ffdae8 100%)",
+    "gradient-glass": "linear-gradient(135deg,#c7d2fe 0%,#e9d5ff 50%,#fbcfe8 100%)",
+    "dark-gold": "linear-gradient(135deg,#1f1a15 0%,#3a2d1a 100%)",
+    "dark-violet": "linear-gradient(135deg,#1e1b4b 0%,#4c1d95 100%)",
+    "purple-cards": "linear-gradient(135deg,#faf5ff 0%,#fce7f3 100%)",
+    "warm-paper": "linear-gradient(135deg,#f5f1e8 0%,#ede4cc 100%)",
+    "amber-warm": "linear-gradient(135deg,#fef3c7 0%,#fed7aa 100%)",
+    "blue-clean": "linear-gradient(135deg,#eff6ff 0%,#e0e7ff 100%)",
+    "rose-soft": "linear-gradient(135deg,#fff1f2 0%,#fce7f3 100%)",
+    "clean-white": "linear-gradient(135deg,#ffffff 0%,#f5f5f5 100%)",
+    "emerald-clean": "linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%)",
+  }[p] || "#ffffff");
+
+  const previewAccent = (p: string): string => ({
+    "warm-serif": "#171717",
+    "dark-copper": "#d4a574",
+    "modern-grid": "#171717",
+    "ivory-green": "#4a7c59",
+    "bold-black": "#ff3d7f",
+    "gradient-glass": "#6366f1",
+    "dark-gold": "#f59e0b",
+    "dark-violet": "#a78bfa",
+    "purple-cards": "#a855f7",
+    "warm-paper": "#b45309",
+    "amber-warm": "#d97706",
+    "blue-clean": "#2563eb",
+    "rose-soft": "#f43f5e",
+    "clean-white": "#059669",
+    "emerald-clean": "#10b981",
+  }[p] || "#171717");
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
@@ -114,6 +164,9 @@ export default function Home() {
             <nav className="hidden md:flex items-center gap-8">
               <Link href="#features" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
                 Özellikler
+              </Link>
+              <Link href="#themes" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
+                Temalar
               </Link>
               <Link href="/menu/demo-restoran" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
                 Demo Menü
@@ -398,6 +451,68 @@ export default function Home() {
                 Yüksek performanslı bulut altyapısı. 99.9% uptime garantisi ile kesintisiz hizmet.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Theme Gallery */}
+      <section id="themes" className="py-24 md:py-32 bg-gray-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full border border-[#FF6F00]/30 bg-[#FF6F00]/10 text-xs font-semibold text-[#FF6F00]">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#FF6F00]"></span>
+              15 tema · her mekana bir dil
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight">
+              Kendi Estetiğini Seç
+            </h2>
+            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
+              Sıcak dergi, koyu bakır, cesur retro veya cam efekti — restoranın karakterine uyanı seç.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
+            {themeGallery.map((t) => (
+              <Link
+                key={t.id}
+                href={`/menu/demo-restoran?theme=${t.id}`}
+                target="_blank"
+                className="group relative overflow-hidden rounded-2xl border border-gray-800/70 bg-gray-900/40 hover:border-[#FF6F00]/50 hover:bg-gray-900/60 transition-all"
+              >
+                <div className="relative h-28 md:h-32 w-full overflow-hidden" style={{ background: previewGradient(t.preview) }}>
+                  <div className="absolute inset-4 flex flex-col justify-end gap-1">
+                    <div className="h-1.5 rounded-full w-2/3 opacity-40" style={{ background: previewAccent(t.preview) }}></div>
+                    <div className="h-1.5 rounded-full w-1/2 opacity-25" style={{ background: previewAccent(t.preview) }}></div>
+                    <div className="mt-1 self-end h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-black" style={{ background: previewAccent(t.preview), color: t.preview.startsWith("dark") ? "#0d0d0f" : "#ffffff" }}>+</div>
+                  </div>
+                </div>
+                <div className="p-3 md:p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-sm md:text-base font-bold text-white truncate">{t.name}</div>
+                    <span className={`shrink-0 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded ${
+                      t.tag === "Yeni"
+                        ? "text-[#FF6F00] bg-[#FF6F00]/10"
+                        : t.tag === "Popüler"
+                        ? "text-emerald-400 bg-emerald-400/10"
+                        : "text-gray-500 bg-gray-800/50"
+                    }`}>{t.tag}</span>
+                  </div>
+                  <div className="mt-1 text-[11px] font-mono text-gray-500 group-hover:text-gray-300 transition-colors">
+                    /?theme={t.id}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              href="/menu-packages"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-gray-300 hover:text-white transition-colors border-b border-gray-700 hover:border-[#FF6F00] pb-1"
+            >
+              Detaylı paket sayfasına git
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
