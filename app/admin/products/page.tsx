@@ -103,30 +103,20 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex justify-between items-center py-5">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
-                <Link href="/admin/dashboard">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Geri
-                </Link>
-              </Button>
-              <h1 className="premium-heading-3">Ürün Yönetimi</h1>
-            </div>
-            <Button asChild className="premium-btn-primary">
-              <Link href="/admin/products/new">
-                <Plus className="w-5 h-5 mr-2" />
-                Yeni Ürün Ekle
-              </Link>
-            </Button>
-          </div>
+    <div>
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">Ürünler</h1>
+          <Button asChild className="premium-btn-primary">
+            <Link href="/admin/products/new">
+              <Plus className="w-5 h-5 mr-2" />
+              Yeni Ürün Ekle
+            </Link>
+          </Button>
         </div>
-      </header>
+      </div>
 
-      <main className="premium-container py-10">
+      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8">
         {products.length === 0 ? (
           <div className="premium-card p-16 text-center animate-premium-fade-in">
             <div className="relative inline-flex items-center justify-center mb-6">

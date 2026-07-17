@@ -142,38 +142,23 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      {/* Premium Header */}
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex justify-between items-center py-5">
-            <div>
-              <h1 className="premium-heading-3 text-gray-900">
-                {restaurant?.name || 'Admin Panel'}
-              </h1>
-              {restaurant?.slug && (
-                <p className="text-sm text-gray-600 mt-2 font-medium">
-                  Menü Linki: <span className="font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded-lg">/menu/{restaurant.slug}</span>
-                </p>
-              )}
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" asChild className="premium-btn-secondary text-sm px-5 py-2.5">
-                <Link href="/admin/settings">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Ayarlar
-                </Link>
-              </Button>
-              <Button variant="outline" onClick={handleLogout} className="premium-btn-secondary text-sm px-5 py-2.5">
-                Çıkış
-              </Button>
-            </div>
-          </div>
+    <div>
+      {/* Page header */}
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6">
+          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">
+            {restaurant?.name || "Panel"}
+          </h1>
+          {restaurant?.slug && (
+            <p className="text-sm text-neutral-500 mt-1 font-medium">
+              Menü: <span className="font-mono text-neutral-800 bg-neutral-100 px-2 py-0.5 rounded-md">/menu/{restaurant.slug}</span>
+            </p>
+          )}
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
-      <main className="premium-container py-10">
+      <main className="max-w-7xl mx-auto px-6 lg:px-10 py-8">
         {/* Table Requests Alerts */}
         {tableRequests.length > 0 && (
           <div className="mb-6 space-y-3">

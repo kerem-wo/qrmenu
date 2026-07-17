@@ -187,69 +187,59 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex items-center justify-between gap-4 py-5">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
-                <Link href="/admin/dashboard">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Geri
-                </Link>
-              </Button>
-              <div>
-                <h1 className="premium-heading-3">Siparişler</h1>
-                {orders.length > 0 && (
-                  <span className="text-sm text-gray-600 font-medium">({orders.length} sipariş)</span>
-                )}
-              </div>
-            </div>
+    <div>
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-baseline gap-3">
+            <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">Siparişler</h1>
             {orders.length > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                {selectedOrders.size > 0 && (
-                  <>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={deleteSelectedOrders}
-                      className="premium-btn-secondary text-red-600 border-red-300 hover:bg-red-50 px-4 py-2"
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Seçili Olanları Sil ({selectedOrders.size})
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={clearSelection}
-                      className="premium-btn-secondary px-4 py-2"
-                    >
-                      Seçimi Temizle
-                    </Button>
-                  </>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={selectAllOrders}
-                  className="premium-btn-secondary px-4 py-2"
-                >
-                  Tümünü Seç
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={deleteAllOrders}
-                  className="premium-btn-secondary text-red-600 border-red-300 hover:bg-red-50 px-4 py-2"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Hepsini Temizle
-                </Button>
-              </div>
+              <span className="text-sm text-neutral-500 font-semibold">{orders.length} adet</span>
             )}
           </div>
+          {orders.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {selectedOrders.size > 0 && (
+                <>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={deleteSelectedOrders}
+                    className="premium-btn-secondary text-red-600 border-red-300 hover:bg-red-50 px-4 py-2"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Seçili Olanları Sil ({selectedOrders.size})
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={clearSelection}
+                    className="premium-btn-secondary px-4 py-2"
+                  >
+                    Seçimi Temizle
+                  </Button>
+                </>
+              )}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={selectAllOrders}
+                className="premium-btn-secondary px-4 py-2"
+              >
+                Tümünü Seç
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={deleteAllOrders}
+                className="premium-btn-secondary text-red-600 border-red-300 hover:bg-red-50 px-4 py-2"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Hepsini Temizle
+              </Button>
+            </div>
+          )}
         </div>
-      </header>
+      </div>
 
       <main className="premium-container py-10">
         {orders.length === 0 ? (

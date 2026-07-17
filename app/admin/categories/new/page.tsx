@@ -73,18 +73,18 @@ export default function NewCategoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="container mx-auto px-6 py-4 flex items-center gap-4">
-          <Button variant="ghost" asChild className="text-slate-600 hover:text-slate-900">
+    <div>
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center gap-4">
+          <Button variant="ghost" asChild className="text-neutral-600 hover:text-neutral-900">
             <Link href="/admin/categories">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Geri
+              Kategorilere dön
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold text-slate-900">Yeni Kategori Ekle</h1>
+          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">Yeni Kategori</h1>
         </div>
-      </header>
+      </div>
 
       <main className="container mx-auto px-6 py-8 max-w-2xl">
         <Card className="card-modern">

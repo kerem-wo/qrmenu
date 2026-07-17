@@ -106,28 +106,18 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex justify-between items-center py-5">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" asChild className="premium-btn-secondary px-4 py-2">
-                <Link href="/admin/dashboard">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Geri
-                </Link>
-              </Button>
-              <h1 className="premium-heading-3">Kategori Yönetimi</h1>
-            </div>
-            <Button asChild className="premium-btn-primary">
-              <Link href="/admin/categories/new">
-                <Plus className="w-5 h-5 mr-2" />
-                Yeni Kategori Ekle
-              </Link>
-            </Button>
-          </div>
+    <div>
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">Kategoriler</h1>
+          <Button asChild className="premium-btn-primary">
+            <Link href="/admin/categories/new">
+              <Plus className="w-5 h-5 mr-2" />
+              Yeni Kategori Ekle
+            </Link>
+          </Button>
         </div>
-      </header>
+      </div>
 
       <main className="premium-container py-10">
         {categories.length === 0 ? (

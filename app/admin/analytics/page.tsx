@@ -46,23 +46,21 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex justify-between items-center py-5">
-            <h1 className="premium-heading-3">Analitik & Raporlar</h1>
-            <select
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-              className="premium-input px-6 py-2.5 max-w-xs"
-            >
+    <div>
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between gap-4 flex-wrap">
+          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">Analitik</h1>
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="premium-input px-6 py-2.5 max-w-xs"
+          >
             <option value="7">Son 7 Gün</option>
             <option value="30">Son 30 Gün</option>
             <option value="90">Son 90 Gün</option>
           </select>
-          </div>
         </div>
-      </header>
+      </div>
 
       <main className="premium-container py-10">
         {analytics && (

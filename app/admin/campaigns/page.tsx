@@ -80,20 +80,18 @@ export default function CampaignsPage() {
   }
 
   return (
-    <div className="min-h-screen premium-bg-gradient">
-      <header className="premium-glass sticky top-0 z-50 border-b border-gray-200/50">
-        <div className="premium-container">
-          <div className="flex justify-between items-center py-5">
-            <h1 className="premium-heading-3">Kampanyalar</h1>
-            <Link href="/admin/campaigns/new">
-              <Button className="premium-btn-primary">
-                <Plus className="w-5 h-5 mr-2" />
-                Yeni Kampanya
-              </Button>
-            </Link>
-          </div>
+    <div>
+      <div className="border-b border-neutral-200/70 bg-white">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 py-6 flex items-center justify-between gap-4 flex-wrap">
+          <h1 className="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">Kampanyalar</h1>
+          <Link href="/admin/campaigns/new">
+            <Button className="premium-btn-primary">
+              <Plus className="w-5 h-5 mr-2" />
+              Yeni Kampanya
+            </Button>
+          </Link>
         </div>
-      </header>
+      </div>
 
       <main className="premium-container py-10">
         {campaigns.length === 0 ? (
