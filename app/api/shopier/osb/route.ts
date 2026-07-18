@@ -7,6 +7,7 @@ import {
   readShopierBody,
   timingSafeEqualText,
 } from "@/lib/shopier";
+import { createHmac } from "crypto";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -30,6 +31,13 @@ function verifyOsbAccess(request: Request, body: Record<string, any>) {
   const config = getShopierOsbConfig();
   if (!config.username || !config.password) return false;
 
+  const res = String(body.res || "").trim();
+  const hash = String(body.hash || "").trim();
+  if (res && hash) {
+    const expected = createHmac("sha256", config.password).update(`${res}${config.username}`).digest("hex");
+    return timingSafeEqualText(hash, expected);
+  }
+
   const basic = decodeBasicAuth(request.headers.get("authorization"));
   if (
     basic &&
@@ -49,6 +57,15 @@ function verifyOsbAccess(request: Request, body: Record<string, any>) {
 }
 
 function tryDecodeEmbeddedPayload(body: Record<string, any>) {
+  if (typeof body.res === "string" && body.res.trim()) {
+    try {
+      const decoded = Buffer.from(body.res, "base64").toString("utf8");
+      return JSON.parse(decoded);
+    } catch {
+      return body;
+    }
+  }
+
   for (const value of Object.values(body)) {
     if (typeof value !== "string" || value.length < 16) continue;
     try {
@@ -76,12 +93,12 @@ export async function POST(request: Request) {
 
     const payload = tryDecodeEmbeddedPayload(body);
     if (!payloadIsNotFailed(payload)) {
-      return new NextResponse("OK", { status: 200 });
+      return new NextResponse("success", { status: 200 });
     }
 
     const paymentId = extractPaymentIdFromShopierPayload(payload);
     if (!paymentId) {
-      return new NextResponse("OK", { status: 200 });
+      return new NextResponse("success", { status: 200 });
     }
 
     await prisma.$transaction((tx) =>
@@ -93,7 +110,7 @@ export async function POST(request: Request) {
       })
     );
 
-    return new NextResponse("OK", { status: 200 });
+    return new NextResponse("success", { status: 200 });
   } catch (error) {
     console.error("Shopier OSB error:", error);
     return NextResponse.json({ error: "Shopier OSB işlenemedi" }, { status: 500 });
