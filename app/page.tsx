@@ -35,6 +35,11 @@ const themes = [
 
 const demoThemes = themes.slice(0, 10);
 
+const iPhoneFrame = {
+  width: 433,
+  height: 892,
+};
+
 const navItems = [
   { href: "#features", label: "Özellikler" },
   { href: "#demo", label: "Canlı demo" },
@@ -118,6 +123,7 @@ const themeGallery = [
 export default function Home() {
   const [currentTheme, setCurrentTheme] = useState(2);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [phoneScale, setPhoneScale] = useState(1);
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -140,6 +146,17 @@ export default function Home() {
     document.addEventListener("keydown", handleKey);
     return () => document.removeEventListener("keydown", handleKey);
   }, [mobileOpen]);
+
+  useEffect(() => {
+    const updatePhoneScale = () => {
+      const availableWidth = window.innerWidth - 32;
+      setPhoneScale(Math.min(1, Math.max(0.72, availableWidth / iPhoneFrame.width)));
+    };
+
+    updatePhoneScale();
+    window.addEventListener("resize", updatePhoneScale);
+    return () => window.removeEventListener("resize", updatePhoneScale);
+  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f4efe7] text-[#171614]">
@@ -376,7 +393,7 @@ export default function Home() {
 
         <section id="demo" className="py-20 sm:py-24 lg:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-10 border-y border-[#171614]/10 py-12 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="grid gap-10 border-y border-[#171614]/10 py-12 lg:grid-cols-[0.64fr_1.36fr]">
               <div>
                 <p className="text-sm font-black text-[#e66b1b]">Ürün kanıtı</p>
                 <h2 className="mt-5 max-w-[12ch] text-4xl font-black leading-tight sm:text-5xl">
@@ -387,17 +404,36 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,360px)_1fr] lg:items-start">
-                <div className="mx-auto w-full max-w-[360px] rounded-[24px] bg-[#171614] p-2 shadow-[0_18px_48px_rgba(23,22,20,0.18)]">
-                  <div className="overflow-hidden rounded-[18px] bg-white">
-                    <iframe
-                      key={themes[currentTheme]}
-                      src={`/menu/demo-restoran?theme=${themes[currentTheme]}`}
-                      className="h-[620px] w-full border-0 bg-white"
-                      title="Rivo QR canlı menü önizlemesi"
-                      loading="lazy"
-                      style={{ pointerEvents: "none" }}
-                    />
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,433px)_1fr] xl:items-start">
+                <div
+                  className="mx-auto"
+                  style={{ width: iPhoneFrame.width * phoneScale, height: iPhoneFrame.height * phoneScale }}
+                >
+                  <div
+                    className="relative rounded-[58px] border border-[#3a3834] bg-[#11100f] p-[19px] shadow-[0_26px_70px_rgba(23,22,20,0.22),inset_0_1px_0_rgba(255,255,255,0.16),inset_0_-18px_30px_rgba(0,0,0,0.24)]"
+                    style={{
+                      width: iPhoneFrame.width,
+                      height: iPhoneFrame.height,
+                      transform: `scale(${phoneScale})`,
+                      transformOrigin: "top left",
+                    }}
+                  >
+                    <span className="absolute -left-[3px] top-[156px] h-16 w-[3px] rounded-l-full bg-[#24221f]" />
+                    <span className="absolute -left-[3px] top-[244px] h-20 w-[3px] rounded-l-full bg-[#24221f]" />
+                    <span className="absolute -right-[3px] top-[214px] h-24 w-[3px] rounded-r-full bg-[#24221f]" />
+                    <span className="pointer-events-none absolute left-1/2 top-[34px] z-20 h-[37px] w-[126px] -translate-x-1/2 rounded-full bg-[#060606] shadow-[inset_0_1px_1px_rgba(255,255,255,0.12),0_2px_8px_rgba(0,0,0,0.35)]">
+                      <span className="absolute right-[18px] top-1/2 h-[10px] w-[10px] -translate-y-1/2 rounded-full bg-[#151922] ring-1 ring-[#2f3b49]" />
+                    </span>
+                    <div className="h-[852px] w-[393px] overflow-hidden rounded-[42px] bg-white ring-1 ring-white/10">
+                      <iframe
+                        key={themes[currentTheme]}
+                        src={`/menu/demo-restoran?theme=${themes[currentTheme]}&previewScroll=off`}
+                        className="h-full w-full border-0 bg-white"
+                        title="Rivo QR canlı menü önizlemesi"
+                        loading="lazy"
+                        style={{ pointerEvents: "none" }}
+                      />
+                    </div>
                   </div>
                 </div>
 
