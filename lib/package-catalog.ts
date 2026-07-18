@@ -260,6 +260,28 @@ export function getBillingPrice(item: Pick<ThemePackage, "monthlyPrice" | "yearl
   return cycle === "monthly" ? item.monthlyPrice : item.yearlyPrice;
 }
 
+export function getPackageTierRank(tier: PackageTier | null | undefined) {
+  return tier ? PACKAGE_TIERS[tier]?.rank || 0 : 0;
+}
+
+export function getThemePackageRank(theme: string | null | undefined) {
+  return getPackageTierRank(getThemePackage(theme)?.tier);
+}
+
+export function getThemeUpgradeAmount(
+  currentTheme: string | null | undefined,
+  targetTheme: string | null | undefined,
+  cycle: BillingCycle,
+  hasActivePackage = true
+) {
+  const targetPackage = getThemePackage(targetTheme);
+  if (!targetPackage) return 0;
+
+  const currentPackage = getThemePackage(currentTheme);
+  const currentAmount = hasActivePackage && currentPackage ? getBillingPrice(currentPackage, cycle) : 0;
+  return Math.max(0, getBillingPrice(targetPackage, cycle) - currentAmount);
+}
+
 export function formatTry(amount: number) {
   return new Intl.NumberFormat("tr-TR", {
     maximumFractionDigits: 0,

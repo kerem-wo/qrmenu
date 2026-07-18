@@ -120,6 +120,25 @@ Production'a yüklemeden önce **mutlaka** `DEPLOY.md` ve `KURULUM-SQL-YOK.md` d
 
 Detaylı rehber: `KURULUM-SQL-YOK.md`
 
+## Shopier Ödeme Ayarları
+
+Tema yükseltme ödemeleri için production ortamında şu env değerleri gerekir:
+
+```bash
+SHOPIER_API_KEY=
+SHOPIER_API_SECRET=
+SHOPIER_WEBSITE_INDEX=1
+SHOPIER_WEBHOOK_TOKEN=
+SHOPIER_OSB_USERNAME=
+SHOPIER_OSB_PASSWORD=
+```
+
+Shopier klasik ödeme dönüş URL'i: `https://rivoqr.com/api/shopier/callback`
+
+Shopier webhook URL'i: `https://rivoqr.com/api/shopier/webhook`
+
+OSB bildirim URL'i: `https://rivoqr.com/api/shopier/osb`
+
 ## Geliştirme Planı
 
 - [x] Temel proje yapısı

@@ -7,11 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Trash2, AlertTriangle, CheckCircle } from "lucide-react";
+import { ArrowLeft, Trash2, AlertTriangle, CheckCircle, CreditCard } from "lucide-react";
 import toast from "react-hot-toast";
 import { checkAuth, clearSessionFromStorage } from "@/lib/auth-client";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { formatTry, getThemePackage } from "@/lib/package-catalog";
+import {
+  formatTry,
+  getPackageTierRank,
+  getThemePackage,
+  getThemeUpgradeAmount,
+  type BillingCycle,
+} from "@/lib/package-catalog";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -27,7 +33,11 @@ export default function SettingsPage() {
     packageEndDate: string | null;
     price: number;
     features: string[];
+    theme: string;
+    tier: string;
+    rank: number;
   } | null>(null);
+  const [savedTheme, setSavedTheme] = useState("default");
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -85,9 +95,13 @@ export default function SettingsPage() {
                 packageEndDate: data.packageEndDate || null,
                 price: data.packageType === "yearly" ? packageCatalog.yearlyPrice : packageCatalog.monthlyPrice,
                 features: packageCatalog.features,
+                theme: packageCatalog.theme,
+                tier: packageCatalog.tier,
+                rank: getPackageTierRank(packageCatalog.tier),
               }
             : null
         );
+        setSavedTheme(data.theme || "default");
         setFormData({
           name: data.name,
           description: data.description || "",
@@ -117,6 +131,35 @@ export default function SettingsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchRestaurant]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
+    if (payment === "success") {
+      toast.success("Ödeme alındı, tema aktif edildi!");
+      window.history.replaceState({}, "", window.location.pathname);
+      fetchRestaurant();
+    }
+    if (payment === "failed") {
+      toast.error("Ödeme tamamlanmadı, eski tema korunuyor.");
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [fetchRestaurant]);
+
+  const selectedThemeCatalog = getThemePackage(formData.theme);
+  const activeBillingCycle: BillingCycle = activePackage?.packageType === "yearly" ? "yearly" : "monthly";
+  const activePackageRank = activePackage?.rank || getPackageTierRank(getThemePackage("default")?.tier);
+  const themeChanged = formData.theme !== savedTheme;
+  const selectedUpgradeAmount =
+    selectedThemeCatalog && themeChanged && getPackageTierRank(selectedThemeCatalog.tier) > activePackageRank
+      ? getThemeUpgradeAmount(
+          activePackage?.theme || "default",
+          selectedThemeCatalog.theme,
+          activeBillingCycle,
+          Boolean(activePackage && activePackage.packageStatus === "active")
+        )
+      : 0;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -140,10 +183,21 @@ export default function SettingsPage() {
         }),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         toast.success("Ayarlar başarıyla kaydedildi!");
+        setSavedTheme(formData.theme);
+        fetchRestaurant();
+      } else if (res.status === 402 && data.requiresPayment) {
+        if (!data.paymentConfigured) {
+          toast.error("Shopier ödeme ayarları eksik. Tema ödemesi alınmadan uygulanmadı.");
+          return;
+        }
+
+        toast.success("Ödeme sayfasına yönlendiriliyorsunuz.");
+        window.location.href = data.paymentUrl;
       } else {
-        const data = await res.json();
         toast.error(data.error || "Ayarlar kaydedilirken bir hata oluştu!");
       }
     } catch (error) {
@@ -334,6 +388,21 @@ export default function SettingsPage() {
               <p className="text-xs text-gray-600 mt-1 font-medium">
                 Menünüzün görsel tasarımını seçin. Değişiklikler kaydedildikten sonra menü sayfanızda görünecektir.
               </p>
+              {selectedThemeCatalog && selectedUpgradeAmount > 0 ? (
+                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <div className="flex items-start gap-3">
+                    <CreditCard className="mt-0.5 h-5 w-5 text-amber-700" />
+                    <div>
+                      <div className="text-sm font-black text-amber-950">
+                        {selectedThemeCatalog.tierName} tema için ödeme gerekiyor
+                      </div>
+                      <p className="mt-1 text-sm font-semibold text-amber-800">
+                        {formatTry(selectedUpgradeAmount)} ₺ ödeme tamamlanmadan bu tema uygulanmaz.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <div className="mt-3">
                 <Link
                   href={`/menu/${formData.slug}?theme=${formData.theme}`}
