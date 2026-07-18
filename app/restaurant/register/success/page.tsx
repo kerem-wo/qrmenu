@@ -11,6 +11,7 @@ function SuccessContent() {
   const router = useRouter();
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const paymentSuccess = searchParams?.get("payment") === "success";
+  const packageSuccess = searchParams?.get("package") === "success";
 
   useEffect(() => {
     const id = searchParams?.get("restaurantId");
@@ -19,13 +20,13 @@ function SuccessContent() {
     }
   }, [searchParams]);
 
-  if (!paymentSuccess) {
+  if (!paymentSuccess && !packageSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center premium-bg-gradient p-4">
         <div className="premium-card p-8 md:p-12 text-center max-w-md animate-premium-scale-in">
-          <h2 className="premium-heading-3 mb-4">Ödeme Bekleniyor</h2>
+          <h2 className="premium-heading-3 mb-4">Paket Seçimi Bekleniyor</h2>
           <p className="text-gray-600 font-medium mb-8">
-            Ödeme işleminiz tamamlanıyor...
+            Restoran kaydınızı tamamlamak için paket seçimi yapılması gerekiyor.
           </p>
           <Button
             onClick={() => router.push("/restaurant/register")}
@@ -49,7 +50,9 @@ function SuccessContent() {
         </div>
         <h2 className="premium-heading-3 mb-4">Kayıt Başarılı!</h2>
         <p className="text-gray-600 font-medium mb-8">
-          Ödemeniz başarıyla tamamlandı. Hesabınız aktif edildi ve kullanıma hazır.
+          {paymentSuccess
+            ? "Ödemeniz başarıyla tamamlandı. Hesabınız aktif edildi ve kullanıma hazır."
+            : "Paket seçiminiz kaydedildi. Hesabınız onay sürecinden sonra kullanıma hazır olacak."}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href="/admin/login">

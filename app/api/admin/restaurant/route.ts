@@ -17,7 +17,7 @@ export async function GET() {
 
     const restaurant = await prisma.restaurant.findUnique({
       where: { id: session.restaurantId },
-      include: { translations: true },
+      include: { translations: true, packageTheme: true },
     });
 
     if (!restaurant) {
@@ -94,7 +94,7 @@ export async function PUT(request: Request) {
 
       return tx.restaurant.findUnique({
         where: { id: updated.id },
-        include: { translations: true },
+        include: { translations: true, packageTheme: true },
       });
     });
 

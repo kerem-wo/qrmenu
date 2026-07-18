@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Trash2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Trash2, AlertTriangle, CheckCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { checkAuth, clearSessionFromStorage } from "@/lib/auth-client";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { formatTry, getThemePackage } from "@/lib/package-catalog";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -18,6 +19,15 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [activePackage, setActivePackage] = useState<{
+    displayName: string;
+    tierName: string;
+    packageType: string;
+    packageStatus: string;
+    packageEndDate: string | null;
+    price: number;
+    features: string[];
+  } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -64,6 +74,20 @@ export default function SettingsPage() {
           if (!map[lang]) continue;
           map[lang] = { name: t.name || "", description: t.description || "" };
         }
+        const packageCatalog = getThemePackage(data.packageTheme?.name || data.theme);
+        setActivePackage(
+          packageCatalog
+            ? {
+                displayName: packageCatalog.displayName,
+                tierName: packageCatalog.tierName,
+                packageType: data.packageType || "monthly",
+                packageStatus: data.packageStatus || "inactive",
+                packageEndDate: data.packageEndDate || null,
+                price: data.packageType === "yearly" ? packageCatalog.yearlyPrice : packageCatalog.monthlyPrice,
+                features: packageCatalog.features,
+              }
+            : null
+        );
         setFormData({
           name: data.name,
           description: data.description || "",
@@ -187,6 +211,40 @@ export default function SettingsPage() {
             <p className="text-gray-600 font-medium">Restoran bilgilerinizi güncelleyin</p>
           </div>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {activePackage ? (
+              <div className="rounded-2xl border border-[#FF6F00]/20 bg-[#FF6F00]/5 p-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="text-xs font-black uppercase text-[#FF6F00]">Aktif paket</div>
+                    <h3 className="mt-1 text-xl font-black text-gray-900">{activePackage.displayName}</h3>
+                    <p className="mt-1 text-sm font-semibold text-gray-600">
+                      {activePackage.tierName} · {activePackage.packageType === "yearly" ? "Yıllık" : "Aylık"} ·{" "}
+                      {activePackage.packageStatus === "active" ? "Aktif" : "Pasif"}
+                    </p>
+                    {activePackage.packageEndDate ? (
+                      <p className="mt-1 text-xs font-medium text-gray-500">
+                        Bitiş: {new Date(activePackage.packageEndDate).toLocaleDateString("tr-TR")}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="rounded-xl bg-white px-4 py-3 text-right shadow-sm">
+                    <div className="text-2xl font-black text-gray-900">{formatTry(activePackage.price)} ₺</div>
+                    <div className="text-xs font-semibold text-gray-500">
+                      / {activePackage.packageType === "yearly" ? "yıl" : "ay"}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-2">
+                  {activePackage.features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-bold text-gray-700">Restoran Adı *</Label>
               <Input

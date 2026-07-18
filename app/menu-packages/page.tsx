@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Smartphone, Sparkles, Eye, Check, Star, Coffee, Utensils, ChefHat } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Sparkles, Eye, Check, Star } from "lucide-react";
+import { PACKAGE_TIERS, formatTry, getThemePackage } from "@/lib/package-catalog";
 
 type MenuPackage = {
   id: string;
@@ -16,6 +16,14 @@ type MenuPackage = {
 };
 
 const packages: MenuPackage[] = [
+  {
+    id: "default",
+    name: "Başlangıç Menü",
+    description: "Hızlı açılan, sade ve güvenilir QR menü. Ürün, kategori, fiyat, stok ve sipariş akışını ilk günden yönetmek isteyen işletmeler için.",
+    theme: "default",
+    image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80",
+    features: ["Dijital QR menü", "Ürün yönetimi", "Sipariş akışı", "Mobil uyumlu"],
+  },
   {
     id: "editorial",
     name: "Editorial — Minimal Sıcak",
@@ -137,6 +145,14 @@ const packages: MenuPackage[] = [
   },
 ];
 
+const packageCards = [...packages].sort((a, b) => {
+  const aCatalog = getThemePackage(a.theme);
+  const bCatalog = getThemePackage(b.theme);
+  const aRank = aCatalog ? PACKAGE_TIERS[aCatalog.tier].rank : 99;
+  const bRank = bCatalog ? PACKAGE_TIERS[bCatalog.tier].rank : 99;
+  return aRank - bRank || a.name.localeCompare(b.name, "tr");
+});
+
 export default function MenuPackagesPage() {
   return (
     <div className="min-h-screen premium-bg-gradient">
@@ -172,7 +188,7 @@ export default function MenuPackagesPage() {
           <div className="max-w-4xl mx-auto text-center animate-premium-fade-in">
             <h1 className="premium-heading-1 mb-6">Menü Paketleri</h1>
             <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
-              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu 14 farklı Rivo QR tasarımını keşfedin.
+              T.C. Ticaret Bakanlığı yönetmeliğine uygun, mobil uyumlu {packageCards.length} farklı Rivo QR tasarımını keşfedin.
             </p>
           </div>
         </div>
@@ -182,13 +198,19 @@ export default function MenuPackagesPage() {
       <section className="premium-section relative">
         <div className="premium-container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {packages.map((pkg, index) => (
-              <div
-                key={pkg.id}
-                className="premium-card p-6 premium-hover-lift group relative overflow-hidden animate-premium-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {pkg.popular && (
+            {packageCards.map((pkg, index) => {
+              const catalog = getThemePackage(pkg.theme);
+              const features = catalog?.features || pkg.features;
+              const isPopular = Boolean(pkg.popular || catalog?.popular);
+              const isNew = Boolean(pkg.isNew || catalog?.isNew);
+
+              return (
+                <div
+                  key={pkg.id}
+                  className="premium-card p-6 premium-hover-lift group relative overflow-hidden animate-premium-fade-in"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                {isPopular && (
                   <div className="absolute top-4 right-4 z-10">
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-green-500 to-blue-600 text-white text-xs font-bold rounded-full shadow-lg">
                       <Sparkles className="w-3 h-3" />
@@ -196,7 +218,7 @@ export default function MenuPackagesPage() {
                     </span>
                   </div>
                 )}
-                {pkg.isNew && (
+                {isNew && !isPopular && (
                   <div className="absolute top-4 right-4 z-10">
                     <span className="inline-flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-[#FF6F00] to-[#FF8F33] text-white text-xs font-bold rounded-full shadow-lg">
                       <Sparkles className="w-3 h-3" />
@@ -207,6 +229,31 @@ export default function MenuPackagesPage() {
 
                 {/* Theme Preview - Custom Design for Each Theme */}
                 <div className="relative h-64 w-full mb-4 rounded-2xl overflow-hidden bg-white border-2 border-gray-200 shadow-lg">
+                  {pkg.theme === "default" && (
+                    <div className="h-full bg-gradient-to-br from-emerald-50 to-white p-4">
+                      <div className="bg-white rounded-xl p-3 shadow-sm mb-2 border border-emerald-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="font-black text-gray-900 text-sm">Başlangıç Menü</h4>
+                          <div className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-500 text-xs font-black text-white">
+                            QR
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-2 bg-gray-200 rounded w-3/4"></div>
+                          <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                      <div className="bg-white rounded-lg p-2 flex items-center gap-2 border border-emerald-100">
+                        <div className="w-12 h-12 bg-emerald-100 rounded-lg"></div>
+                        <div className="flex-1">
+                          <div className="h-2 bg-gray-300 rounded w-2/3 mb-1"></div>
+                          <div className="h-2 bg-gray-200 rounded w-1/3"></div>
+                        </div>
+                        <div className="w-6 h-6 bg-emerald-500 rounded-full"></div>
+                      </div>
+                    </div>
+                  )}
+
                   {pkg.theme === "premium" && (
                     <div className="h-full bg-gradient-to-br from-green-50 to-blue-50 p-4">
                       <div className="bg-white rounded-xl p-3 shadow-sm mb-2">
@@ -534,10 +581,29 @@ export default function MenuPackagesPage() {
                     <p className="text-sm text-gray-600 leading-relaxed">{pkg.description}</p>
                   </div>
 
+                  {catalog ? (
+                    <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-xs font-black uppercase text-gray-500">{catalog.tierName}</div>
+                          <div className="mt-1 flex items-baseline gap-2">
+                            <span className="text-2xl font-black text-gray-900">
+                              {formatTry(catalog.monthlyPrice)} ₺
+                            </span>
+                            <span className="text-sm font-semibold text-gray-500">/ ay</span>
+                          </div>
+                        </div>
+                        <div className="text-right text-xs font-semibold text-green-700">
+                          Yıllık {formatTry(catalog.yearlyPrice)} ₺
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
                   {/* Features */}
                   <div className="space-y-2">
-                    {pkg.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-sm text-gray-700">
+                    {features.map((feature) => (
+                      <div key={feature} className="flex items-center gap-2 text-sm text-gray-700">
                         <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
                         <span>{feature}</span>
                       </div>
@@ -563,8 +629,9 @@ export default function MenuPackagesPage() {
                     </Link>
                   </div>
                 </div>
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

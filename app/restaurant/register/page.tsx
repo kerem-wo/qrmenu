@@ -199,7 +199,7 @@ function RestaurantRegisterContent() {
         // Tema ve paket seçimi sayfasına yönlendir
         if (data.restaurantId) {
           setTimeout(() => {
-            router.push(`/restaurant/register/package?restaurantId=${data.restaurantId}`);
+            router.push(`/restaurant/register/package?restaurantId=${data.restaurantId}&theme=${selectedTheme}`);
           }, 1000);
         } else {
           // Fallback: login sayfasına yönlendir

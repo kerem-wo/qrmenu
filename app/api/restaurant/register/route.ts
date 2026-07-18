@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { rateLimit, getClientIP, logSecurityEvent, sanitizeInput } from "@/lib/security";
+import { VALID_THEME_NAMES } from "@/lib/package-catalog";
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
     // Transaction ile restaurant ve admin oluştur
     const result = await prisma.$transaction(async (tx) => {
       // Theme validation - sadece geçerli temalar kabul edilir
-      const validThemes = ["default", "premium", "paper", "paper-image", "swipe", "premium-plus", "pro", "soft-ui", "ultra-plus"];
+      const validThemes = VALID_THEME_NAMES;
       const selectedTheme = theme && validThemes.includes(theme) ? theme : "default";
 
       // Encrypt documents before storage (only if not already encrypted)

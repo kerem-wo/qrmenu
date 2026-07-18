@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { config } from 'dotenv';
 import { resolve } from 'path';
+import { PACKAGE_TIERS, THEME_PACKAGES } from '../lib/package-catalog';
 
 // Load .env.local if it exists
 config({ path: resolve(process.cwd(), '.env.local') });
@@ -450,35 +451,16 @@ async function main() {
   });
 
   // Create Themes
-  const themes = [
-    {
-      name: "default",
-      displayName: "Tema A - Standart",
-      description: "Temel ve kullanışlı tasarım",
-      monthlyPrice: 99.00,
-      yearlyPrice: 990.00,
-      yearlyDiscount: 17, // %17 indirim
-      features: ["Temel menü görünümü", "QR kod desteği", "Mobil uyumlu"],
-    },
-    {
-      name: "premium",
-      displayName: "Tema B - Premium",
-      description: "Gelişmiş özellikler ve modern tasarım",
-      monthlyPrice: 199.00,
-      yearlyPrice: 1990.00,
-      yearlyDiscount: 17,
-      features: ["Premium tasarım", "Gelişmiş animasyonlar", "Özel renk şemaları", "Sosyal medya entegrasyonu"],
-    },
-    {
-      name: "pro",
-      displayName: "Tema C - Pro",
-      description: "En gelişmiş özellikler ve profesyonel tasarım",
-      monthlyPrice: 299.00,
-      yearlyPrice: 2990.00,
-      yearlyDiscount: 17,
-      features: ["Pro tasarım", "Tüm premium özellikler", "Özel logo desteği", "Öncelikli destek", "Gelişmiş analitik"],
-    },
-  ];
+  const themes = THEME_PACKAGES.map((item) => ({
+    name: item.theme,
+    displayName: item.displayName,
+    description: item.description,
+    monthlyPrice: item.monthlyPrice,
+    yearlyPrice: item.yearlyPrice,
+    yearlyDiscount: item.yearlyDiscount,
+    features: item.features,
+    isActive: true,
+  }));
 
   for (const theme of themes) {
     await prisma.theme.upsert({
@@ -511,14 +493,14 @@ async function main() {
     update: {
       displayName: "Yıllık Paket",
       basePrice: 0, // Tema fiyatına göre belirlenir
-      discountPercent: 17, // %17 indirim
+      discountPercent: PACKAGE_TIERS.starter.yearlyDiscount,
       isActive: true,
     },
     create: {
       name: "yearly",
       displayName: "Yıllık Paket",
       basePrice: 0,
-      discountPercent: 17,
+      discountPercent: PACKAGE_TIERS.starter.yearlyDiscount,
       isActive: true,
     },
   });
