@@ -149,8 +149,17 @@ export default function Home() {
 
   useEffect(() => {
     const updatePhoneScale = () => {
-      const availableWidth = window.innerWidth - 32;
-      setPhoneScale(Math.min(1, Math.max(0.72, availableWidth / iPhoneFrame.width)));
+      const isDesktop = window.innerWidth >= 1024;
+      const availableWidth = window.innerWidth - (isDesktop ? 96 : 32);
+      const availableHeight = isDesktop ? window.innerHeight - 170 : window.innerHeight;
+      const maxScale = isDesktop ? 0.82 : 1;
+      const scale = Math.min(
+        maxScale,
+        availableWidth / iPhoneFrame.width,
+        availableHeight / iPhoneFrame.height
+      );
+
+      setPhoneScale(Math.max(0.66, scale));
     };
 
     updatePhoneScale();
