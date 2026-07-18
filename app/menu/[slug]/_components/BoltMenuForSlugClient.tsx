@@ -947,25 +947,37 @@ export function BoltMenuForSlugClient() {
     );
   }, [items]);
 
-  // Scroll to products section when loaded in iframe (for landing page preview)
+  // Scroll to products section when loaded in iframe unless a preview disables it.
   useEffect(() => {
-    // Check if we're in an iframe
-    const isInIframe = window.self !== window.top;
-    
-    if (isInIframe && items.length > 0) {
+    let isInIframe = false;
+    try {
+      isInIframe = window.self !== window.top;
+    } catch {
+      isInIframe = true;
+    }
+
+    const previewScrollDisabled =
+      new URLSearchParams(window.location.search).get("previewScroll") === "off";
+
+    if (isInIframe && !previewScrollDisabled && items.length > 0) {
       // Wait for content to render, then scroll to products
       setTimeout(() => {
         const popularSection = document.querySelector('[data-tab="Most Popular"]') || 
                                document.querySelector('section[id*="Most Popular"]') ||
                                document.querySelector('section[id*="most-popular"]');
+        const scrollPreviewTo = (section: Element) => {
+          const top = section.getBoundingClientRect().top + window.scrollY;
+          window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+        };
+
         if (popularSection) {
-          popularSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+          scrollPreviewTo(popularSection);
         } else {
           // If "Most Popular" not found, scroll to first category section
           const firstCategorySection = document.querySelector('section[data-tab]') ||
                                        document.querySelector('section[id*="category"]');
           if (firstCategorySection) {
-            firstCategorySection.scrollIntoView({ behavior: 'auto', block: 'start' });
+            scrollPreviewTo(firstCategorySection);
           }
         }
       }, 500); // Wait 500ms for content to render

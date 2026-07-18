@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     siteName: "Rivo QR",
     images: [
       {
-        url: "/rivo-qr-restaurant-hero.png",
-        width: 1792,
-        height: 1024,
-        alt: "Restoran masasında Rivo QR dijital menü deneyimi",
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Rivo QR logosu",
       },
     ],
     locale: "tr_TR",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Rivo QR - Restoranlar için dijital QR menü",
     description: "QR menünüzü dakikalar içinde yayına alın ve tek panelden yönetin.",
-    images: ["/rivo-qr-restaurant-hero.png"],
+    images: ["/logo.png"],
   },
   icons: {
     icon: [
