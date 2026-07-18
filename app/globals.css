@@ -36,8 +36,18 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-slate-50 text-slate-900 antialiased;
+    text-rendering: geometricPrecision;
+  }
+
+  ::selection {
+    background: rgba(249, 115, 22, 0.28);
+    color: #fff7ed;
   }
   
   /* Remove Chrome default form styles */
@@ -89,6 +99,49 @@
 }
 
 @layer utilities {
+  .rivo-noise {
+    background-image:
+      linear-gradient(115deg, rgba(255, 255, 255, 0.09), transparent 18%, rgba(255, 255, 255, 0.035) 36%, transparent 56%),
+      linear-gradient(35deg, transparent 0%, rgba(249, 115, 22, 0.08) 34%, transparent 58%);
+    background-size: 260px 260px, 320px 320px;
+  }
+
+  @keyframes rivo-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .rivo-animate-in {
+    opacity: 0;
+    animation: rivo-fade-up 0.78s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .rivo-animate-in {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
   /* Clean Modern Backgrounds */
   .bg-pattern {
     background-image: 
